@@ -21,6 +21,7 @@
 		63948AC3170BCECD0065D68A /* MasterViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 63948AC1170BCECD0065D68A /* MasterViewController.xib */; };
 		63948AC6170BCECD0065D68A /* DetailViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 63948AC4170BCECD0065D68A /* DetailViewController.xib */; };
 		63948ACF170BCF090065D68A /* DAAppsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 63948ACE170BCF090065D68A /* DAAppsViewController.m */; };
+		63948AD3170CE7B10065D68A /* DAAppsViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 63948AD2170CE7B10065D68A /* DAAppsViewCell.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -45,6 +46,8 @@
 		63948AC5170BCECD0065D68A /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = en.lproj/DetailViewController.xib; sourceTree = "<group>"; };
 		63948ACD170BCF090065D68A /* DAAppsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DAAppsViewController.h; sourceTree = "<group>"; };
 		63948ACE170BCF090065D68A /* DAAppsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DAAppsViewController.m; sourceTree = "<group>"; };
+		63948AD1170CE7B10065D68A /* DAAppsViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DAAppsViewCell.h; sourceTree = "<group>"; };
+		63948AD2170CE7B10065D68A /* DAAppsViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DAAppsViewCell.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -122,6 +125,8 @@
 		63948ACC170BCEDE0065D68A /* DAAppsViewController */ = {
 			isa = PBXGroup;
 			children = (
+				63948AD1170CE7B10065D68A /* DAAppsViewCell.h */,
+				63948AD2170CE7B10065D68A /* DAAppsViewCell.m */,
 				63948ACD170BCF090065D68A /* DAAppsViewController.h */,
 				63948ACE170BCF090065D68A /* DAAppsViewController.m */,
 			);
@@ -201,6 +206,7 @@
 				63948ABD170BCECD0065D68A /* MasterViewController.m in Sources */,
 				63948AC0170BCECD0065D68A /* DetailViewController.m in Sources */,
 				63948ACF170BCF090065D68A /* DAAppsViewController.m in Sources */,
+				63948AD3170CE7B10065D68A /* DAAppsViewCell.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -331,6 +337,7 @@
 				63948ACB170BCECD0065D68A /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
