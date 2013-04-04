@@ -10,6 +10,10 @@
 
 @interface DAAppsViewController ()
 
+@property (nonatomic, strong) NSURLConnection *urlConnection;
+@property (nonatomic, strong) NSMutableData *responseData;
+@property (nonatomic, strong) NSArray *appsArray;
+
 @end
 
 @implementation DAAppsViewController

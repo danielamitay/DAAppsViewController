@@ -8,6 +8,19 @@
 
 #import "DAAppsViewCell.h"
 
+@interface DAAppsViewCell ()
+
+@property (nonatomic, strong) UIImageView *iconView;
+@property (nonatomic, strong) UILabel *nameLabel;
+@property (nonatomic, strong) UILabel *genreLabel;
+
+@property (nonatomic, strong) UIImageView *starImageView;
+@property (nonatomic, strong) UILabel *noRatingsLabel;
+@property (nonatomic, strong) UILabel *ratingsLabel;
+@property (nonatomic, strong) UIButton *purchaseButton;
+
+@end
+
 @implementation DAAppsViewCell
 
 - (id)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier
