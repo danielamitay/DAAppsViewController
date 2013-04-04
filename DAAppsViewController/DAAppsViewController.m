@@ -7,6 +7,11 @@
 //
 
 #import "DAAppsViewController.h"
+#import <StoreKit/StoreKit.h>
+#import "DAAppsViewCell.h"
+
+#define DARK_BACKGROUND_COLOR   [UIColor colorWithWhite:235.0f/255.0f alpha:1.0f]
+#define LIGHT_BACKGROUND_COLOR  [UIColor colorWithWhite:245.0f/255.0f alpha:1.0f]
 
 @interface DAAppsViewController ()
 
