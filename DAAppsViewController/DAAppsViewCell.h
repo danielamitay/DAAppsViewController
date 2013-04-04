@@ -10,4 +10,15 @@
 
 @interface DAAppsViewCell : UITableViewCell
 
+@property (nonatomic) NSInteger appId;
+
+@property (nonatomic, copy) NSString *name;
+@property (nonatomic, copy) NSString *genre;
+@property (nonatomic, copy) UIImage *icon;
+
+@property (nonatomic) NSInteger userRatingCount;
+@property (nonatomic) CGFloat userRating;
+
+@property (nonatomic, copy) NSString *buttonText;
+
 @end
