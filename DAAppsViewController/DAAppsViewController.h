@@ -16,4 +16,6 @@
 @property (nonatomic) BOOL onlyShowOtherApps;
 @property (nonatomic, copy) void(^didViewApp)(NSInteger appId);
 
++ (DAAppsViewController *)sharedInstance;
+
 @end
