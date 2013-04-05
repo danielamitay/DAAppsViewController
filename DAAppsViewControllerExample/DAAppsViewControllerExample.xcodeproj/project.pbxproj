@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		631EF347170E2AB500031F79 /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 631EF346170E2AB500031F79 /* StoreKit.framework */; };
+		631EF34D170F6A6E00031F79 /* DAAppObject.m in Sources */ = {isa = PBXBuildFile; fileRef = 631EF34C170F6A6E00031F79 /* DAAppObject.m */; };
 		63948AA4170BCECD0065D68A /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 63948AA3170BCECD0065D68A /* UIKit.framework */; };
 		63948AA6170BCECD0065D68A /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 63948AA5170BCECD0065D68A /* Foundation.framework */; };
 		63948AA8170BCECD0065D68A /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 63948AA7170BCECD0065D68A /* CoreGraphics.framework */; };
@@ -27,6 +28,8 @@
 
 /* Begin PBXFileReference section */
 		631EF346170E2AB500031F79 /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = System/Library/Frameworks/StoreKit.framework; sourceTree = SDKROOT; };
+		631EF34B170F6A6E00031F79 /* DAAppObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DAAppObject.h; sourceTree = "<group>"; };
+		631EF34C170F6A6E00031F79 /* DAAppObject.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DAAppObject.m; sourceTree = "<group>"; };
 		63948AA0170BCECD0065D68A /* DAAppsViewControllerExample.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = DAAppsViewControllerExample.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		63948AA3170BCECD0065D68A /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		63948AA5170BCECD0065D68A /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
@@ -133,6 +136,8 @@
 				63948AD2170CE7B10065D68A /* DAAppsViewCell.m */,
 				63948ACD170BCF090065D68A /* DAAppsViewController.h */,
 				63948ACE170BCF090065D68A /* DAAppsViewController.m */,
+				631EF34B170F6A6E00031F79 /* DAAppObject.h */,
+				631EF34C170F6A6E00031F79 /* DAAppObject.m */,
 			);
 			name = DAAppsViewController;
 			path = ../DAAppsViewController;
@@ -211,6 +216,7 @@
 				63948AC0170BCECD0065D68A /* DetailViewController.m in Sources */,
 				63948ACF170BCF090065D68A /* DAAppsViewController.m in Sources */,
 				63948AD3170CE7B10065D68A /* DAAppsViewCell.m in Sources */,
+				631EF34D170F6A6E00031F79 /* DAAppObject.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
