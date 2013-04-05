@@ -8,7 +8,7 @@
 
 #import "DAAppsViewController.h"
 #import <StoreKit/StoreKit.h>
-#import "DAAppsViewCell.h"
+#import "DAAppViewCell.h"
 
 #define DARK_BACKGROUND_COLOR   [UIColor colorWithWhite:235.0f/255.0f alpha:1.0f]
 #define LIGHT_BACKGROUND_COLOR  [UIColor colorWithWhite:245.0f/255.0f alpha:1.0f]
@@ -101,10 +101,10 @@
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     static NSString *CellIdentifier = @"Cell";
-    DAAppsViewCell *cell = (DAAppsViewCell *)[tableView dequeueReusableCellWithIdentifier:CellIdentifier];
+    DAAppViewCell *cell = (DAAppViewCell *)[tableView dequeueReusableCellWithIdentifier:CellIdentifier];
     if (!cell)
     {
-        cell = [[DAAppsViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier];
+        cell = [[DAAppViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier];
     }
     
     NSMutableDictionary *appDictionary = [self.appsArray objectAtIndex:indexPath.row];

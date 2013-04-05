@@ -1,14 +1,14 @@
 //
-//  DAAppsViewCell.m
+//  DAAppViewCell.m
 //  DAAppsViewController
 //
 //  Created by Daniel Amitay on 4/3/13.
 //  Copyright (c) 2013 Daniel Amitay. All rights reserved.
 //
 
-#import "DAAppsViewCell.h"
+#import "DAAppViewCell.h"
 
-@interface DAAppsViewCell ()
+@interface DAAppViewCell ()
 
 @property (nonatomic, strong) UIImageView *iconView;
 @property (nonatomic, strong) UILabel *nameLabel;
@@ -21,7 +21,7 @@
 
 @end
 
-@implementation DAAppsViewCell
+@implementation DAAppViewCell
 
 - (id)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier
 {

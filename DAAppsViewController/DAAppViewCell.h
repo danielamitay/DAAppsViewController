@@ -1,5 +1,5 @@
 //
-//  DAAppsViewCell.h
+//  DAAppViewCell.h
 //  DAAppsViewController
 //
 //  Created by Daniel Amitay on 4/3/13.
@@ -8,7 +8,7 @@
 
 #import <UIKit/UIKit.h>
 
-@interface DAAppsViewCell : UITableViewCell
+@interface DAAppViewCell : UITableViewCell
 
 @property (nonatomic) NSInteger appId;
 
