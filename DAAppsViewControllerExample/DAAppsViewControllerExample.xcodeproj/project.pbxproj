@@ -132,10 +132,10 @@
 		63948ACC170BCEDE0065D68A /* DAAppsViewController */ = {
 			isa = PBXGroup;
 			children = (
-				63948AD1170CE7B10065D68A /* DAAppViewCell.h */,
-				63948AD2170CE7B10065D68A /* DAAppViewCell.m */,
 				63948ACD170BCF090065D68A /* DAAppsViewController.h */,
 				63948ACE170BCF090065D68A /* DAAppsViewController.m */,
+				63948AD1170CE7B10065D68A /* DAAppViewCell.h */,
+				63948AD2170CE7B10065D68A /* DAAppViewCell.m */,
 				631EF34B170F6A6E00031F79 /* DAAppObject.h */,
 				631EF34C170F6A6E00031F79 /* DAAppObject.m */,
 			);

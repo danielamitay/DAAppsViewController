@@ -155,54 +155,27 @@
 
 #pragma mark - Property methods
 
-- (void)setAppId:(NSInteger)appId
+- (void)setAppObject:(DAAppObject *)appObject
 {
-    _appId = appId;
-}
-
-- (void)setName:(NSString *)name
-{
-    _name = name;
-    self.nameLabel.text = _name;
-}
-
-- (void)setGenre:(NSString *)genre
-{
-    _genre = genre;
-    self.genreLabel.text = _genre;
-}
-
-- (void)setIcon:(UIImage *)icon
-{
-    _icon = icon;
-    self.iconView.image = _icon;
-}
-
-- (void)setUserRatingCount:(NSInteger)userRatingCount
-{
-    _userRatingCount = userRatingCount;
-    self.ratingsLabel.text = [NSString stringWithFormat:@"(%i)", _userRatingCount];
-    self.noRatingsLabel.hidden = _userRatingCount;
-    self.starImageView.hidden = !_userRatingCount;
-}
-
-- (void)setUserRating:(CGFloat)userRating
-{
-    _userRating = userRating;
+    _appObject = appObject;
+    self.nameLabel.text = appObject.name;
+    self.genreLabel.text = appObject.genre;
+    //self.iconView.image = _icon;
+    
+    self.ratingsLabel.text = [NSString stringWithFormat:@"(%i)", appObject.userRatingCount];
+    self.noRatingsLabel.hidden = appObject.userRatingCount;
+    self.starImageView.hidden = !appObject.userRatingCount;
+    
     UIImage *starsImage = [UIImage imageNamed:@"DAStarsImage"];
     UIGraphicsBeginImageContextWithOptions(self.starImageView.frame.size, NO, 0);
     CGPoint starPoint = CGPointMake(0.0f,
                                     -starsImage.size.height + self.starImageView.frame.size.height +
-                                    (self.starImageView.frame.size.height * (2 * _userRating)));
+                                    (self.starImageView.frame.size.height * (2 * appObject.userRating)));
     [starsImage drawAtPoint:starPoint];
     self.starImageView.image = UIGraphicsGetImageFromCurrentImageContext();
     UIGraphicsEndImageContext();
-}
-
-- (void)setButtonText:(NSString *)buttonText
-{
-    _buttonText = buttonText;
-    [self.purchaseButton setTitle:_buttonText forState:UIControlStateNormal];
+    
+    [self.purchaseButton setTitle:appObject.formattedPrice forState:UIControlStateNormal];
 }
 
 @end

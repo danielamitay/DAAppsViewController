@@ -7,18 +7,10 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "DAAppObject.h"
 
 @interface DAAppViewCell : UITableViewCell
 
-@property (nonatomic) NSInteger appId;
-
-@property (nonatomic, copy) NSString *name;
-@property (nonatomic, copy) NSString *genre;
-@property (nonatomic, copy) UIImage *icon;
-
-@property (nonatomic) NSInteger userRatingCount;
-@property (nonatomic) CGFloat userRating;
-
-@property (nonatomic, copy) NSString *buttonText;
+@property (nonatomic, copy) DAAppObject *appObject;
 
 @end
