@@ -8,12 +8,13 @@
 
 #import "DAAppViewCell.h"
 
+static NSMutableDictionary *_iconCacheDictionary = nil;
+
 @interface DAAppViewCell ()
 
 @property (nonatomic, strong) UIImageView *iconView;
 @property (nonatomic, strong) UILabel *nameLabel;
 @property (nonatomic, strong) UILabel *genreLabel;
-
 @property (nonatomic, strong) UIImageView *starImageView;
 @property (nonatomic, strong) UILabel *noRatingsLabel;
 @property (nonatomic, strong) UILabel *ratingsLabel;
@@ -24,6 +25,14 @@
 @end
 
 @implementation DAAppViewCell
+
++ (void)initialize
+{
+    if (self != [DAAppViewCell class])
+        return;
+    
+    _iconCacheDictionary = [[NSMutableDictionary alloc] init];
+}
 
 - (id)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier
 {
@@ -65,7 +74,7 @@
         self.nameLabel = [[UILabel alloc] init];
         self.nameLabel.frame = (CGRect) {
             .origin.x = 88.0f,
-            .origin.y = 34.0f,
+            .origin.y = 20.0f,
             .size.width = self.frame.size.width - 165.0f,
             .size.height = 15.0f
         };
@@ -78,9 +87,9 @@
         self.genreLabel = [[UILabel alloc] init];
         self.genreLabel.frame = (CGRect) {
             .origin.x = 88.0f,
-            .origin.y = 20.0f,
+            .origin.y = 39.0f,
             .size.width = 100.0f,
-            .size.height = 10.0f
+            .size.height = 11.0f
         };
         self.genreLabel.font = [UIFont systemFontOfSize:10.0f];
         self.genreLabel.backgroundColor = [UIColor clearColor];
@@ -90,7 +99,7 @@
         self.starImageView = [[UIImageView alloc] init];
         self.starImageView.frame = (CGRect) {
             .origin.x = 88.0f,
-            .origin.y = 53.0f,
+            .origin.y = 54.0f,
             .size.width = 44.0f,
             .size.height = 9.5f
         };
@@ -101,7 +110,7 @@
         self.noRatingsLabel = [[UILabel alloc] init];
         self.noRatingsLabel.frame = (CGRect) {
             .origin.x = 88.0f,
-            .origin.y = 53.0f,
+            .origin.y = 54.0f,
             .size.width = 60.0f,
             .size.height = 10.0f
         };
@@ -114,12 +123,12 @@
         
         self.ratingsLabel = [[UILabel alloc] init];
         self.ratingsLabel.frame = (CGRect) {
-            .origin.x = 140.0f,
+            .origin.x = 135.0f,
             .origin.y = 51.5f,
             .size.width = 60.0f,
             .size.height = 12.0f
         };
-        self.ratingsLabel.font = [UIFont systemFontOfSize:12.0f];
+        self.ratingsLabel.font = [UIFont systemFontOfSize:10.0f];
         self.ratingsLabel.textColor = [UIColor colorWithWhite:90.0f/255.0f alpha:1.0f];
         self.ratingsLabel.backgroundColor = [UIColor clearColor];
         [self addSubview:self.ratingsLabel];
@@ -167,22 +176,75 @@
     _appObject = appObject;
     self.nameLabel.text = appObject.name;
     self.genreLabel.text = appObject.genre;
-    //self.iconView.image = _icon;
-    
     self.ratingsLabel.text = [NSString stringWithFormat:@"(%i)", appObject.userRatingCount];
     self.noRatingsLabel.hidden = appObject.userRatingCount;
     self.starImageView.hidden = !appObject.userRatingCount;
+    [self.purchaseButton setTitle:appObject.formattedPrice forState:UIControlStateNormal];
     
     UIImage *starsImage = [UIImage imageNamed:@"DAStarsImage"];
     UIGraphicsBeginImageContextWithOptions(self.starImageView.frame.size, NO, 0);
-    CGPoint starPoint = CGPointMake(0.0f,
-                                    -starsImage.size.height + self.starImageView.frame.size.height +
-                                    (self.starImageView.frame.size.height * (2 * appObject.userRating)));
+    CGPoint starPoint = (CGPoint) {
+        .y = (self.starImageView.frame.size.height * (2 * appObject.userRating + 1)) - starsImage.size.height
+    };
     [starsImage drawAtPoint:starPoint];
     self.starImageView.image = UIGraphicsGetImageFromCurrentImageContext();
     UIGraphicsEndImageContext();
     
-    [self.purchaseButton setTitle:appObject.formattedPrice forState:UIControlStateNormal];
+    UIImage *iconImage = [_iconCacheDictionary objectForKey:self.appObject.iconURL];
+    if (iconImage)
+    {
+        self.iconView.image = iconImage;
+    }
+    else
+    {
+        self.iconView.image = [UIImage imageNamed:@"DAPlaceholderImage"];
+        NSURL *iconURL = self.appObject.iconURL;
+        dispatch_queue_t thread = dispatch_queue_create(NULL, NULL);
+        dispatch_async(thread, ^{
+            NSURLRequest *urlRequest = [NSURLRequest requestWithURL:iconURL
+                                                        cachePolicy:NSURLRequestReturnCacheDataElseLoad
+                                                    timeoutInterval:10.0f];
+            NSData *iconData = [NSURLConnection sendSynchronousRequest:urlRequest
+                                                     returningResponse:NULL
+                                                                 error:NULL];
+            UIImage *iconImage = [UIImage imageWithData:iconData];
+            
+            if (!self.appObject.iconIsPrerendered)
+            {
+                UIGraphicsBeginImageContext(iconImage.size);
+                [iconImage drawAtPoint:CGPointZero];
+                CGRect imageRect = (CGRect) {
+                    .size = iconImage.size
+                };
+                [[UIImage imageNamed:@"DAOverlayImage"] drawInRect:imageRect];
+                iconImage = UIGraphicsGetImageFromCurrentImageContext();
+                UIGraphicsEndImageContext();
+            }
+            
+            CGImageRef maskRef = [UIImage imageNamed:@"DAMaskImage"].CGImage;
+            CGImageRef mask = CGImageMaskCreate(CGImageGetWidth(maskRef),
+                                                CGImageGetHeight(maskRef),
+                                                CGImageGetBitsPerComponent(maskRef),
+                                                CGImageGetBitsPerPixel(maskRef),
+                                                CGImageGetBytesPerRow(maskRef),
+                                                CGImageGetDataProvider(maskRef), NULL, false);
+            CGImageRef maskedImageRef = CGImageCreateWithMask([iconImage CGImage], mask);
+            iconImage = [UIImage imageWithCGImage:maskedImageRef];
+            CGImageRelease(mask);
+            CGImageRelease(maskedImageRef);
+            
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [_iconCacheDictionary setObject:iconImage forKey:iconURL];
+                if (self.appObject.iconURL == iconURL)
+                {
+                    self.iconView.image = iconImage;
+                }
+            });
+        });
+        #if !OS_OBJECT_USE_OBJC
+        dispatch_release(thread);
+        #endif
+    }
 }
 
 @end
