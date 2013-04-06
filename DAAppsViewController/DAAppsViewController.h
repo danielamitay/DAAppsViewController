@@ -10,12 +10,12 @@
 
 @interface DAAppsViewController : UITableViewController
 
-@property (nonatomic) NSInteger artistId;
-
-@property (nonatomic) BOOL onlyShowCompatibleApps;
-@property (nonatomic) BOOL onlyShowOtherApps;
 @property (nonatomic, copy) void(^didViewApp)(NSInteger appId);
 
 + (DAAppsViewController *)sharedInstance;
+
+- (void)loadAppsWithArtistId:(NSInteger)artistId completionBlock:(void(^)(BOOL result, NSError *error))block;
+- (void)loadAppsWithAppIds:(NSArray *)appIds completionBlock:(void(^)(BOOL result, NSError *error))block;
+- (void)loadAppsWithSearchTerm:(NSString *)searchTerm completionBlock:(void(^)(BOOL result, NSError *error))block;
 
 @end

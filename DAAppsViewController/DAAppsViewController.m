@@ -13,11 +13,13 @@
 #define DARK_BACKGROUND_COLOR   [UIColor colorWithWhite:235.0f/255.0f alpha:1.0f]
 #define LIGHT_BACKGROUND_COLOR  [UIColor colorWithWhite:245.0f/255.0f alpha:1.0f]
 
-@interface DAAppsViewController () <NSURLConnectionDelegate>
+@interface DAAppsViewController () <NSURLConnectionDelegate, SKStoreProductViewControllerDelegate>
 
 @property (nonatomic, strong) NSURLConnection *urlConnection;
 @property (nonatomic, strong) NSMutableData *responseData;
 @property (nonatomic, strong) NSArray *appsArray;
+
+- (NSDictionary *)resultsDictionaryForURL:(NSURL *)URL error:(NSError **)error;
 
 @end
 
@@ -33,33 +35,6 @@
         sharedInstance = [[DAAppsViewController alloc] init];
     });
     return sharedInstance;
-}
-
-#pragma mark - Property methods
-
-- (void)setArtistId:(NSInteger)artistId
-{
-    _artistId = artistId;
-    if (self.urlConnection)
-    {
-        [self.urlConnection cancel];
-        self.responseData = nil;
-    }
-    
-    NSString *countryCode = [[NSLocale currentLocale] objectForKey:NSLocaleCountryCode];
-    NSMutableString *mutableRequestString = [[NSMutableString alloc] init];
-    [mutableRequestString appendFormat:@"http://itunes.apple.com/%@/", countryCode];
-    [mutableRequestString appendFormat:@"artist/id%i?dataOnly=true", _artistId];
-    
-    NSURL *requestURL = [[NSURL alloc] initWithString:mutableRequestString];
-    NSMutableURLRequest *urlRequest = [[NSMutableURLRequest alloc] init];
-    [urlRequest setURL:requestURL];
-    [urlRequest setTimeoutInterval:30.0f];
-    [urlRequest setCachePolicy:NSURLRequestReloadRevalidatingCacheData];
-    [urlRequest setValue:@"iTunes-iPad/6.0 (6; 16GB; dt:73)" forHTTPHeaderField:@"User-Agent"];
-    //self.urlConnection = [[NSURLConnection alloc] initWithRequest:urlRequest delegate:self];
-    
-    self.title = NSLocalizedString(@"Loading...",);
 }
 
 #pragma mark - View methods
@@ -85,6 +60,80 @@
     [super didReceiveMemoryWarning];
 }
 
+#pragma mark - Property methods
+
+- (void)setAppsArray:(NSArray *)appsArray
+{
+    _appsArray = appsArray;
+    [self.tableView reloadData];
+}
+
+#pragma mark - Loading methods
+
+- (NSDictionary *)resultsDictionaryForURL:(NSURL *)URL error:(NSError **)error
+{
+    NSMutableURLRequest *request = [[NSMutableURLRequest alloc] init];
+    [request setURL:URL];
+    [request setTimeoutInterval:20.0f];
+    [request setCachePolicy:NSURLRequestReturnCacheDataElseLoad];
+    [request setValue:@"iTunes-iPad/6.0 (6; 16GB; dt:73)" forHTTPHeaderField:@"User-Agent"];
+    
+    NSError *connectionError;
+    NSData *result = [NSURLConnection sendSynchronousRequest:request
+                                           returningResponse:NULL
+                                                       error:&connectionError];
+    if (connectionError)
+    {
+        *error = connectionError;
+        return nil;
+    }
+    NSError *jsonError;
+    NSDictionary *jsonDictionary = [NSJSONSerialization JSONObjectWithData:result
+                                                                   options:0
+                                                                     error:&jsonError];
+    *error = jsonError;
+    return jsonDictionary;
+}
+
+- (void)loadAppsWithArtistId:(NSInteger)artistId completionBlock:(void(^)(BOOL result, NSError *error))block
+{
+    self.title = NSLocalizedString(@"Loading...",);
+    
+    dispatch_queue_t request_thread = dispatch_queue_create(NULL, NULL);
+    dispatch_async(request_thread, ^{
+        
+    });
+    #if !OS_OBJECT_USE_OBJC
+    dispatch_release(retrieval_thread);
+    #endif
+}
+
+- (void)loadAppsWithAppIds:(NSArray *)appIds completionBlock:(void(^)(BOOL result, NSError *error))block
+{
+    self.title = NSLocalizedString(@"Loading...",);
+    
+    dispatch_queue_t request_thread = dispatch_queue_create(NULL, NULL);
+    dispatch_async(request_thread, ^{
+        
+    });
+    #if !OS_OBJECT_USE_OBJC
+    dispatch_release(retrieval_thread);
+    #endif
+}
+
+- (void)loadAppsWithSearchTerm:(NSString *)searchTerm completionBlock:(void(^)(BOOL result, NSError *error))block
+{
+    self.title = NSLocalizedString(@"Loading...",);
+    
+    dispatch_queue_t request_thread = dispatch_queue_create(NULL, NULL);
+    dispatch_async(request_thread, ^{
+        
+    });
+    #if !OS_OBJECT_USE_OBJC
+    dispatch_release(retrieval_thread);
+    #endif
+}
+
 #pragma mark - Table view data source
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
@@ -107,7 +156,44 @@
         cell = [[DAAppViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier];
     }
     
+    cell.appObject = [self.appsArray objectAtIndex:indexPath.row];
+    
     return cell;
+}
+
+#pragma mark- Table view delegate methods
+
+- (void)tableView:(UITableView *)tableView accessoryButtonTappedForRowWithIndexPath:(NSIndexPath *)indexPath
+{
+    DAAppObject *appObject = [self.appsArray objectAtIndex:indexPath.row];
+    
+    if (self.didViewApp)
+    {
+        self.didViewApp(appObject.appId);
+    }
+    
+    if (NSClassFromString(@"SKStoreProductViewController"))
+    {
+        NSDictionary *appParameters = @{SKStoreProductParameterITunesItemIdentifier : [NSString stringWithFormat:@"%u", appObject.appId]};
+        SKStoreProductViewController *productViewController = [[SKStoreProductViewController alloc] init];
+        [productViewController setDelegate:self];
+        [productViewController loadProductWithParameters:appParameters completionBlock:nil];
+        [self presentViewController:productViewController
+                           animated:YES
+                         completion:nil];
+    }
+    else
+    {
+        NSString *appUrlString = [NSString stringWithFormat:@"itms-apps://itunes.apple.com/app/id%u?mt=8", appObject.appId];
+        [[UIApplication sharedApplication] openURL:[NSURL URLWithString:appUrlString]];
+    }
+}
+
+#pragma mark- Product view controller delegate methods
+
+- (void)productViewControllerDidFinish:(SKStoreProductViewController *)viewController
+{
+    [viewController dismissViewControllerAnimated:YES completion:nil];
 }
 
 @end

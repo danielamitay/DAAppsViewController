@@ -19,6 +19,8 @@
 @property (nonatomic, strong) UILabel *ratingsLabel;
 @property (nonatomic, strong) UIButton *purchaseButton;
 
+- (void)purchaseButton:(UIButton *)button;
+
 @end
 
 @implementation DAAppViewCell
@@ -143,14 +145,19 @@
         [self.purchaseButton addTarget:self
                                 action:@selector(purchaseButton:)
                       forControlEvents:UIControlEventTouchUpInside];
-        [self addSubview:self.purchaseButton];
+        [self setAccessoryView:self.purchaseButton];
     }
     return self;
 }
 
 - (void)purchaseButton:(UIButton *)button
 {
-    
+    UITableView *tableView = (UITableView *)self.superview;
+    NSIndexPath *pathOfTheCell = [tableView indexPathForCell:self];
+    if ([tableView.delegate respondsToSelector:@selector(tableView:accessoryButtonTappedForRowWithIndexPath:)])
+    {
+        [tableView.delegate tableView:tableView accessoryButtonTappedForRowWithIndexPath:pathOfTheCell];
+    }
 }
 
 #pragma mark - Property methods
