@@ -101,7 +101,73 @@
     
     dispatch_queue_t request_thread = dispatch_queue_create(NULL, NULL);
     dispatch_async(request_thread, ^{
+        NSString *countryCode = [[NSLocale currentLocale] objectForKey:NSLocaleCountryCode];
+        NSMutableString *requestUrlString = [[NSMutableString alloc] init];
+        [requestUrlString appendFormat:@"http://itunes.apple.com/%@/artist/", countryCode];
+        [requestUrlString appendFormat:@"id%i", artistId];
+        [requestUrlString appendFormat:@"?dataOnly=true"];
+        NSURL *requestURL = [[NSURL alloc] initWithString:requestUrlString];
         
+        NSError *requestError;
+        NSDictionary *jsonObject = [self resultsDictionaryForURL:requestURL error:&requestError];
+        if (requestError)
+        {
+            dispatch_async(dispatch_get_main_queue(), ^{
+                if (block)
+                {
+                    block(FALSE, requestError);
+                }
+            });
+        }
+        else
+        {
+            NSDictionary *artistDictionary = jsonObject;
+            NSArray *stack = [artistDictionary objectForKey:@"stack"];
+            NSString *pageTitle = [artistDictionary objectForKey:@"pageTitle"];
+            
+            NSMutableArray *mutableApps = [[NSMutableArray alloc] init];
+            for (NSDictionary *swoosh in stack)
+            {
+                NSArray *content = [swoosh objectForKey:@"content"];
+                for (NSDictionary *lockup in content)
+                {
+                    DAAppObject *appObject = [[DAAppObject alloc] init];
+                    
+                    appObject.bundleId = [lockup objectForKey:@"bundle-id"];
+                    appObject.name = [lockup objectForKey:@"name"];
+                    appObject.genre = [lockup objectForKey:@"genre"];
+                    appObject.appId = [[lockup objectForKey:@"id"] integerValue];
+                    appObject.iconIsPrerendered = [[lockup objectForKey:@"icon-is-prerendered"] boolValue];
+                    appObject.isUniversal = [[lockup objectForKey:@"is_universal_app"] boolValue];
+                    
+                    NSArray *offers = [lockup objectForKey:@"offers"];
+                    NSDictionary *offer = [offers lastObject];
+                    appObject.formattedPrice = [offer objectForKey:@"button_text"];
+                    
+                    NSArray *artwork = [lockup objectForKey:@"artwork"];
+                    NSDictionary *artworkDictionary = [artwork objectAtIndex:MIN(artwork.count - 1, 2)];
+                    NSString *iconUrlString = [artworkDictionary objectForKey:@"url"];
+                    appObject.iconURL = [[NSURL alloc] initWithString:iconUrlString];
+                    appObject.userRating = [[lockup objectForKey:@"user_rating"] floatValue];
+                    appObject.userRatingCount = [[lockup objectForKey:@"user_rating_count"] integerValue];
+                    
+                    if (![mutableApps containsObject:appObject])
+                    {
+                        [mutableApps addObject:appObject];
+                    }
+                }
+            }
+            
+            dispatch_async(dispatch_get_main_queue(), ^{
+                self.title = pageTitle;
+                self.appsArray = mutableApps;
+                [self.tableView reloadData];
+                if (block)
+                {
+                    block(TRUE, NULL);
+                }
+            });
+        }
     });
     #if !OS_OBJECT_USE_OBJC
     dispatch_release(retrieval_thread);
@@ -114,7 +180,79 @@
     
     dispatch_queue_t request_thread = dispatch_queue_create(NULL, NULL);
     dispatch_async(request_thread, ^{
+        NSString *appString = [appIds componentsJoinedByString:@","];
+        NSString *countryCode = [[NSLocale currentLocale] objectForKey:NSLocaleCountryCode];
+        NSMutableString *requestUrlString = [[NSMutableString alloc] init];
+        [requestUrlString appendFormat:@"http://itunes.apple.com/lookup"];
+        [requestUrlString appendFormat:@"?id=%@", appString];
+        [requestUrlString appendFormat:@"&country=%@", countryCode];
+        NSURL *requestURL = [[NSURL alloc] initWithString:requestUrlString];
         
+        NSError *requestError;
+        NSDictionary *jsonObject = [self resultsDictionaryForURL:requestURL error:&requestError];
+        if (requestError)
+        {
+            dispatch_async(dispatch_get_main_queue(), ^{
+                if (block)
+                {
+                    block(FALSE, requestError);
+                }
+            });
+        }
+        else
+        {
+            NSDictionary *appsDictionary = jsonObject;
+            NSArray *results = [appsDictionary objectForKey:@"results"];
+            NSString *pageTitle = @"Results";
+            
+            NSMutableArray *mutableApps = [[NSMutableArray alloc] init];
+            for (NSDictionary *result in results)
+            {
+                DAAppObject *appObject = [[DAAppObject alloc] init];
+                
+                appObject.bundleId = [result objectForKey:@"bundleId"];
+                appObject.name = [result objectForKey:@"trackName"];
+                appObject.genre = [result objectForKey:@"primaryGenreName"];
+                appObject.appId = [[result objectForKey:@"trackId"] integerValue];
+                //appObject.iconIsPrerendered = FALSE;
+                
+                NSArray *features = [result objectForKey:@"features"];
+                appObject.isUniversal = [features containsObject:@"iosUniversal"];
+                appObject.formattedPrice = [[result objectForKey:@"formattedPrice"] uppercaseString];
+                //NSString *iconUrlString = [result objectForKey:@"artworkUrl60"];
+                NSString *iconUrlString = [result objectForKey:@"artworkUrl512"];
+                NSArray *iconUrlComponents = [iconUrlString componentsSeparatedByString:@"."];
+                NSMutableArray *mutableIconURLComponents = [[NSMutableArray alloc] initWithArray:iconUrlComponents];
+                [mutableIconURLComponents insertObject:@"128x128-75" atIndex:mutableIconURLComponents.count-1];
+                iconUrlString = [mutableIconURLComponents componentsJoinedByString:@"."];
+                
+                appObject.iconURL = [[NSURL alloc] initWithString:iconUrlString];
+                appObject.userRating = [[result objectForKey:@"averageUserRating"] floatValue];
+                appObject.userRatingCount = [[result objectForKey:@"userRatingCount"] integerValue];
+                
+                if (![mutableApps containsObject:appObject])
+                {
+                    [mutableApps addObject:appObject];
+                }
+            }
+            
+            dispatch_async(dispatch_get_main_queue(), ^{
+                self.title = pageTitle;
+                self.appsArray = mutableApps;
+                [self.tableView reloadData];
+                if (block)
+                {
+                    block(TRUE, NULL);
+                }
+            });
+            
+            dispatch_async(dispatch_get_main_queue(), ^{
+                if (block)
+                {
+                    block(TRUE, NULL);
+                }
+            });
+        }
     });
     #if !OS_OBJECT_USE_OBJC
     dispatch_release(retrieval_thread);
@@ -127,7 +265,79 @@
     
     dispatch_queue_t request_thread = dispatch_queue_create(NULL, NULL);
     dispatch_async(request_thread, ^{
+        NSString *countryCode = [[NSLocale currentLocale] objectForKey:NSLocaleCountryCode];
+        NSMutableString *requestUrlString = [[NSMutableString alloc] init];
+        [requestUrlString appendFormat:@"http://itunes.apple.com/search"];
+        [requestUrlString appendFormat:@"?term=%@", searchTerm];
+        [requestUrlString appendFormat:@"&country=%@", countryCode];
+        [requestUrlString appendFormat:@"&entity=software"];
+        NSURL *requestURL = [[NSURL alloc] initWithString:requestUrlString];
         
+        NSError *requestError;
+        NSDictionary *jsonObject = [self resultsDictionaryForURL:requestURL error:&requestError];
+        if (requestError)
+        {
+            dispatch_async(dispatch_get_main_queue(), ^{
+                if (block)
+                {
+                    block(FALSE, requestError);
+                }
+            });
+        }
+        else
+        {
+            NSDictionary *appsDictionary = jsonObject;
+            NSArray *results = [appsDictionary objectForKey:@"results"];
+            NSString *pageTitle = @"Results";
+            
+            NSMutableArray *mutableApps = [[NSMutableArray alloc] init];
+            for (NSDictionary *result in results)
+            {
+                DAAppObject *appObject = [[DAAppObject alloc] init];
+                
+                appObject.bundleId = [result objectForKey:@"bundleId"];
+                appObject.name = [result objectForKey:@"trackName"];
+                appObject.genre = [result objectForKey:@"primaryGenreName"];
+                appObject.appId = [[result objectForKey:@"trackId"] integerValue];
+                //appObject.iconIsPrerendered = FALSE;
+                
+                NSArray *features = [result objectForKey:@"features"];
+                appObject.isUniversal = [features containsObject:@"iosUniversal"];
+                appObject.formattedPrice = [[result objectForKey:@"formattedPrice"] uppercaseString];
+                //NSString *iconUrlString = [result objectForKey:@"artworkUrl60"];
+                NSString *iconUrlString = [result objectForKey:@"artworkUrl512"];
+                NSArray *iconUrlComponents = [iconUrlString componentsSeparatedByString:@"."];
+                NSMutableArray *mutableIconURLComponents = [[NSMutableArray alloc] initWithArray:iconUrlComponents];
+                [mutableIconURLComponents insertObject:@"128x128-75" atIndex:mutableIconURLComponents.count-1];
+                iconUrlString = [mutableIconURLComponents componentsJoinedByString:@"."];
+                
+                appObject.iconURL = [[NSURL alloc] initWithString:iconUrlString];
+                appObject.userRating = [[result objectForKey:@"averageUserRating"] floatValue];
+                appObject.userRatingCount = [[result objectForKey:@"userRatingCount"] integerValue];
+                
+                if (![mutableApps containsObject:appObject])
+                {
+                    [mutableApps addObject:appObject];
+                }
+            }
+            
+            dispatch_async(dispatch_get_main_queue(), ^{
+                self.title = pageTitle;
+                self.appsArray = mutableApps;
+                [self.tableView reloadData];
+                if (block)
+                {
+                    block(TRUE, NULL);
+                }
+            });
+            
+            dispatch_async(dispatch_get_main_queue(), ^{
+                if (block)
+                {
+                    block(TRUE, NULL);
+                }
+            });
+        }
     });
     #if !OS_OBJECT_USE_OBJC
     dispatch_release(retrieval_thread);
