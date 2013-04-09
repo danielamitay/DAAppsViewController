@@ -8,18 +8,17 @@
 
 #import "AppDelegate.h"
 
-#import "MasterViewController.h"
+#import "RootViewController.h"
 
 @implementation AppDelegate
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
     self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
-    // Override point for customization after application launch.
-
-    MasterViewController *masterViewController = [[MasterViewController alloc] initWithNibName:@"MasterViewController" bundle:nil];
-    self.navigationController = [[UINavigationController alloc] initWithRootViewController:masterViewController];
-    self.window.rootViewController = self.navigationController;
+    
+    RootViewController *rootViewController = [[RootViewController alloc] init];
+    self.window.rootViewController = [[UINavigationController alloc] initWithRootViewController:rootViewController];
+    
     [self.window makeKeyAndVisible];
     return YES;
 }

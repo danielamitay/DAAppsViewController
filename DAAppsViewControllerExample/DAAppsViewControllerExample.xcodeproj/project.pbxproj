@@ -25,12 +25,9 @@
 		63948AB6170BCECD0065D68A /* Default.png in Resources */ = {isa = PBXBuildFile; fileRef = 63948AB5170BCECD0065D68A /* Default.png */; };
 		63948AB8170BCECD0065D68A /* Default@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 63948AB7170BCECD0065D68A /* Default@2x.png */; };
 		63948ABA170BCECD0065D68A /* Default-568h@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 63948AB9170BCECD0065D68A /* Default-568h@2x.png */; };
-		63948ABD170BCECD0065D68A /* MasterViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 63948ABC170BCECD0065D68A /* MasterViewController.m */; };
-		63948AC0170BCECD0065D68A /* DetailViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 63948ABF170BCECD0065D68A /* DetailViewController.m */; };
-		63948AC3170BCECD0065D68A /* MasterViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 63948AC1170BCECD0065D68A /* MasterViewController.xib */; };
-		63948AC6170BCECD0065D68A /* DetailViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 63948AC4170BCECD0065D68A /* DetailViewController.xib */; };
 		63948ACF170BCF090065D68A /* DAAppsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 63948ACE170BCF090065D68A /* DAAppsViewController.m */; };
 		63948AD3170CE7B10065D68A /* DAAppViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 63948AD2170CE7B10065D68A /* DAAppViewCell.m */; };
+		63CA5E5A1714079100B71EB0 /* RootViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 63CA5E591714079100B71EB0 /* RootViewController.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -57,16 +54,12 @@
 		63948AB5170BCECD0065D68A /* Default.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Default.png; sourceTree = "<group>"; };
 		63948AB7170BCECD0065D68A /* Default@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default@2x.png"; sourceTree = "<group>"; };
 		63948AB9170BCECD0065D68A /* Default-568h@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default-568h@2x.png"; sourceTree = "<group>"; };
-		63948ABB170BCECD0065D68A /* MasterViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MasterViewController.h; sourceTree = "<group>"; };
-		63948ABC170BCECD0065D68A /* MasterViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MasterViewController.m; sourceTree = "<group>"; };
-		63948ABE170BCECD0065D68A /* DetailViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DetailViewController.h; sourceTree = "<group>"; };
-		63948ABF170BCECD0065D68A /* DetailViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = DetailViewController.m; sourceTree = "<group>"; };
-		63948AC2170BCECD0065D68A /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = en.lproj/MasterViewController.xib; sourceTree = "<group>"; };
-		63948AC5170BCECD0065D68A /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = en.lproj/DetailViewController.xib; sourceTree = "<group>"; };
 		63948ACD170BCF090065D68A /* DAAppsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DAAppsViewController.h; sourceTree = "<group>"; };
 		63948ACE170BCF090065D68A /* DAAppsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DAAppsViewController.m; sourceTree = "<group>"; };
 		63948AD1170CE7B10065D68A /* DAAppViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DAAppViewCell.h; sourceTree = "<group>"; };
 		63948AD2170CE7B10065D68A /* DAAppViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DAAppViewCell.m; sourceTree = "<group>"; };
+		63CA5E581714079100B71EB0 /* RootViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RootViewController.h; sourceTree = "<group>"; };
+		63CA5E591714079100B71EB0 /* RootViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RootViewController.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -132,12 +125,8 @@
 			children = (
 				63948AB2170BCECD0065D68A /* AppDelegate.h */,
 				63948AB3170BCECD0065D68A /* AppDelegate.m */,
-				63948ABB170BCECD0065D68A /* MasterViewController.h */,
-				63948ABC170BCECD0065D68A /* MasterViewController.m */,
-				63948ABE170BCECD0065D68A /* DetailViewController.h */,
-				63948ABF170BCECD0065D68A /* DetailViewController.m */,
-				63948AC1170BCECD0065D68A /* MasterViewController.xib */,
-				63948AC4170BCECD0065D68A /* DetailViewController.xib */,
+				63CA5E581714079100B71EB0 /* RootViewController.h */,
+				63CA5E591714079100B71EB0 /* RootViewController.m */,
 				63948AAA170BCECD0065D68A /* Supporting Files */,
 			);
 			path = DAAppsViewControllerExample;
@@ -227,8 +216,6 @@
 				63948AB6170BCECD0065D68A /* Default.png in Resources */,
 				63948AB8170BCECD0065D68A /* Default@2x.png in Resources */,
 				63948ABA170BCECD0065D68A /* Default-568h@2x.png in Resources */,
-				63948AC3170BCECD0065D68A /* MasterViewController.xib in Resources */,
-				63948AC6170BCECD0065D68A /* DetailViewController.xib in Resources */,
 				6380D4551713F40F00AD0AD3 /* DAButtonImage@2x.png in Resources */,
 				6380D4561713F40F00AD0AD3 /* DAButtonImageSelected@2x.png in Resources */,
 				6380D4571713F40F00AD0AD3 /* DAMaskImage@2x.png in Resources */,
@@ -248,11 +235,10 @@
 			files = (
 				63948AB0170BCECD0065D68A /* main.m in Sources */,
 				63948AB4170BCECD0065D68A /* AppDelegate.m in Sources */,
-				63948ABD170BCECD0065D68A /* MasterViewController.m in Sources */,
-				63948AC0170BCECD0065D68A /* DetailViewController.m in Sources */,
 				63948ACF170BCF090065D68A /* DAAppsViewController.m in Sources */,
 				63948AD3170CE7B10065D68A /* DAAppViewCell.m in Sources */,
 				631EF34D170F6A6E00031F79 /* DAAppObject.m in Sources */,
+				63CA5E5A1714079100B71EB0 /* RootViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -265,22 +251,6 @@
 				63948AAD170BCECD0065D68A /* en */,
 			);
 			name = InfoPlist.strings;
-			sourceTree = "<group>";
-		};
-		63948AC1170BCECD0065D68A /* MasterViewController.xib */ = {
-			isa = PBXVariantGroup;
-			children = (
-				63948AC2170BCECD0065D68A /* en */,
-			);
-			name = MasterViewController.xib;
-			sourceTree = "<group>";
-		};
-		63948AC4170BCECD0065D68A /* DetailViewController.xib */ = {
-			isa = PBXVariantGroup;
-			children = (
-				63948AC5170BCECD0065D68A /* en */,
-			);
-			name = DetailViewController.xib;
 			sourceTree = "<group>";
 		};
 /* End PBXVariantGroup section */
