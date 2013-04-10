@@ -177,7 +177,7 @@
         }
     });
     #if !OS_OBJECT_USE_OBJC
-    dispatch_release(retrieval_thread);
+    dispatch_release(request_thread);
     #endif
 }
 
@@ -262,7 +262,7 @@
         }
     });
     #if !OS_OBJECT_USE_OBJC
-    dispatch_release(retrieval_thread);
+    dispatch_release(request_thread);
     #endif
 }
 
@@ -347,7 +347,7 @@
         }
     });
     #if !OS_OBJECT_USE_OBJC
-    dispatch_release(retrieval_thread);
+    dispatch_release(request_thread);
     #endif
 }
 
