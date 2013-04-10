@@ -10,9 +10,7 @@
 
 @interface DAAppsViewController : UITableViewController
 
-@property (nonatomic, copy) void(^didViewApp)(NSInteger appId);
-
-+ (DAAppsViewController *)sharedInstance;
+@property (nonatomic, copy) void(^didViewAppBlock)(NSInteger appId);
 
 - (void)loadAppsWithArtistId:(NSInteger)artistId completionBlock:(void(^)(BOOL result, NSError *error))block;
 - (void)loadAppsWithAppIds:(NSArray *)appIds completionBlock:(void(^)(BOOL result, NSError *error))block;

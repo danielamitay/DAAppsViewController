@@ -25,18 +25,6 @@
 
 @implementation DAAppsViewController
 
-#pragma mark - Shared Instance
-
-+ (DAAppsViewController *)sharedInstance
-{
-    static dispatch_once_t pred;
-    static DAAppsViewController *sharedInstance = nil;
-    dispatch_once(&pred, ^{
-        sharedInstance = [[DAAppsViewController alloc] init];
-    });
-    return sharedInstance;
-}
-
 #pragma mark - View methods
 
 - (void)viewDidLoad
@@ -383,9 +371,9 @@
 {
     DAAppObject *appObject = [self.appsArray objectAtIndex:indexPath.row];
     
-    if (self.didViewApp)
+    if (self.didViewAppBlock)
     {
-        self.didViewApp(appObject.appId);
+        self.didViewAppBlock(appObject.appId);
     }
     
     if (NSClassFromString(@"SKStoreProductViewController"))
