@@ -32,30 +32,12 @@
         return NO;
     else if (self.artistId != appObject.artistId)
         return NO;
-    else if (![self.bundleId isEqualToString:appObject.bundleId])
-        return NO;
-    else if (![self.name isEqualToString:appObject.name])
-        return NO;
-    else if (![self.genre isEqualToString:appObject.genre])
-        return NO;
-    else if (![self.formattedPrice isEqualToString:appObject.formattedPrice])
-        return NO;
-    else if (![self.iconURL isEqual:appObject.iconURL])
-        return NO;
-    else if (self.iconIsPrerendered != appObject.iconIsPrerendered)
-        return NO;
-    else if (self.isUniversal != appObject.isUniversal)
-        return NO;
-    else if (self.userRatingCount != appObject.userRatingCount)
-        return NO;
-    else if (self.userRating != appObject.userRating)
-        return NO;
     return YES;
 }
 
 - (NSUInteger)hash
 {
-    return self.appId ^ self.userRatingCount;
+    return self.appId ^ self.artistId;
 }
 
 @end
