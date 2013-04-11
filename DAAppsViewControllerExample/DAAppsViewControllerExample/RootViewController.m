@@ -8,114 +8,159 @@
 
 #import "RootViewController.h"
 
+#import "DAAppsViewController.h"
+
 @interface RootViewController ()
+
+@property (nonatomic, strong) NSDictionary *artistsDictionary;
+@property (nonatomic, strong) NSDictionary *appsDictionary;
+@property (nonatomic, strong) NSDictionary *termsDictionary;
 
 @end
 
 @implementation RootViewController
 
-- (id)initWithStyle:(UITableViewStyle)style
-{
-    self = [super initWithStyle:style];
-    if (self) {
-        // Custom initialization
-    }
-    return self;
-}
-
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-
-    // Uncomment the following line to preserve selection between presentations.
-    // self.clearsSelectionOnViewWillAppear = NO;
- 
-    // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
-    // self.navigationItem.rightBarButtonItem = self.editButtonItem;
+    
+    self.tableView.rowHeight = 44.0f;
+    self.title = @"DAAppsViewController";
+    
+    self.navigationItem.backBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"Back"
+                                                                             style:UIBarButtonItemStyleBordered
+                                                                            target:nil
+                                                                            action:nil];
+    
+    self.artistsDictionary = [NSDictionary dictionaryWithObjectsAndKeys:
+                              @356087517, @"Daniel Amitay",
+                              @284417353, @"Apple",
+                              @284882218, @"Facebook",
+                              @281956209, @"Google",
+                              nil];
+    
+    self.appsDictionary = [NSDictionary dictionaryWithObjectsAndKeys:
+                           @[@592447445,@333903271,@284882215,@288429040,@403639508,@310633997], @"Social Apps",
+                           @[@575647534,@498151501,@482453112,@582790430,@543421080,@493136154], @"Slick Apps",
+                           @[@284993459,@383463868,@377342622,@489321253], @"Cool Tech",
+                           nil];
+    
+    self.termsDictionary = [NSDictionary dictionaryWithObjectsAndKeys:
+                            @"Angry", @"Angry",
+                            @"Sleep", @"Sleep",
+                            @"Radio", @"Radio",
+                            nil];
 }
 
 - (void)didReceiveMemoryWarning
 {
     [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
 }
 
 #pragma mark - Table view data source
 
+- (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section
+{
+    switch (section)
+    {
+        case 0:
+            return @"By Artist Identifier (NSInteger)";
+            break;
+        case 1:
+            return @"By App Identifiers (NSArray)";
+            break;
+        case 2:
+            return @"By Search Term (NSString)";
+            break;
+        default:
+            return nil;
+            break;
+    }
+}
+
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
 {
-#warning Potentially incomplete method implementation.
-    // Return the number of sections.
-    return 0;
+    return 3;
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-#warning Incomplete method implementation.
-    // Return the number of rows in the section.
-    return 0;
+    switch (section)
+    {
+        case 0:
+            return self.artistsDictionary.allKeys.count;
+            break;
+        case 1:
+            return self.appsDictionary.allKeys.count;
+            break;
+        case 2:
+            return self.termsDictionary.allKeys.count;
+            break;
+        default:
+            return 1;
+            break;
+    }
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     static NSString *CellIdentifier = @"Cell";
-    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier forIndexPath:indexPath];
+    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
+    if (!cell)
+    {
+        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleValue1 reuseIdentifier:CellIdentifier];
+    }
     
-    // Configure the cell...
+    switch (indexPath.section)
+    {
+        case 0:
+            cell.textLabel.text = [self.artistsDictionary.allKeys objectAtIndex:indexPath.row];
+            break;
+        case 1:
+            cell.textLabel.text = [self.appsDictionary.allKeys objectAtIndex:indexPath.row];
+            break;
+        case 2:
+            cell.textLabel.text = [self.termsDictionary.allKeys objectAtIndex:indexPath.row];
+            break;
+        default:
+            break;
+    }
     
     return cell;
 }
-
-/*
-// Override to support conditional editing of the table view.
-- (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    // Return NO if you do not want the specified item to be editable.
-    return YES;
-}
-*/
-
-/*
-// Override to support editing the table view.
-- (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    if (editingStyle == UITableViewCellEditingStyleDelete) {
-        // Delete the row from the data source
-        [tableView deleteRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationFade];
-    }   
-    else if (editingStyle == UITableViewCellEditingStyleInsert) {
-        // Create a new instance of the appropriate class, insert it into the array, and add a new row to the table view
-    }   
-}
-*/
-
-/*
-// Override to support rearranging the table view.
-- (void)tableView:(UITableView *)tableView moveRowAtIndexPath:(NSIndexPath *)fromIndexPath toIndexPath:(NSIndexPath *)toIndexPath
-{
-}
-*/
-
-/*
-// Override to support conditional rearranging of the table view.
-- (BOOL)tableView:(UITableView *)tableView canMoveRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    // Return NO if you do not want the item to be re-orderable.
-    return YES;
-}
-*/
 
 #pragma mark - Table view delegate
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    // Navigation logic may go here. Create and push another view controller.
-    /*
-     <#DetailViewController#> *detailViewController = [[<#DetailViewController#> alloc] initWithNibName:@"<#Nib name#>" bundle:nil];
-     // ...
-     // Pass the selected object to the new view controller.
-     [self.navigationController pushViewController:detailViewController animated:YES];
-     */
+    DAAppsViewController *appViewController = [[DAAppsViewController alloc] init];
+    switch (indexPath.section)
+    {
+        case 0:
+        {
+            NSString *key = [self.artistsDictionary.allKeys objectAtIndex:indexPath.row];
+            NSNumber *number = [self.artistsDictionary objectForKey:key];
+            [appViewController loadAppsWithArtistId:number.integerValue completionBlock:nil];
+        }
+            break;
+        case 1:
+        {
+            NSString *key = [self.appsDictionary.allKeys objectAtIndex:indexPath.row];
+            NSArray *values = [self.appsDictionary objectForKey:key];
+            [appViewController loadAppsWithAppIds:values completionBlock:nil];
+        }
+            break;
+        case 2:
+        {
+            NSString *key = [self.termsDictionary.allKeys objectAtIndex:indexPath.row];
+            NSString *term = [self.termsDictionary objectForKey:key];
+            [appViewController loadAppsWithSearchTerm:term completionBlock:nil];
+        }
+            break;
+        default:
+            break;
+    }
+    [self.navigationController pushViewController:appViewController animated:YES];
 }
 
 @end
