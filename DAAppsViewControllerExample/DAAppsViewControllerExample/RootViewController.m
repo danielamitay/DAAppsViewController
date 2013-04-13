@@ -133,34 +133,34 @@
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    DAAppsViewController *appViewController = [[DAAppsViewController alloc] init];
+    DAAppsViewController *appsViewController = [[DAAppsViewController alloc] init];
     switch (indexPath.section)
     {
         case 0:
         {
             NSString *key = [self.artistsDictionary.allKeys objectAtIndex:indexPath.row];
             NSNumber *number = [self.artistsDictionary objectForKey:key];
-            [appViewController loadAppsWithArtistId:number.integerValue completionBlock:nil];
+            [appsViewController loadAppsWithArtistId:number.integerValue completionBlock:nil];
         }
             break;
         case 1:
         {
             NSString *key = [self.appsDictionary.allKeys objectAtIndex:indexPath.row];
             NSArray *values = [self.appsDictionary objectForKey:key];
-            [appViewController loadAppsWithAppIds:values completionBlock:nil];
+            [appsViewController loadAppsWithAppIds:values completionBlock:nil];
         }
             break;
         case 2:
         {
             NSString *key = [self.termsDictionary.allKeys objectAtIndex:indexPath.row];
             NSString *term = [self.termsDictionary objectForKey:key];
-            [appViewController loadAppsWithSearchTerm:term completionBlock:nil];
+            [appsViewController loadAppsWithSearchTerm:term completionBlock:nil];
         }
             break;
         default:
             break;
     }
-    [self.navigationController pushViewController:appViewController animated:YES];
+    [self.navigationController pushViewController:appsViewController animated:YES];
 }
 
 @end
