@@ -29,7 +29,9 @@ static NSMutableDictionary *_iconCacheDictionary = nil;
 + (void)initialize
 {
     if (self != [DAAppViewCell class])
+    {
         return;
+    }
     
     _iconCacheDictionary = [[NSMutableDictionary alloc] init];
 }

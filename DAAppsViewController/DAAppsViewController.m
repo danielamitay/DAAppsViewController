@@ -46,8 +46,7 @@
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
-    
-    self.tableView.contentOffset = CGPointZero;
+    [self.tableView setContentOffset:CGPointZero];
 }
 
 - (void)didReceiveMemoryWarning

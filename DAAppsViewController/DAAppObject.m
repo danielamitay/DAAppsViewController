@@ -27,11 +27,17 @@
 - (BOOL)isEqualToAppObject:(DAAppObject *)appObject
 {
     if (self == appObject)
+    {
         return YES;
+    }
     else if (self.appId != appObject.appId)
+    {
         return NO;
+    }
     else if (self.artistId != appObject.artistId)
+    {
         return NO;
+    }
     return YES;
 }
 
