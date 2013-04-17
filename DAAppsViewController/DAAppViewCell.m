@@ -60,7 +60,7 @@ static NSMutableDictionary *_iconCacheDictionary = nil;
             .size.height = 67.0f
         };
         cellImageShadowView.contentMode = UIViewContentModeScaleAspectFit;
-        cellImageShadowView.image = [UIImage imageNamed:@"DAShadowImage"];
+        cellImageShadowView.image = [UIImage imageNamed:@"DAAppsViewController.bundle/DAShadowImage"];
         [self addSubview:cellImageShadowView];
         
         self.iconView = [[UIImageView alloc] init];
@@ -149,8 +149,8 @@ static NSMutableDictionary *_iconCacheDictionary = nil;
         [self.purchaseButton.titleLabel setShadowOffset:CGSizeMake(0.0f, 1.0f)];
         [self.purchaseButton.titleLabel setFont:[UIFont boldSystemFontOfSize:13.0f]];
         [self.purchaseButton setTitle:@"VIEW" forState:UIControlStateNormal];
-        UIImage *buttonImage = [UIImage imageNamed:@"DAButtonImage"];
-        UIImage *buttonImageSelected = [UIImage imageNamed:@"DAButtonImageSelected"];
+        UIImage *buttonImage = [UIImage imageNamed:@"DAAppsViewController.bundle/DAButtonImage"];
+        UIImage *buttonImageSelected = [UIImage imageNamed:@"DAAppsViewController.bundle/DAButtonImageSelected"];
         [self.purchaseButton setBackgroundImage:buttonImage forState:UIControlStateNormal];
         [self.purchaseButton setBackgroundImage:buttonImageSelected forState:UIControlStateHighlighted];
         [self.purchaseButton addTarget:self
@@ -183,7 +183,7 @@ static NSMutableDictionary *_iconCacheDictionary = nil;
     self.starImageView.hidden = !appObject.userRatingCount;
     [self.purchaseButton setTitle:appObject.formattedPrice forState:UIControlStateNormal];
     
-    UIImage *starsImage = [UIImage imageNamed:@"DAStarsImage"];
+    UIImage *starsImage = [UIImage imageNamed:@"DAAppsViewController.bundle/DAStarsImage"];
     UIGraphicsBeginImageContextWithOptions(self.starImageView.frame.size, NO, 0);
     CGPoint starPoint = (CGPoint) {
         .y = (self.starImageView.frame.size.height * (2 * appObject.userRating + 1)) - starsImage.size.height
@@ -199,7 +199,7 @@ static NSMutableDictionary *_iconCacheDictionary = nil;
     }
     else
     {
-        self.iconView.image = [UIImage imageNamed:@"DAPlaceholderImage"];
+        self.iconView.image = [UIImage imageNamed:@"DAAppsViewController.bundle/DAPlaceholderImage"];
         NSURL *iconURL = self.appObject.iconURL;
         dispatch_queue_t thread = dispatch_queue_create(NULL, NULL);
         dispatch_async(thread, ^{
@@ -218,12 +218,12 @@ static NSMutableDictionary *_iconCacheDictionary = nil;
                 CGRect imageRect = (CGRect) {
                     .size = iconImage.size
                 };
-                [[UIImage imageNamed:@"DAOverlayImage"] drawInRect:imageRect];
+                [[UIImage imageNamed:@"DAAppsViewController.bundle/DAOverlayImage"] drawInRect:imageRect];
                 iconImage = UIGraphicsGetImageFromCurrentImageContext();
                 UIGraphicsEndImageContext();
             }
             
-            CGImageRef maskRef = [UIImage imageNamed:@"DAMaskImage"].CGImage;
+            CGImageRef maskRef = [UIImage imageNamed:@"DAAppsViewController.bundle/DAMaskImage"].CGImage;
             CGImageRef mask = CGImageMaskCreate(CGImageGetWidth(maskRef),
                                                 CGImageGetHeight(maskRef),
                                                 CGImageGetBitsPerComponent(maskRef),
