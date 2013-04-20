@@ -126,7 +126,7 @@ static NSMutableDictionary *_iconCacheDictionary = nil;
         self.ratingsLabel = [[UILabel alloc] init];
         self.ratingsLabel.frame = (CGRect) {
             .origin.x = 135.0f,
-            .origin.y = 51.5f,
+            .origin.y = 52.0f,
             .size.width = 60.0f,
             .size.height = 12.0f
         };
@@ -179,6 +179,7 @@ static NSMutableDictionary *_iconCacheDictionary = nil;
     self.nameLabel.text = appObject.name;
     self.genreLabel.text = appObject.genre;
     self.ratingsLabel.text = [NSString stringWithFormat:@"(%i)", appObject.userRatingCount];
+    self.ratingsLabel.hidden = !appObject.userRatingCount;
     self.noRatingsLabel.hidden = appObject.userRatingCount;
     self.starImageView.hidden = !appObject.userRatingCount;
     [self.purchaseButton setTitle:appObject.formattedPrice forState:UIControlStateNormal];
