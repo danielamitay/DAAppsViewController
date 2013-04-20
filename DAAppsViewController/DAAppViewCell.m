@@ -114,7 +114,7 @@ static NSMutableDictionary *_iconCacheDictionary = nil;
             .origin.x = 88.0f,
             .origin.y = 54.0f,
             .size.width = 60.0f,
-            .size.height = 10.0f
+            .size.height = 12.0f
         };
         self.noRatingsLabel.font = [UIFont systemFontOfSize:10.0f];
         self.noRatingsLabel.textColor = [UIColor colorWithWhite:99.0f/255.0f alpha:1.0f];
@@ -125,8 +125,8 @@ static NSMutableDictionary *_iconCacheDictionary = nil;
         
         self.ratingsLabel = [[UILabel alloc] init];
         self.ratingsLabel.frame = (CGRect) {
-            .origin.x = 135.0f,
-            .origin.y = 51.5f,
+            .origin.x = 140.0f,
+            .origin.y = 54.0f,
             .size.width = 60.0f,
             .size.height = 12.0f
         };
