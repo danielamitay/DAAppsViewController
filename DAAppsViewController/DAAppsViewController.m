@@ -18,6 +18,7 @@
 @property (nonatomic, strong) NSURLConnection *urlConnection;
 @property (nonatomic, strong) NSMutableData *responseData;
 @property (nonatomic, strong) NSArray *appsArray;
+@property (nonatomic, strong) NSString *pageTitle;
 
 - (NSDictionary *)resultsDictionaryForURL:(NSURL *)URL error:(NSError **)error;
 
@@ -91,7 +92,7 @@
 
 - (void)loadAppsWithArtistId:(NSInteger)artistId completionBlock:(void(^)(BOOL result, NSError *error))block
 {
-    self.title = NSLocalizedString(@"Loading...",);
+    self.title = NSLocalizedString(@"Loading...", @"");
     
     dispatch_queue_t request_thread = dispatch_queue_create(NULL, NULL);
     dispatch_async(request_thread, ^{
@@ -170,7 +171,7 @@
 
 - (void)loadAppsWithAppIds:(NSArray *)appIds completionBlock:(void(^)(BOOL result, NSError *error))block
 {
-    self.title = NSLocalizedString(@"Loading...",);
+    self.title = NSLocalizedString(@"Loading...", @"");
     
     dispatch_queue_t request_thread = dispatch_queue_create(NULL, NULL);
     dispatch_async(request_thread, ^{
@@ -197,7 +198,13 @@
         {
             NSDictionary *appsDictionary = jsonObject;
             NSArray *results = [appsDictionary objectForKey:@"results"];
-            NSString *pageTitle = @"Results";
+            NSString *pageTitle;
+            if (self.pageTitle!=nil) {
+                pageTitle = self.pageTitle;
+            } else {
+                pageTitle = NSLocalizedString(@"Results", @"");
+            }
+            
             
             NSMutableArray *mutableApps = [[NSMutableArray alloc] init];
             for (NSDictionary *result in results)
@@ -253,9 +260,17 @@
     #endif
 }
 
+- (void)loadAppsWithAppIds:(NSArray *)appIds withPageTitle:(NSString*)pageTitle completionBlock:(void(^)(BOOL result, NSError *error))block
+{
+    self.pageTitle = pageTitle;
+    
+    [self loadAppsWithAppIds:appIds completionBlock:block];
+}
+
+
 - (void)loadAppsWithSearchTerm:(NSString *)searchTerm completionBlock:(void(^)(BOOL result, NSError *error))block
 {
-    self.title = NSLocalizedString(@"Loading...",);
+    self.title = NSLocalizedString(@"Loading...", @"");
     
     dispatch_queue_t request_thread = dispatch_queue_create(NULL, NULL);
     dispatch_async(request_thread, ^{
