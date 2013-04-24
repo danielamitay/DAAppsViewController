@@ -14,6 +14,7 @@
 
 - (void)loadAppsWithArtistId:(NSInteger)artistId completionBlock:(void(^)(BOOL result, NSError *error))block;
 - (void)loadAppsWithAppIds:(NSArray *)appIds completionBlock:(void(^)(BOOL result, NSError *error))block;
+- (void)loadAppsWithAppIds:(NSArray *)appIds withPageTitle:(NSString*)pageTitle completionBlock:(void(^)(BOOL result, NSError *error))block;
 - (void)loadAppsWithSearchTerm:(NSString *)searchTerm completionBlock:(void(^)(BOOL result, NSError *error))block;
 
 @end
