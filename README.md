@@ -24,10 +24,19 @@ DAAppsViewController *appsViewController = [[DAAppsViewController alloc] init];
 
 ### Displaying a predetermined set of apps
 
+By **appId**:
 ```objective-c
 NSArray *appsArray = @[@575647534,@498151501,@482453112,@582790430,@543421080];
 DAAppsViewController *appsViewController = [[DAAppsViewController alloc] init];
 [appsViewController loadAppsWithAppIds:appsArray completionBlock:nil];
+[self.navigationController pushViewController:appsViewController animated:YES];
+```
+
+By **bundleId**:
+```objective-c
+NSArray *bundlesArray = @[@"com.flexibits.fantastical.iphone",@"com.samvermette.Transit",@"com.tripsyapp.tripsy",@"com.seatgeek.SeatGeek",@"com.bumptechnologies.flock.Release"];
+DAAppsViewController *appsViewController = [[DAAppsViewController alloc] init];
+[appsViewController loadAppsWithBundleIds:bundlesArray completionBlock:nil];
 [self.navigationController pushViewController:appsViewController animated:YES];
 ```
 
