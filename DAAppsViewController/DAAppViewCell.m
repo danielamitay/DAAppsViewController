@@ -28,12 +28,10 @@ static NSMutableDictionary *_iconCacheDictionary = nil;
 
 + (void)initialize
 {
-    if (self != [DAAppViewCell class])
+    if (self == [DAAppViewCell class])
     {
-        return;
+        _iconCacheDictionary = [[NSMutableDictionary alloc] init];
     }
-    
-    _iconCacheDictionary = [[NSMutableDictionary alloc] init];
 }
 
 - (id)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier
