@@ -253,6 +253,91 @@
     #endif
 }
 
+- (void)loadAppsWithBundleIds:(NSArray *)bundleIds completionBlock:(void(^)(BOOL result, NSError *error))block
+{
+    self.title = NSLocalizedString(@"Loading...",);
+    
+    dispatch_queue_t request_thread = dispatch_queue_create(NULL, NULL);
+    dispatch_async(request_thread, ^{
+        NSString *bundleString = [bundleIds componentsJoinedByString:@","];
+        NSString *countryCode = [[NSLocale currentLocale] objectForKey:NSLocaleCountryCode];
+        NSMutableString *requestUrlString = [[NSMutableString alloc] init];
+        [requestUrlString appendFormat:@"http://itunes.apple.com/lookup"];
+        [requestUrlString appendFormat:@"?bundleId=%@", bundleString];
+        [requestUrlString appendFormat:@"&country=%@", countryCode];
+        NSURL *requestURL = [[NSURL alloc] initWithString:requestUrlString];
+        
+        NSError *requestError;
+        NSDictionary *jsonObject = [self resultsDictionaryForURL:requestURL error:&requestError];
+        if (requestError)
+        {
+            dispatch_async(dispatch_get_main_queue(), ^{
+                if (block)
+                {
+                    block(FALSE, requestError);
+                }
+            });
+        }
+        else
+        {
+            NSDictionary *appsDictionary = jsonObject;
+            NSArray *results = [appsDictionary objectForKey:@"results"];
+            NSString *pageTitle = @"Results";
+            
+            NSMutableArray *mutableApps = [[NSMutableArray alloc] init];
+            for (NSDictionary *result in results)
+            {
+                DAAppObject *appObject = [[DAAppObject alloc] init];
+                
+                appObject.bundleId = [result objectForKey:@"bundleId"];
+                appObject.name = [result objectForKey:@"trackName"];
+                appObject.genre = [result objectForKey:@"primaryGenreName"];
+                appObject.appId = [[result objectForKey:@"trackId"] integerValue];
+                //appObject.iconIsPrerendered = FALSE;
+                
+                NSArray *features = [result objectForKey:@"features"];
+                appObject.isUniversal = [features containsObject:@"iosUniversal"];
+                appObject.formattedPrice = [[result objectForKey:@"formattedPrice"] uppercaseString];
+                //NSString *iconUrlString = [result objectForKey:@"artworkUrl60"];
+                NSString *iconUrlString = [result objectForKey:@"artworkUrl512"];
+                NSArray *iconUrlComponents = [iconUrlString componentsSeparatedByString:@"."];
+                NSMutableArray *mutableIconURLComponents = [[NSMutableArray alloc] initWithArray:iconUrlComponents];
+                [mutableIconURLComponents insertObject:@"128x128-75" atIndex:mutableIconURLComponents.count-1];
+                iconUrlString = [mutableIconURLComponents componentsJoinedByString:@"."];
+                
+                appObject.iconURL = [[NSURL alloc] initWithString:iconUrlString];
+                appObject.userRating = [[result objectForKey:@"averageUserRating"] floatValue];
+                appObject.userRatingCount = [[result objectForKey:@"userRatingCount"] integerValue];
+                
+                if (![mutableApps containsObject:appObject])
+                {
+                    [mutableApps addObject:appObject];
+                }
+            }
+            
+            dispatch_async(dispatch_get_main_queue(), ^{
+                self.title = pageTitle;
+                self.appsArray = mutableApps;
+                [self.tableView reloadData];
+                if (block)
+                {
+                    block(TRUE, NULL);
+                }
+            });
+            
+            dispatch_async(dispatch_get_main_queue(), ^{
+                if (block)
+                {
+                    block(TRUE, NULL);
+                }
+            });
+        }
+    });
+    #if !OS_OBJECT_USE_OBJC
+    dispatch_release(request_thread);
+    #endif
+}
+
 - (void)loadAppsWithSearchTerm:(NSString *)searchTerm completionBlock:(void(^)(BOOL result, NSError *error))block
 {
     self.title = NSLocalizedString(@"Loading...",);
