@@ -97,8 +97,12 @@
     dispatch_async(request_thread, ^{
         NSString *countryCode = [[NSLocale currentLocale] objectForKey:NSLocaleCountryCode];
         NSMutableString *requestUrlString = [[NSMutableString alloc] init];
-        [requestUrlString appendFormat:@"http://itunes.apple.com/%@/artist/", countryCode];
-        [requestUrlString appendFormat:@"id%i", artistId];
+        [requestUrlString appendFormat:@"http://itunes.apple.com/"];
+        if (countryCode)
+        {
+            [requestUrlString appendFormat:@"%@/", countryCode];
+        }
+        [requestUrlString appendFormat:@"artist/id%i", artistId];
         [requestUrlString appendFormat:@"?dataOnly=true"];
         NSURL *requestURL = [[NSURL alloc] initWithString:requestUrlString];
         
