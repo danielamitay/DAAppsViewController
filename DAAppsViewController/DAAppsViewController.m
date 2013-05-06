@@ -96,6 +96,10 @@
     dispatch_queue_t request_thread = dispatch_queue_create(NULL, NULL);
     dispatch_async(request_thread, ^{
         NSString *countryCode = [[NSLocale currentLocale] objectForKey:NSLocaleCountryCode];
+        if (!countryCode)
+        {
+            countryCode = @"US";
+        }
         NSMutableString *requestUrlString = [[NSMutableString alloc] init];
         [requestUrlString appendFormat:@"http://itunes.apple.com/%@/artist/", countryCode];
         [requestUrlString appendFormat:@"id%i", artistId];
@@ -176,6 +180,10 @@
     dispatch_async(request_thread, ^{
         NSString *appString = [appIds componentsJoinedByString:@","];
         NSString *countryCode = [[NSLocale currentLocale] objectForKey:NSLocaleCountryCode];
+        if (!countryCode)
+        {
+            countryCode = @"US";
+        }
         NSMutableString *requestUrlString = [[NSMutableString alloc] init];
         [requestUrlString appendFormat:@"http://itunes.apple.com/lookup"];
         [requestUrlString appendFormat:@"?id=%@", appString];
@@ -261,6 +269,10 @@
     dispatch_async(request_thread, ^{
         NSString *bundleString = [bundleIds componentsJoinedByString:@","];
         NSString *countryCode = [[NSLocale currentLocale] objectForKey:NSLocaleCountryCode];
+        if (!countryCode)
+        {
+            countryCode = @"US";
+        }
         NSMutableString *requestUrlString = [[NSMutableString alloc] init];
         [requestUrlString appendFormat:@"http://itunes.apple.com/lookup"];
         [requestUrlString appendFormat:@"?bundleId=%@", bundleString];
@@ -345,6 +357,10 @@
     dispatch_queue_t request_thread = dispatch_queue_create(NULL, NULL);
     dispatch_async(request_thread, ^{
         NSString *countryCode = [[NSLocale currentLocale] objectForKey:NSLocaleCountryCode];
+        if (!countryCode)
+        {
+            countryCode = @"US";
+        }
         NSMutableString *requestUrlString = [[NSMutableString alloc] init];
         [requestUrlString appendFormat:@"http://itunes.apple.com/search"];
         [requestUrlString appendFormat:@"?term=%@", searchTerm];
