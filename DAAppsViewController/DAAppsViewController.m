@@ -179,7 +179,10 @@
         NSMutableString *requestUrlString = [[NSMutableString alloc] init];
         [requestUrlString appendFormat:@"http://itunes.apple.com/lookup"];
         [requestUrlString appendFormat:@"?id=%@", appString];
-        [requestUrlString appendFormat:@"&country=%@", countryCode];
+        if (countryCode)
+        {
+            [requestUrlString appendFormat:@"&country=%@", countryCode];
+        }
         NSURL *requestURL = [[NSURL alloc] initWithString:requestUrlString];
         
         NSError *requestError;
@@ -264,7 +267,10 @@
         NSMutableString *requestUrlString = [[NSMutableString alloc] init];
         [requestUrlString appendFormat:@"http://itunes.apple.com/lookup"];
         [requestUrlString appendFormat:@"?bundleId=%@", bundleString];
-        [requestUrlString appendFormat:@"&country=%@", countryCode];
+        if (countryCode)
+        {
+            [requestUrlString appendFormat:@"&country=%@", countryCode];
+        }
         NSURL *requestURL = [[NSURL alloc] initWithString:requestUrlString];
         
         NSError *requestError;
@@ -348,7 +354,10 @@
         NSMutableString *requestUrlString = [[NSMutableString alloc] init];
         [requestUrlString appendFormat:@"http://itunes.apple.com/search"];
         [requestUrlString appendFormat:@"?term=%@", searchTerm];
-        [requestUrlString appendFormat:@"&country=%@", countryCode];
+        if (countryCode)
+        {
+            [requestUrlString appendFormat:@"&country=%@", countryCode];
+        }
         [requestUrlString appendFormat:@"&entity=software"];
         NSURL *requestURL = [[NSURL alloc] initWithString:requestUrlString];
         
