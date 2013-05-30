@@ -39,7 +39,7 @@ static NSMutableDictionary *_iconCacheDictionary = nil;
     self = [super initWithStyle:style reuseIdentifier:reuseIdentifier];
     if (self)
     {
-        self.selectionStyle = UITableViewCellSelectionStyleNone;
+        self.selectionStyle = UITableViewCellSelectionStyleGray;
         
         UIView *cellTopWhiteLine = [[UIView alloc] init];
         cellTopWhiteLine.frame = (CGRect) {
