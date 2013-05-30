@@ -464,6 +464,12 @@
 
 #pragma mark- Table view delegate methods
 
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    [tableView deselectRowAtIndexPath:indexPath animated:YES];
+    [self tableView:tableView accessoryButtonTappedForRowWithIndexPath:indexPath];
+}
+
 - (void)tableView:(UITableView *)tableView accessoryButtonTappedForRowWithIndexPath:(NSIndexPath *)indexPath
 {
     DAAppObject *appObject = [self.appsArray objectAtIndex:indexPath.row];
