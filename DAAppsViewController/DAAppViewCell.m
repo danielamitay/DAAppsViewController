@@ -242,9 +242,9 @@ static NSMutableDictionary *_iconCacheDictionary = nil;
                 }
             });
         });
-        #if !OS_OBJECT_USE_OBJC
+#if !OS_OBJECT_USE_OBJC
         dispatch_release(thread);
-        #endif
+#endif
     }
 }
 

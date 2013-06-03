@@ -168,9 +168,9 @@
             });
         }
     });
-    #if !OS_OBJECT_USE_OBJC
+#if !OS_OBJECT_USE_OBJC
     dispatch_release(request_thread);
-    #endif
+#endif
 }
 
 - (void)loadAppsWithAppIds:(NSArray *)appIds completionBlock:(void(^)(BOOL result, NSError *error))block
@@ -256,9 +256,9 @@
             });
         }
     });
-    #if !OS_OBJECT_USE_OBJC
+#if !OS_OBJECT_USE_OBJC
     dispatch_release(request_thread);
-    #endif
+#endif
 }
 
 - (void)loadAppsWithBundleIds:(NSArray *)bundleIds completionBlock:(void(^)(BOOL result, NSError *error))block
@@ -344,9 +344,9 @@
             });
         }
     });
-    #if !OS_OBJECT_USE_OBJC
+#if !OS_OBJECT_USE_OBJC
     dispatch_release(request_thread);
-    #endif
+#endif
 }
 
 - (void)loadAppsWithSearchTerm:(NSString *)searchTerm completionBlock:(void(^)(BOOL result, NSError *error))block
@@ -432,9 +432,9 @@
             });
         }
     });
-    #if !OS_OBJECT_USE_OBJC
+#if !OS_OBJECT_USE_OBJC
     dispatch_release(request_thread);
-    #endif
+#endif
 }
 
 #pragma mark - Table view data source
@@ -463,7 +463,7 @@
     return cell;
 }
 
-#pragma mark- Table view delegate methods
+#pragma mark - Table view delegate methods
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
@@ -504,7 +504,7 @@
     }
 }
 
-#pragma mark- Product view controller delegate methods
+#pragma mark - Product view controller delegate methods
 
 - (void)productViewControllerDidFinish:(SKStoreProductViewController *)viewController
 {
