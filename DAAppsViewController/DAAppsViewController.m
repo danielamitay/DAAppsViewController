@@ -487,7 +487,7 @@
         self.didViewAppBlock(appObject.appId);
     }
     
-    if (NSClassFromString(@"SKStoreProductViewController"))
+    if ([SKStoreProductViewController class])
     {
         NSDictionary *appParameters = @{SKStoreProductParameterITunesItemIdentifier : [NSString stringWithFormat:@"%u", appObject.appId]};
         SKStoreProductViewController *productViewController = [[SKStoreProductViewController alloc] init];
