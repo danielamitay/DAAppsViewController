@@ -20,6 +20,7 @@
 @property (nonatomic, strong) NSArray *appsArray;
 
 - (NSDictionary *)resultsDictionaryForURL:(NSURL *)URL error:(NSError **)error;
+- (void)presentAppObjectAtIndexPath:(NSIndexPath *)indexPath;
 
 @end
 
@@ -467,10 +468,17 @@
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
-    [self tableView:tableView accessoryButtonTappedForRowWithIndexPath:indexPath];
+    [self presentAppObjectAtIndexPath:indexPath];
 }
 
 - (void)tableView:(UITableView *)tableView accessoryButtonTappedForRowWithIndexPath:(NSIndexPath *)indexPath
+{
+    [self presentAppObjectAtIndexPath:indexPath];
+}
+
+#pragma mark - Presentation methods
+
+- (void)presentAppObjectAtIndexPath:(NSIndexPath *)indexPath
 {
     DAAppObject *appObject = [self.appsArray objectAtIndex:indexPath.row];
     
