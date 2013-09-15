@@ -161,7 +161,12 @@ static NSMutableDictionary *_iconCacheDictionary = nil;
 
 - (void)purchaseButton:(UIButton *)button
 {
-    UITableView *tableView = (UITableView *)self.superview;
+    id view = [self superview];
+    while ([view isKindOfClass:[UITableView class]] == NO) {
+      view = [view superview];
+    }
+  
+    UITableView *tableView = (UITableView *)view;
     NSIndexPath *pathOfTheCell = [tableView indexPathForCell:self];
     if ([tableView.delegate respondsToSelector:@selector(tableView:accessoryButtonTappedForRowWithIndexPath:)])
     {
