@@ -8,7 +8,7 @@
 
 #import "DAAppViewCell.h"
 
-static NSMutableDictionary *_iconCacheDictionary = nil;
+static NSCache *_iconCache = nil;
 
 @interface DAAppViewCell ()
 
@@ -30,7 +30,7 @@ static NSMutableDictionary *_iconCacheDictionary = nil;
 {
     if (self == [DAAppViewCell class])
     {
-        _iconCacheDictionary = [[NSMutableDictionary alloc] init];
+        _iconCache = [[NSCache alloc] init];
     }
 }
 
@@ -202,7 +202,7 @@ static NSMutableDictionary *_iconCacheDictionary = nil;
     self.starImageView.image = UIGraphicsGetImageFromCurrentImageContext();
     UIGraphicsEndImageContext();
     
-    UIImage *iconImage = [_iconCacheDictionary objectForKey:self.appObject.iconURL];
+    UIImage *iconImage = [_iconCache objectForKey:self.appObject.iconURL];
     if (iconImage)
     {
         self.iconView.image = iconImage;
@@ -246,7 +246,7 @@ static NSMutableDictionary *_iconCacheDictionary = nil;
             CGImageRelease(maskedImageRef);
             
             dispatch_async(dispatch_get_main_queue(), ^{
-                [_iconCacheDictionary setObject:iconImage forKey:iconURL];
+                [_iconCache setObject:iconImage forKey:iconURL];
                 if (self.appObject.iconURL == iconURL)
                 {
                     self.iconView.image = iconImage;
