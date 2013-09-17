@@ -161,12 +161,18 @@ static NSMutableDictionary *_iconCacheDictionary = nil;
 
 - (void)purchaseButton:(UIButton *)button
 {
-    id view = [self superview];
-    while ([view isKindOfClass:[UITableView class]] == NO) {
-      view = [view superview];
+    // UITableViewCells and UITableViews are not guaranteed to be the current
+    // view's parent and grandparent views, respectively. (e.g. iOS7 vs iOS6)
+    // As such, we iterate upwards until we find both.
+    UITableView *tableView = nil;
+    UIResponder *nextResponder = self;
+    while (nextResponder && !tableView) {
+        nextResponder = nextResponder.nextResponder;
+        if ([nextResponder isKindOfClass:[UITableView class]]) {
+            tableView = (UITableView *)nextResponder;
+        }
     }
-  
-    UITableView *tableView = (UITableView *)view;
+    
     NSIndexPath *pathOfTheCell = [tableView indexPathForCell:self];
     if ([tableView.delegate respondsToSelector:@selector(tableView:accessoryButtonTappedForRowWithIndexPath:)])
     {
