@@ -211,7 +211,6 @@
                 appObject.name = [result objectForKey:@"trackName"];
                 appObject.genre = [result objectForKey:@"primaryGenreName"];
                 appObject.appId = [[result objectForKey:@"trackId"] integerValue];
-                //appObject.iconIsPrerendered = FALSE;
                 
                 NSArray *features = [result objectForKey:@"features"];
                 appObject.isUniversal = [features containsObject:@"iosUniversal"];
@@ -237,13 +236,6 @@
                 self.title = pageTitle;
                 self.appsArray = mutableApps;
                 [self.tableView reloadData];
-                if (block)
-                {
-                    block(TRUE, NULL);
-                }
-            });
-            
-            dispatch_async(dispatch_get_main_queue(), ^{
                 if (block)
                 {
                     block(TRUE, NULL);
@@ -295,7 +287,6 @@
                 appObject.name = [result objectForKey:@"trackName"];
                 appObject.genre = [result objectForKey:@"primaryGenreName"];
                 appObject.appId = [[result objectForKey:@"trackId"] integerValue];
-                //appObject.iconIsPrerendered = FALSE;
                 
                 NSArray *features = [result objectForKey:@"features"];
                 appObject.isUniversal = [features containsObject:@"iosUniversal"];
@@ -321,13 +312,6 @@
                 self.title = pageTitle;
                 self.appsArray = mutableApps;
                 [self.tableView reloadData];
-                if (block)
-                {
-                    block(TRUE, NULL);
-                }
-            });
-            
-            dispatch_async(dispatch_get_main_queue(), ^{
                 if (block)
                 {
                     block(TRUE, NULL);
@@ -379,7 +363,6 @@
                 appObject.name = [result objectForKey:@"trackName"];
                 appObject.genre = [result objectForKey:@"primaryGenreName"];
                 appObject.appId = [[result objectForKey:@"trackId"] integerValue];
-                //appObject.iconIsPrerendered = FALSE;
                 
                 NSArray *features = [result objectForKey:@"features"];
                 appObject.isUniversal = [features containsObject:@"iosUniversal"];
@@ -405,13 +388,6 @@
                 self.title = pageTitle;
                 self.appsArray = mutableApps;
                 [self.tableView reloadData];
-                if (block)
-                {
-                    block(TRUE, NULL);
-                }
-            });
-            
-            dispatch_async(dispatch_get_main_queue(), ^{
                 if (block)
                 {
                     block(TRUE, NULL);
