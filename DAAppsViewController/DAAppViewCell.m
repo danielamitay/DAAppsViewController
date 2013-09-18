@@ -211,8 +211,7 @@ static NSCache *_iconCache = nil;
     {
         self.iconView.image = [UIImage imageNamed:@"DAAppsViewController.bundle/DAPlaceholderImage"];
         NSURL *iconURL = self.appObject.iconURL;
-        dispatch_queue_t thread = dispatch_queue_create(NULL, NULL);
-        dispatch_async(thread, ^{
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
             NSURLRequest *urlRequest = [NSURLRequest requestWithURL:iconURL
                                                         cachePolicy:NSURLRequestReturnCacheDataElseLoad
                                                     timeoutInterval:10.0f];
@@ -253,9 +252,6 @@ static NSCache *_iconCache = nil;
                 }
             });
         });
-#if !OS_OBJECT_USE_OBJC
-        dispatch_release(thread);
-#endif
     }
 }
 
