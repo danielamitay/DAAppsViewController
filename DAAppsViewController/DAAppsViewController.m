@@ -84,7 +84,7 @@
     }
     NSError *jsonError;
     NSDictionary *jsonDictionary = [NSJSONSerialization JSONObjectWithData:result
-                                                                   options:0
+                                                                   options:NSJSONReadingMutableContainers
                                                                      error:&jsonError];
     *error = jsonError;
     return jsonDictionary;
