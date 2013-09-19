@@ -10,6 +10,7 @@
 #import <StoreKit/StoreKit.h>
 #import "DAAppViewCell.h"
 
+#define USER_AGENT              @"iTunes-iPad/6.0 (6; 16GB; dt:73)"
 #define DARK_BACKGROUND_COLOR   [UIColor colorWithWhite:235.0f/255.0f alpha:1.0f]
 #define LIGHT_BACKGROUND_COLOR  [UIColor colorWithWhite:245.0f/255.0f alpha:1.0f]
 
@@ -71,7 +72,7 @@
     [request setURL:URL];
     [request setTimeoutInterval:20.0f];
     [request setCachePolicy:NSURLRequestReturnCacheDataElseLoad];
-    [request setValue:@"iTunes-iPad/6.0 (6; 16GB; dt:73)" forHTTPHeaderField:@"User-Agent"];
+    [request setValue:USER_AGENT forHTTPHeaderField:@"User-Agent"];
     
     NSError *connectionError;
     NSData *result = [NSURLConnection sendSynchronousRequest:request
@@ -460,7 +461,8 @@
     else
     {
         NSString *appUrlString = [NSString stringWithFormat:@"itms-apps://itunes.apple.com/app/id%u?mt=8", appObject.appId];
-        [[UIApplication sharedApplication] openURL:[NSURL URLWithString:appUrlString]];
+        NSURL *appURL = [[NSURL alloc] initWithString:appUrlString];
+        [[UIApplication sharedApplication] openURL:appURL];
     }
 }
 
