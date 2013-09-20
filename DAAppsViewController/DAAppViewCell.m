@@ -244,13 +244,15 @@ static NSCache *_iconCache = nil;
             CGImageRelease(mask);
             CGImageRelease(maskedImageRef);
             
-            dispatch_async(dispatch_get_main_queue(), ^{
+            if (iconImage) {
                 [_iconCache setObject:iconImage forKey:iconURL];
-                if (self.appObject.iconURL == iconURL)
-                {
-                    self.iconView.image = iconImage;
-                }
-            });
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    if (self.appObject.iconURL == iconURL)
+                    {
+                        self.iconView.image = iconImage;
+                    }
+                });
+            }
         });
     }
 }
