@@ -141,19 +141,42 @@ static NSCache *_iconCache = nil;
             .origin.x = self.frame.size.width - 67.0f,
             .origin.y = 28.0f,
             .size.width = 59.0f,
-            .size.height = 25.0f
+            .size.height = (DA_IS_IOS7 ? 26.0f : 25.0f)
         };
         self.purchaseButton.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin;
-        UIColor *titleColor = [UIColor colorWithWhite:105.0f/255.0f alpha:1.0f];
-        [self.purchaseButton setTitleColor:titleColor forState:UIControlStateNormal];
-        [self.purchaseButton setTitleShadowColor:[UIColor whiteColor] forState:UIControlStateNormal];
-        [self.purchaseButton.titleLabel setShadowOffset:CGSizeMake(0.0f, 1.0f)];
+        
+        if (DA_IS_IOS7) {
+            UIColor *titleColor = [UIColor colorWithRed:0.0f green:0.49f blue:0.96f alpha:1.0f];
+            [self.purchaseButton setTitleColor:titleColor forState:UIControlStateNormal];
+            [self.purchaseButton setTitleColor:[UIColor whiteColor] forState:UIControlStateHighlighted];
+
+            self.purchaseButton.layer.borderColor = titleColor.CGColor;
+            self.purchaseButton.layer.borderWidth = 1.0f;
+            self.purchaseButton.layer.cornerRadius = 4.0f;
+            self.purchaseButton.layer.masksToBounds = YES;
+            
+            CGRect rect = CGRectMake(0.0f, 0.0f, 2.0f, 2.0f);
+            UIGraphicsBeginImageContextWithOptions(rect.size, NO, 0);
+            CGContextRef context = UIGraphicsGetCurrentContext();
+            CGContextSetFillColorWithColor(context, titleColor.CGColor);
+            CGContextFillRect(context, rect);
+            UIImage *coloredImage = UIGraphicsGetImageFromCurrentImageContext();
+            UIGraphicsEndImageContext();
+            [self.purchaseButton setBackgroundImage:coloredImage forState:UIControlStateHighlighted];
+        } else {
+            UIColor *titleColor = [UIColor colorWithWhite:105.0f/255.0f alpha:1.0f];
+            [self.purchaseButton setTitleColor:titleColor forState:UIControlStateNormal];
+            [self.purchaseButton setTitleShadowColor:[UIColor whiteColor] forState:UIControlStateNormal];
+            [self.purchaseButton.titleLabel setShadowOffset:CGSizeMake(0.0f, 1.0f)];
+            
+            UIImage *buttonImage = [UIImage imageNamed:@"DAAppsViewController.bundle/DAButtonImage"];
+            UIImage *buttonImageSelected = [UIImage imageNamed:@"DAAppsViewController.bundle/DAButtonImageSelected"];
+            [self.purchaseButton setBackgroundImage:buttonImage forState:UIControlStateNormal];
+            [self.purchaseButton setBackgroundImage:buttonImageSelected forState:UIControlStateHighlighted];
+        }
         [self.purchaseButton.titleLabel setFont:[UIFont boldSystemFontOfSize:13.0f]];
         [self.purchaseButton setTitle:@"VIEW" forState:UIControlStateNormal];
-        UIImage *buttonImage = [UIImage imageNamed:@"DAAppsViewController.bundle/DAButtonImage"];
-        UIImage *buttonImageSelected = [UIImage imageNamed:@"DAAppsViewController.bundle/DAButtonImageSelected"];
-        [self.purchaseButton setBackgroundImage:buttonImage forState:UIControlStateNormal];
-        [self.purchaseButton setBackgroundImage:buttonImageSelected forState:UIControlStateHighlighted];
+        
         [self.purchaseButton addTarget:self
                                 action:@selector(purchaseButton:)
                       forControlEvents:UIControlEventTouchUpInside];

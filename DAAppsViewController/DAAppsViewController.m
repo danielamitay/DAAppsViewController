@@ -34,7 +34,9 @@
     [super viewDidLoad];
     
     self.tableView.rowHeight = 83.0f;
-    self.tableView.backgroundColor = DARK_BACKGROUND_COLOR;
+    if (!DA_IS_IOS7) {
+        self.tableView.backgroundColor = DARK_BACKGROUND_COLOR;
+    }
     
     UIView *tableFooterView = [[UIView alloc] init];
     tableFooterView.backgroundColor = [UIColor whiteColor];
@@ -407,7 +409,9 @@
 
 - (void)tableView:(UITableView *)tableView willDisplayCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    cell.backgroundColor = (indexPath.row % 2 ? DARK_BACKGROUND_COLOR : LIGHT_BACKGROUND_COLOR);
+    if (!DA_IS_IOS7) {
+        cell.backgroundColor = (indexPath.row % 2 ? DARK_BACKGROUND_COLOR : LIGHT_BACKGROUND_COLOR);
+    }
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath

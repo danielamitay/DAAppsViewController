@@ -8,6 +8,8 @@
 
 #import <Foundation/Foundation.h>
 
+#define DA_IS_IOS7 [[[UIDevice currentDevice] systemVersion] floatValue] >= 7.0
+
 @interface DAAppObject : NSObject
 
 @property (nonatomic) NSInteger appId;
