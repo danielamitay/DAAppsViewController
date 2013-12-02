@@ -193,6 +193,7 @@
                 appObject.name = [result objectForKey:@"trackName"];
                 appObject.genre = [result objectForKey:@"primaryGenreName"];
                 appObject.appId = [[result objectForKey:@"trackId"] integerValue];
+                appObject.iconIsPrerendered = DA_IS_IOS7;
                 
                 NSArray *features = [result objectForKey:@"features"];
                 appObject.isUniversal = [features containsObject:@"iosUniversal"];
@@ -260,6 +261,7 @@
                 appObject.name = [result objectForKey:@"trackName"];
                 appObject.genre = [result objectForKey:@"primaryGenreName"];
                 appObject.appId = [[result objectForKey:@"trackId"] integerValue];
+                appObject.iconIsPrerendered = DA_IS_IOS7;
                 
                 NSArray *features = [result objectForKey:@"features"];
                 appObject.isUniversal = [features containsObject:@"iosUniversal"];
@@ -327,6 +329,7 @@
                 appObject.name = [result objectForKey:@"trackName"];
                 appObject.genre = [result objectForKey:@"primaryGenreName"];
                 appObject.appId = [[result objectForKey:@"trackId"] integerValue];
+                appObject.iconIsPrerendered = DA_IS_IOS7;
                 
                 NSArray *features = [result objectForKey:@"features"];
                 appObject.isUniversal = [features containsObject:@"iosUniversal"];
