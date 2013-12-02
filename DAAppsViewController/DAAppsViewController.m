@@ -47,16 +47,6 @@
     self.tableView.tableFooterView = tableFooterView;
 }
 
-- (void)viewWillAppear:(BOOL)animated
-{
-    [super viewWillAppear:animated];
-    [self.tableView setContentOffset:CGPointZero];
-}
-
-- (void)didReceiveMemoryWarning
-{
-    [super didReceiveMemoryWarning];
-}
 
 #pragma mark - Property methods
 
@@ -64,7 +54,13 @@
 {
     _appsArray = appsArray;
     [self.tableView reloadData];
+    
+    CGPoint contentOffset = (CGPoint) {
+        .y = -self.tableView.contentInset.top
+    };
+    [self.tableView setContentOffset:contentOffset];
 }
+
 
 #pragma mark - Loading methods
 
@@ -80,8 +76,7 @@
     NSData *result = [NSURLConnection sendSynchronousRequest:request
                                            returningResponse:NULL
                                                        error:&connectionError];
-    if (connectionError)
-    {
+    if (connectionError) {
         *error = connectionError;
         return nil;
     }
@@ -101,8 +96,7 @@
         NSString *countryCode = [[NSLocale currentLocale] objectForKey:NSLocaleCountryCode];
         NSMutableString *requestUrlString = [[NSMutableString alloc] init];
         [requestUrlString appendFormat:@"http://itunes.apple.com/"];
-        if (countryCode)
-        {
+        if (countryCode) {
             [requestUrlString appendFormat:@"%@/", countryCode];
         }
         [requestUrlString appendFormat:@"artist/id%i", artistId];
@@ -111,27 +105,21 @@
         
         NSError *requestError;
         NSDictionary *jsonObject = [self resultsDictionaryForURL:requestURL error:&requestError];
-        if (requestError)
-        {
+        if (requestError) {
             dispatch_async(dispatch_get_main_queue(), ^{
-                if (block)
-                {
+                if (block) {
                     block(FALSE, requestError);
                 }
             });
-        }
-        else
-        {
+        } else {
             NSDictionary *artistDictionary = jsonObject;
             NSArray *stack = [artistDictionary objectForKey:@"stack"];
             NSString *pageTitle = [artistDictionary objectForKey:@"pageTitle"];
             
             NSMutableArray *mutableApps = [[NSMutableArray alloc] init];
-            for (NSDictionary *swoosh in stack)
-            {
+            for (NSDictionary *swoosh in stack) {
                 NSArray *content = [swoosh objectForKey:@"content"];
-                for (NSDictionary *lockup in content)
-                {
+                for (NSDictionary *lockup in content) {
                     DAAppObject *appObject = [[DAAppObject alloc] init];
                     
                     appObject.bundleId = [lockup objectForKey:@"bundle-id"];
@@ -152,8 +140,7 @@
                     appObject.userRating = [[lockup objectForKey:@"user_rating"] floatValue];
                     appObject.userRatingCount = [[lockup objectForKey:@"user_rating_count"] integerValue];
                     
-                    if (![mutableApps containsObject:appObject])
-                    {
+                    if (![mutableApps containsObject:appObject]) {
                         [mutableApps addObject:appObject];
                     }
                 }
@@ -162,9 +149,7 @@
             dispatch_async(dispatch_get_main_queue(), ^{
                 self.title = pageTitle;
                 self.appsArray = mutableApps;
-                [self.tableView reloadData];
-                if (block)
-                {
+                if (block) {
                     block(TRUE, NULL);
                 }
             });
@@ -182,32 +167,26 @@
         NSMutableString *requestUrlString = [[NSMutableString alloc] init];
         [requestUrlString appendFormat:@"http://itunes.apple.com/lookup"];
         [requestUrlString appendFormat:@"?id=%@", appString];
-        if (countryCode)
-        {
+        if (countryCode) {
             [requestUrlString appendFormat:@"&country=%@", countryCode];
         }
         NSURL *requestURL = [[NSURL alloc] initWithString:requestUrlString];
         
         NSError *requestError;
         NSDictionary *jsonObject = [self resultsDictionaryForURL:requestURL error:&requestError];
-        if (requestError)
-        {
+        if (requestError) {
             dispatch_async(dispatch_get_main_queue(), ^{
-                if (block)
-                {
+                if (block) {
                     block(FALSE, requestError);
                 }
             });
-        }
-        else
-        {
+        } else {
             NSDictionary *appsDictionary = jsonObject;
             NSArray *results = [appsDictionary objectForKey:@"results"];
             NSString *pageTitle = @"Results";
             
             NSMutableArray *mutableApps = [[NSMutableArray alloc] init];
-            for (NSDictionary *result in results)
-            {
+            for (NSDictionary *result in results) {
                 DAAppObject *appObject = [[DAAppObject alloc] init];
                 
                 appObject.bundleId = [result objectForKey:@"bundleId"];
@@ -229,8 +208,7 @@
                 appObject.userRating = [[result objectForKey:@"averageUserRating"] floatValue];
                 appObject.userRatingCount = [[result objectForKey:@"userRatingCount"] integerValue];
                 
-                if (![mutableApps containsObject:appObject])
-                {
+                if (![mutableApps containsObject:appObject]) {
                     [mutableApps addObject:appObject];
                 }
             }
@@ -238,9 +216,7 @@
             dispatch_async(dispatch_get_main_queue(), ^{
                 self.title = pageTitle;
                 self.appsArray = mutableApps;
-                [self.tableView reloadData];
-                if (block)
-                {
+                if (block) {
                     block(TRUE, NULL);
                 }
             });
@@ -258,32 +234,26 @@
         NSMutableString *requestUrlString = [[NSMutableString alloc] init];
         [requestUrlString appendFormat:@"http://itunes.apple.com/lookup"];
         [requestUrlString appendFormat:@"?bundleId=%@", bundleString];
-        if (countryCode)
-        {
+        if (countryCode) {
             [requestUrlString appendFormat:@"&country=%@", countryCode];
         }
         NSURL *requestURL = [[NSURL alloc] initWithString:requestUrlString];
         
         NSError *requestError;
         NSDictionary *jsonObject = [self resultsDictionaryForURL:requestURL error:&requestError];
-        if (requestError)
-        {
+        if (requestError) {
             dispatch_async(dispatch_get_main_queue(), ^{
-                if (block)
-                {
+                if (block) {
                     block(FALSE, requestError);
                 }
             });
-        }
-        else
-        {
+        } else {
             NSDictionary *appsDictionary = jsonObject;
             NSArray *results = [appsDictionary objectForKey:@"results"];
             NSString *pageTitle = @"Results";
             
             NSMutableArray *mutableApps = [[NSMutableArray alloc] init];
-            for (NSDictionary *result in results)
-            {
+            for (NSDictionary *result in results) {
                 DAAppObject *appObject = [[DAAppObject alloc] init];
                 
                 appObject.bundleId = [result objectForKey:@"bundleId"];
@@ -305,8 +275,7 @@
                 appObject.userRating = [[result objectForKey:@"averageUserRating"] floatValue];
                 appObject.userRatingCount = [[result objectForKey:@"userRatingCount"] integerValue];
                 
-                if (![mutableApps containsObject:appObject])
-                {
+                if (![mutableApps containsObject:appObject]) {
                     [mutableApps addObject:appObject];
                 }
             }
@@ -314,9 +283,7 @@
             dispatch_async(dispatch_get_main_queue(), ^{
                 self.title = pageTitle;
                 self.appsArray = mutableApps;
-                [self.tableView reloadData];
-                if (block)
-                {
+                if (block) {
                     block(TRUE, NULL);
                 }
             });
@@ -333,8 +300,7 @@
         NSMutableString *requestUrlString = [[NSMutableString alloc] init];
         [requestUrlString appendFormat:@"http://itunes.apple.com/search"];
         [requestUrlString appendFormat:@"?term=%@", searchTerm];
-        if (countryCode)
-        {
+        if (countryCode) {
             [requestUrlString appendFormat:@"&country=%@", countryCode];
         }
         [requestUrlString appendFormat:@"&entity=software"];
@@ -342,24 +308,19 @@
         
         NSError *requestError;
         NSDictionary *jsonObject = [self resultsDictionaryForURL:requestURL error:&requestError];
-        if (requestError)
-        {
+        if (requestError) {
             dispatch_async(dispatch_get_main_queue(), ^{
-                if (block)
-                {
+                if (block) {
                     block(FALSE, requestError);
                 }
             });
-        }
-        else
-        {
+        } else {
             NSDictionary *appsDictionary = jsonObject;
             NSArray *results = [appsDictionary objectForKey:@"results"];
             NSString *pageTitle = @"Results";
             
             NSMutableArray *mutableApps = [[NSMutableArray alloc] init];
-            for (NSDictionary *result in results)
-            {
+            for (NSDictionary *result in results) {
                 DAAppObject *appObject = [[DAAppObject alloc] init];
                 
                 appObject.bundleId = [result objectForKey:@"bundleId"];
@@ -381,8 +342,7 @@
                 appObject.userRating = [[result objectForKey:@"averageUserRating"] floatValue];
                 appObject.userRatingCount = [[result objectForKey:@"userRatingCount"] integerValue];
                 
-                if (![mutableApps containsObject:appObject])
-                {
+                if (![mutableApps containsObject:appObject]) {
                     [mutableApps addObject:appObject];
                 }
             }
@@ -390,15 +350,14 @@
             dispatch_async(dispatch_get_main_queue(), ^{
                 self.title = pageTitle;
                 self.appsArray = mutableApps;
-                [self.tableView reloadData];
-                if (block)
-                {
+                if (block) {
                     block(TRUE, NULL);
                 }
             });
         }
     });
 }
+
 
 #pragma mark - Table view data source
 
@@ -418,8 +377,7 @@
 {
     static NSString *CellIdentifier = @"Cell";
     DAAppViewCell *cell = (DAAppViewCell *)[tableView dequeueReusableCellWithIdentifier:CellIdentifier];
-    if (!cell)
-    {
+    if (!cell) {
         cell = [[DAAppViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier];
     }
     
@@ -427,6 +385,7 @@
     
     return cell;
 }
+
 
 #pragma mark - Table view delegate methods
 
@@ -441,19 +400,18 @@
     [self presentAppObjectAtIndexPath:indexPath];
 }
 
+
 #pragma mark - Presentation methods
 
 - (void)presentAppObjectAtIndexPath:(NSIndexPath *)indexPath
 {
     DAAppObject *appObject = [self.appsArray objectAtIndex:indexPath.row];
     
-    if (self.didViewAppBlock)
-    {
+    if (self.didViewAppBlock) {
         self.didViewAppBlock(appObject.appId);
     }
     
-    if ([SKStoreProductViewController class])
-    {
+    if ([SKStoreProductViewController class]) {
         NSDictionary *appParameters = @{SKStoreProductParameterITunesItemIdentifier : [NSString stringWithFormat:@"%u", appObject.appId]};
         SKStoreProductViewController *productViewController = [[SKStoreProductViewController alloc] init];
         [productViewController setDelegate:self];
@@ -461,14 +419,13 @@
         [self presentViewController:productViewController
                            animated:YES
                          completion:nil];
-    }
-    else
-    {
+    } else {
         NSString *appUrlString = [NSString stringWithFormat:@"itms-apps://itunes.apple.com/app/id%u?mt=8", appObject.appId];
         NSURL *appURL = [[NSURL alloc] initWithString:appUrlString];
         [[UIApplication sharedApplication] openURL:appURL];
     }
 }
+
 
 #pragma mark - Product view controller delegate methods
 

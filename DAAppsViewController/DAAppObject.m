@@ -14,28 +14,20 @@
 
 - (BOOL)isEqual:(id)other
 {
-    if (!other || ![other isKindOfClass:[self class]])
-    {
+    if (!other || ![other isKindOfClass:[self class]]) {
         return NO;
-    }
-    else
-    {
+    } else {
         return [self isEqualToAppObject:other];
     }
 }
 
 - (BOOL)isEqualToAppObject:(DAAppObject *)appObject
 {
-    if (self == appObject)
-    {
+    if (self == appObject) {
         return YES;
-    }
-    else if (self.appId != appObject.appId)
-    {
+    } else if (self.appId != appObject.appId) {
         return NO;
-    }
-    else if (self.artistId != appObject.artistId)
-    {
+    } else if (self.artistId != appObject.artistId) {
         return NO;
     }
     return YES;

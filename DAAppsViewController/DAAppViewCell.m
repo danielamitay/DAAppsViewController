@@ -28,17 +28,16 @@ static NSCache *_iconCache = nil;
 
 + (void)initialize
 {
-    if (self == [DAAppViewCell class])
-    {
+    if (self == [DAAppViewCell class]) {
         _iconCache = [[NSCache alloc] init];
+        [_iconCache setCountLimit:40];
     }
 }
 
 - (id)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier
 {
     self = [super initWithStyle:style reuseIdentifier:reuseIdentifier];
-    if (self)
-    {
+    if (self) {
         self.selectionStyle = UITableViewCellSelectionStyleGray;
         if ([self respondsToSelector:@selector(setSeparatorInset:)]) {
             self.separatorInset = UIEdgeInsetsZero;
@@ -200,8 +199,7 @@ static NSCache *_iconCache = nil;
     }
     
     NSIndexPath *pathOfTheCell = [tableView indexPathForCell:self];
-    if ([tableView.delegate respondsToSelector:@selector(tableView:accessoryButtonTappedForRowWithIndexPath:)])
-    {
+    if ([tableView.delegate respondsToSelector:@selector(tableView:accessoryButtonTappedForRowWithIndexPath:)]) {
         [tableView.delegate tableView:tableView accessoryButtonTappedForRowWithIndexPath:pathOfTheCell];
     }
 }
@@ -229,12 +227,9 @@ static NSCache *_iconCache = nil;
     UIGraphicsEndImageContext();
     
     UIImage *iconImage = [_iconCache objectForKey:self.appObject.iconURL];
-    if (iconImage)
-    {
+    if (iconImage) {
         self.iconView.image = iconImage;
-    }
-    else
-    {
+    } else {
         self.iconView.image = [UIImage imageNamed:@"DAAppsViewController.bundle/DAPlaceholderImage"];
         NSURL *iconURL = self.appObject.iconURL;
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
@@ -246,8 +241,7 @@ static NSCache *_iconCache = nil;
                                                                  error:NULL];
             UIImage *iconImage = [UIImage imageWithData:iconData];
             
-            if (!self.appObject.iconIsPrerendered)
-            {
+            if (!self.appObject.iconIsPrerendered) {
                 UIGraphicsBeginImageContext(iconImage.size);
                 [iconImage drawAtPoint:CGPointZero];
                 CGRect imageRect = (CGRect) {
@@ -273,8 +267,7 @@ static NSCache *_iconCache = nil;
             if (iconImage) {
                 [_iconCache setObject:iconImage forKey:iconURL];
                 dispatch_async(dispatch_get_main_queue(), ^{
-                    if (self.appObject.iconURL == iconURL)
-                    {
+                    if (self.appObject.iconURL == iconURL) {
                         self.iconView.image = iconImage;
                     }
                 });
