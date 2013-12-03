@@ -187,7 +187,7 @@
         } else {
             NSDictionary *appsDictionary = jsonObject;
             NSArray *results = [appsDictionary objectForKey:@"results"];
-            NSString *pageTitle = @"Results";
+            NSString *pageTitle = NSLocalizedString(@"Results", nil);
             
             NSMutableArray *mutableApps = [[NSMutableArray alloc] init];
             for (NSDictionary *result in results) {
@@ -257,7 +257,7 @@
         } else {
             NSDictionary *appsDictionary = jsonObject;
             NSArray *results = [appsDictionary objectForKey:@"results"];
-            NSString *pageTitle = @"Results";
+            NSString *pageTitle = NSLocalizedString(@"Results", nil);
             
             NSMutableArray *mutableApps = [[NSMutableArray alloc] init];
             for (NSDictionary *result in results) {
@@ -327,7 +327,7 @@
         } else {
             NSDictionary *appsDictionary = jsonObject;
             NSArray *results = [appsDictionary objectForKey:@"results"];
-            NSString *pageTitle = @"Results";
+            NSString *pageTitle = NSLocalizedString(@"Results", nil);
             
             NSMutableArray *mutableApps = [[NSMutableArray alloc] init];
             for (NSDictionary *result in results) {
