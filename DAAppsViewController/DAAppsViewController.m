@@ -101,6 +101,8 @@
         }
         [requestUrlString appendFormat:@"artist/id%i", artistId];
         [requestUrlString appendFormat:@"?dataOnly=true"];
+        NSString *languagueCode = [[NSLocale currentLocale] objectForKey:NSLocaleLanguageCode];
+        [requestUrlString appendFormat:@"&l=%@", languagueCode];
         NSURL *requestURL = [[NSURL alloc] initWithString:requestUrlString];
         
         NSError *requestError;
@@ -170,6 +172,8 @@
         if (countryCode) {
             [requestUrlString appendFormat:@"&country=%@", countryCode];
         }
+        NSString *languagueCode = [[NSLocale currentLocale] objectForKey:NSLocaleLanguageCode];
+        [requestUrlString appendFormat:@"&l=%@", languagueCode];
         NSURL *requestURL = [[NSURL alloc] initWithString:requestUrlString];
         
         NSError *requestError;
@@ -238,6 +242,8 @@
         if (countryCode) {
             [requestUrlString appendFormat:@"&country=%@", countryCode];
         }
+        NSString *languagueCode = [[NSLocale currentLocale] objectForKey:NSLocaleLanguageCode];
+        [requestUrlString appendFormat:@"&l=%@", languagueCode];
         NSURL *requestURL = [[NSURL alloc] initWithString:requestUrlString];
         
         NSError *requestError;
@@ -306,6 +312,8 @@
             [requestUrlString appendFormat:@"&country=%@", countryCode];
         }
         [requestUrlString appendFormat:@"&entity=software"];
+        NSString *languagueCode = [[NSLocale currentLocale] objectForKey:NSLocaleLanguageCode];
+        [requestUrlString appendFormat:@"&l=%@", languagueCode];
         NSURL *requestURL = [[NSURL alloc] initWithString:requestUrlString];
         
         NSError *requestError;
