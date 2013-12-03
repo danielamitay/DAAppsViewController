@@ -307,7 +307,7 @@
         NSString *countryCode = [[NSLocale currentLocale] objectForKey:NSLocaleCountryCode];
         NSMutableString *requestUrlString = [[NSMutableString alloc] init];
         [requestUrlString appendFormat:@"http://itunes.apple.com/search"];
-        [requestUrlString appendFormat:@"?term=%@", searchTerm];
+        [requestUrlString appendFormat:@"?term=%@", [searchTerm stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]];
         if (countryCode) {
             [requestUrlString appendFormat:@"&country=%@", countryCode];
         }
