@@ -101,6 +101,8 @@
         }
         [requestUrlString appendFormat:@"artist/id%i", artistId];
         [requestUrlString appendFormat:@"?dataOnly=true"];
+        NSString *languagueCode = [[NSLocale currentLocale] objectForKey:NSLocaleLanguageCode];
+        [requestUrlString appendFormat:@"&l=%@", languagueCode];
         NSURL *requestURL = [[NSURL alloc] initWithString:requestUrlString];
         
         NSError *requestError;
@@ -170,6 +172,8 @@
         if (countryCode) {
             [requestUrlString appendFormat:@"&country=%@", countryCode];
         }
+        NSString *languagueCode = [[NSLocale currentLocale] objectForKey:NSLocaleLanguageCode];
+        [requestUrlString appendFormat:@"&l=%@", languagueCode];
         NSURL *requestURL = [[NSURL alloc] initWithString:requestUrlString];
         
         NSError *requestError;
@@ -183,7 +187,7 @@
         } else {
             NSDictionary *appsDictionary = jsonObject;
             NSArray *results = [appsDictionary objectForKey:@"results"];
-            NSString *pageTitle = @"Results";
+            NSString *pageTitle = NSLocalizedString(@"Results", nil);
             
             NSMutableArray *mutableApps = [[NSMutableArray alloc] init];
             for (NSDictionary *result in results) {
@@ -238,6 +242,8 @@
         if (countryCode) {
             [requestUrlString appendFormat:@"&country=%@", countryCode];
         }
+        NSString *languagueCode = [[NSLocale currentLocale] objectForKey:NSLocaleLanguageCode];
+        [requestUrlString appendFormat:@"&l=%@", languagueCode];
         NSURL *requestURL = [[NSURL alloc] initWithString:requestUrlString];
         
         NSError *requestError;
@@ -251,7 +257,7 @@
         } else {
             NSDictionary *appsDictionary = jsonObject;
             NSArray *results = [appsDictionary objectForKey:@"results"];
-            NSString *pageTitle = @"Results";
+            NSString *pageTitle = NSLocalizedString(@"Results", nil);
             
             NSMutableArray *mutableApps = [[NSMutableArray alloc] init];
             for (NSDictionary *result in results) {
@@ -301,11 +307,13 @@
         NSString *countryCode = [[NSLocale currentLocale] objectForKey:NSLocaleCountryCode];
         NSMutableString *requestUrlString = [[NSMutableString alloc] init];
         [requestUrlString appendFormat:@"http://itunes.apple.com/search"];
-        [requestUrlString appendFormat:@"?term=%@", searchTerm];
+        [requestUrlString appendFormat:@"?term=%@", [searchTerm stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]];
         if (countryCode) {
             [requestUrlString appendFormat:@"&country=%@", countryCode];
         }
         [requestUrlString appendFormat:@"&entity=software"];
+        NSString *languagueCode = [[NSLocale currentLocale] objectForKey:NSLocaleLanguageCode];
+        [requestUrlString appendFormat:@"&l=%@", languagueCode];
         NSURL *requestURL = [[NSURL alloc] initWithString:requestUrlString];
         
         NSError *requestError;
@@ -319,7 +327,7 @@
         } else {
             NSDictionary *appsDictionary = jsonObject;
             NSArray *results = [appsDictionary objectForKey:@"results"];
-            NSString *pageTitle = @"Results";
+            NSString *pageTitle = NSLocalizedString(@"Results", nil);
             
             NSMutableArray *mutableApps = [[NSMutableArray alloc] init];
             for (NSDictionary *result in results) {
