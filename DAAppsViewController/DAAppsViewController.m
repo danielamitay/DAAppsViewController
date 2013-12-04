@@ -116,7 +116,7 @@
         } else {
             NSDictionary *artistDictionary = jsonObject;
             NSArray *stack = [artistDictionary objectForKey:@"stack"];
-            NSString *pageTitle = [artistDictionary objectForKey:@"pageTitle"];
+            NSString *pageTitle = (self.pageTitle && self.pageTitle.length > 0)?self.pageTitle:[artistDictionary objectForKey:@"pageTitle"];
             
             NSMutableArray *mutableApps = [[NSMutableArray alloc] init];
             for (NSDictionary *swoosh in stack) {
@@ -187,7 +187,7 @@
         } else {
             NSDictionary *appsDictionary = jsonObject;
             NSArray *results = [appsDictionary objectForKey:@"results"];
-            NSString *pageTitle = NSLocalizedString(@"Results", nil);
+            NSString *pageTitle = (self.pageTitle && self.pageTitle.length > 0)?self.pageTitle:NSLocalizedString(@"Results", nil);
             
             NSMutableArray *mutableApps = [[NSMutableArray alloc] init];
             for (NSDictionary *result in results) {
@@ -257,7 +257,7 @@
         } else {
             NSDictionary *appsDictionary = jsonObject;
             NSArray *results = [appsDictionary objectForKey:@"results"];
-            NSString *pageTitle = NSLocalizedString(@"Results", nil);
+            NSString *pageTitle = (self.pageTitle && self.pageTitle.length > 0)?self.pageTitle:NSLocalizedString(@"Results", nil);
             
             NSMutableArray *mutableApps = [[NSMutableArray alloc] init];
             for (NSDictionary *result in results) {
@@ -327,7 +327,7 @@
         } else {
             NSDictionary *appsDictionary = jsonObject;
             NSArray *results = [appsDictionary objectForKey:@"results"];
-            NSString *pageTitle = NSLocalizedString(@"Results", nil);
+            NSString *pageTitle = (self.pageTitle && self.pageTitle.length > 0)?self.pageTitle:NSLocalizedString(@"Results", nil);
             
             NSMutableArray *mutableApps = [[NSMutableArray alloc] init];
             for (NSDictionary *result in results) {
