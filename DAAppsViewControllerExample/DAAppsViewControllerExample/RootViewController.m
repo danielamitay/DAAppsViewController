@@ -147,6 +147,7 @@
         {
             NSString *key = [self.appsDictionary.allKeys objectAtIndex:indexPath.row];
             NSArray *values = [self.appsDictionary objectForKey:key];
+            appsViewController.pageTitle = key;
             [appsViewController loadAppsWithAppIds:values completionBlock:nil];
         }
             break;

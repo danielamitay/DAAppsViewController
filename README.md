@@ -28,6 +28,7 @@ By **appId**:
 ```objective-c
 NSArray *appsArray = @[@575647534,@498151501,@482453112,@582790430,@543421080];
 DAAppsViewController *appsViewController = [[DAAppsViewController alloc] init];
+appsViewController.pageTitle = @"Apps by XXX"; // Optional
 [appsViewController loadAppsWithAppIds:appsArray completionBlock:nil];
 [self.navigationController pushViewController:appsViewController animated:YES];
 ```
