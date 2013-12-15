@@ -10,7 +10,12 @@
 #import <StoreKit/StoreKit.h>
 #import "DAAppViewCell.h"
 
-#define USER_AGENT              @"iTunes-iPad/6.0 (6; 16GB; dt:73)"
+#define USER_AGENT_IPHONE       @"iTunes-iPhone/6.0 (6; 16GB; dt:73)"
+#define USER_AGENT_IPAD         @"iTunes-iPad/6.0 (6; 16GB; dt:73)"
+#define IS_IPHONE ([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPhone)
+#define DAUserAgent() \
+    IS_IPHONE ? USER_AGENT_IPHONE : USER_AGENT_IPAD
+
 #define DARK_BACKGROUND_COLOR   [UIColor colorWithWhite:235.0f/255.0f alpha:1.0f]
 #define LIGHT_BACKGROUND_COLOR  [UIColor colorWithWhite:245.0f/255.0f alpha:1.0f]
 
@@ -70,7 +75,7 @@
     [request setURL:URL];
     [request setTimeoutInterval:20.0f];
     [request setCachePolicy:NSURLRequestReturnCacheDataElseLoad];
-    [request setValue:USER_AGENT forHTTPHeaderField:@"User-Agent"];
+    [request setValue:DAUserAgent() forHTTPHeaderField:@"User-Agent"];
     
     NSError *connectionError;
     NSData *result = [NSURLConnection sendSynchronousRequest:request
@@ -115,36 +120,23 @@
             });
         } else {
             NSDictionary *artistDictionary = jsonObject;
-            NSArray *stack = [artistDictionary objectForKey:@"stack"];
             NSString *pageTitle = (self.pageTitle && self.pageTitle.length > 0)?self.pageTitle:[artistDictionary objectForKey:@"pageTitle"];
             
             NSMutableArray *mutableApps = [[NSMutableArray alloc] init];
-            for (NSDictionary *swoosh in stack) {
-                NSArray *content = [swoosh objectForKey:@"content"];
+            void(^fetch_block)(NSArray *content) = ^(NSArray *content){
                 for (NSDictionary *lockup in content) {
-                    DAAppObject *appObject = [[DAAppObject alloc] init];
-                    
-                    appObject.bundleId = [lockup objectForKey:@"bundle-id"];
-                    appObject.name = [lockup objectForKey:@"name"];
-                    appObject.genre = [lockup objectForKey:@"genre"];
-                    appObject.appId = [[lockup objectForKey:@"id"] integerValue];
-                    appObject.iconIsPrerendered = [[lockup objectForKey:@"icon-is-prerendered"] boolValue];
-                    appObject.isUniversal = [[lockup objectForKey:@"is_universal_app"] boolValue];
-                    
-                    NSArray *offers = [lockup objectForKey:@"offers"];
-                    NSDictionary *offer = [offers lastObject];
-                    appObject.formattedPrice = [offer objectForKey:@"button_text"];
-                    
-                    NSArray *artwork = [lockup objectForKey:@"artwork"];
-                    NSDictionary *artworkDictionary = [artwork objectAtIndex:MIN(artwork.count - 1, 2)];
-                    NSString *iconUrlString = [artworkDictionary objectForKey:@"url"];
-                    appObject.iconURL = [[NSURL alloc] initWithString:iconUrlString];
-                    appObject.userRating = [[lockup objectForKey:@"user_rating"] floatValue];
-                    appObject.userRatingCount = [[lockup objectForKey:@"user_rating_count"] integerValue];
-                    
+                    DAAppObject *appObject = [[DAAppObject alloc] initWithLockup:lockup];
                     if (![mutableApps containsObject:appObject]) {
                         [mutableApps addObject:appObject];
                     }
+                }
+            };
+            
+            if (IS_IPHONE) {
+                fetch_block(artistDictionary[@"content"][@"content"]);
+            } else {
+                for (NSDictionary *swoosh in artistDictionary[@"stack"]) {
+                    fetch_block(swoosh[@"content"]);
                 }
             }
             

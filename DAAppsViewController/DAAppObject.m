@@ -12,6 +12,33 @@
 
 #pragma mark - Equality methods
 
+- (id)initWithLockup:(NSDictionary *)lockup {
+    self = [super init];
+    if (!self) {
+        return nil;
+    }
+    
+    _bundleId = [lockup objectForKey:@"bundle-id"];
+    _name = [lockup objectForKey:@"name"];
+    _genre = [lockup objectForKey:@"genre"];
+    _appId = [[lockup objectForKey:@"id"] integerValue];
+    _iconIsPrerendered = [[lockup objectForKey:@"icon-is-prerendered"] boolValue];
+    _isUniversal = [[lockup objectForKey:@"is_universal_app"] boolValue];
+    
+    NSArray *offers = [lockup objectForKey:@"offers"];
+    NSDictionary *offer = [offers lastObject];
+    _formattedPrice = [offer objectForKey:@"button_text"];
+    
+    NSArray *artwork = [lockup objectForKey:@"artwork"];
+    NSDictionary *artworkDictionary = [artwork objectAtIndex:MIN(artwork.count - 1, 2)];
+    NSString *iconUrlString = [artworkDictionary objectForKey:@"url"];
+    _iconURL = [[NSURL alloc] initWithString:iconUrlString];
+    _userRating = [[lockup objectForKey:@"user_rating"] floatValue];
+    _userRatingCount = [[lockup objectForKey:@"user_rating_count"] integerValue];
+    
+    return self;
+}
+
 - (BOOL)isEqual:(id)other
 {
     if (!other || ![other isKindOfClass:[self class]]) {
