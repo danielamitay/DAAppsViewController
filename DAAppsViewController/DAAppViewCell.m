@@ -76,8 +76,8 @@ static NSCache *_iconCache = nil;
         self.nameLabel = [[UILabel alloc] init];
         self.nameLabel.frame = (CGRect) {
             .origin.x = 88.0f,
-            .origin.y = 14.0f,
-            .size.width = self.frame.size.width - 100.0f,
+            .origin.y = 20.0f,
+            .size.width = self.frame.size.width - 165.0f,
             .size.height = 15.0f
         };
         self.nameLabel.autoresizingMask = UIViewAutoresizingFlexibleWidth;
@@ -89,7 +89,7 @@ static NSCache *_iconCache = nil;
         self.genreLabel = [[UILabel alloc] init];
         self.genreLabel.frame = (CGRect) {
             .origin.x = 88.0f,
-            .origin.y = 37.0f,
+            .origin.y = 39.0f,
             .size.width = 100.0f,
             .size.height = 11.0f
         };
@@ -101,7 +101,7 @@ static NSCache *_iconCache = nil;
         self.starImageView = [[UIImageView alloc] init];
         self.starImageView.frame = (CGRect) {
             .origin.x = 88.0f,
-            .origin.y = 57.0f,
+            .origin.y = 54.0f,
             .size.width = 44.0f,
             .size.height = 9.5f
         };
@@ -112,7 +112,7 @@ static NSCache *_iconCache = nil;
         self.noRatingsLabel = [[UILabel alloc] init];
         self.noRatingsLabel.frame = (CGRect) {
             .origin.x = 88.0f,
-            .origin.y = 57.0f,
+            .origin.y = 54.0f,
             .size.width = 60.0f,
             .size.height = 10.0f
         };
@@ -126,7 +126,7 @@ static NSCache *_iconCache = nil;
         self.ratingsLabel = [[UILabel alloc] init];
         self.ratingsLabel.frame = (CGRect) {
             .origin.x = 135.0f,
-            .origin.y = 55.0f,
+            .origin.y = 52.0f,
             .size.width = 60.0f,
             .size.height = 12.0f
         };
@@ -139,8 +139,8 @@ static NSCache *_iconCache = nil;
         self.purchaseButton.frame = (CGRect) {
             .origin.x = self.frame.size.width - 67.0f,
             .origin.y = 28.0f,
-            .size.width = 67.0f,
-            .size.height = 24.0f
+            .size.width = 59.0f,
+            .size.height = (DA_IS_IOS7 ? 26.0f : 25.0f)
         };
         self.purchaseButton.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin;
         
