@@ -61,11 +61,9 @@ iOS5.0+
 
 ## Contact
 
-- [Personal website](http://danielamitay.com)
-- [GitHub](http://github.com/danielamitay)
-- [Twitter](http://twitter.com/danielamitay)
-- [LinkedIn](http://www.linkedin.com/in/danielamitay)
-- [Email](mailto:hello@danielamitay.com)
+- [@danielamitay](http://twitter.com/danielamitay)
+- hello@danielamitay.com
+- http://www.danielamitay.com
 
 If you use/enjoy `DAAppsViewController`, let me know!
 
