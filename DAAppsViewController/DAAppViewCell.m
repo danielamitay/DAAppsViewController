@@ -74,25 +74,12 @@ static NSCache *_iconCache = nil;
         [self addSubview:self.iconView];
         
         self.nameLabel = [[UILabel alloc] init];
-        self.nameLabel.frame = (CGRect) {
-            .origin.x = 88.0f,
-            .origin.y = 20.0f,
-            .size.width = self.frame.size.width - 165.0f,
-            .size.height = 15.0f
-        };
-        self.nameLabel.autoresizingMask = UIViewAutoresizingFlexibleWidth;
         self.nameLabel.font = [UIFont boldSystemFontOfSize:14.0f];
         self.nameLabel.backgroundColor = [UIColor clearColor];
         self.nameLabel.textColor = [UIColor colorWithWhite:78.0f/255.0f alpha:1.0f];
         [self addSubview:self.nameLabel];
         
         self.genreLabel = [[UILabel alloc] init];
-        self.genreLabel.frame = (CGRect) {
-            .origin.x = 88.0f,
-            .origin.y = 39.0f,
-            .size.width = 100.0f,
-            .size.height = 11.0f
-        };
         self.genreLabel.font = [UIFont systemFontOfSize:10.0f];
         self.genreLabel.backgroundColor = [UIColor clearColor];
         self.genreLabel.textColor = [UIColor colorWithWhite:99.0f/255.0f alpha:1.0f];
@@ -110,26 +97,20 @@ static NSCache *_iconCache = nil;
         [self addSubview:self.starImageView];
         
         self.noRatingsLabel = [[UILabel alloc] init];
-        self.noRatingsLabel.frame = (CGRect) {
-            .origin.x = 88.0f,
-            .origin.y = 54.0f,
-            .size.width = 60.0f,
-            .size.height = 10.0f
-        };
         self.noRatingsLabel.font = [UIFont systemFontOfSize:10.0f];
         self.noRatingsLabel.textColor = [UIColor colorWithWhite:99.0f/255.0f alpha:1.0f];
         self.noRatingsLabel.backgroundColor = [UIColor clearColor];
         self.noRatingsLabel.text = @"No Ratings";
         self.noRatingsLabel.hidden = YES;
+        CGSize noRatingsLabelSize = [self.noRatingsLabel sizeThatFits:self.noRatingsLabel.bounds.size];
+        self.noRatingsLabel.frame = (CGRect) {
+            .origin.x = 88.0f,
+            .origin.y = 54.0f,
+            .size = noRatingsLabelSize
+        };
         [self addSubview:self.noRatingsLabel];
         
         self.ratingsLabel = [[UILabel alloc] init];
-        self.ratingsLabel.frame = (CGRect) {
-            .origin.x = 135.0f,
-            .origin.y = 52.0f,
-            .size.width = 60.0f,
-            .size.height = 12.0f
-        };
         self.ratingsLabel.font = [UIFont systemFontOfSize:10.0f];
         self.ratingsLabel.textColor = [UIColor colorWithWhite:90.0f/255.0f alpha:1.0f];
         self.ratingsLabel.backgroundColor = [UIColor clearColor];
@@ -202,6 +183,38 @@ static NSCache *_iconCache = nil;
     if ([tableView.delegate respondsToSelector:@selector(tableView:accessoryButtonTappedForRowWithIndexPath:)]) {
         [tableView.delegate tableView:tableView accessoryButtonTappedForRowWithIndexPath:pathOfTheCell];
     }
+}
+
+#pragma mark - View methods
+
+- (void)layoutSubviews
+{
+    [super layoutSubviews];
+    
+    CGFloat maxNameLabelWidth = self.bounds.size.width - 165.0f;
+    CGSize nameLabelSize = [self.nameLabel sizeThatFits:(CGSize) {
+        .width = maxNameLabelWidth
+    }];
+    self.nameLabel.frame = (CGRect) {
+        .origin.x = 88.0f,
+        .origin.y = 19.0f,
+        .size.width = MIN(nameLabelSize.width, maxNameLabelWidth),
+        .size.height = nameLabelSize.height
+    };
+    
+    CGSize genreLabelSize = [self.genreLabel sizeThatFits:self.genreLabel.bounds.size];
+    self.genreLabel.frame = (CGRect) {
+        .origin.x = 88.0f,
+        .origin.y = 39.0f,
+        .size = genreLabelSize
+    };
+    
+    CGSize ratingsLabelSize = [self.ratingsLabel sizeThatFits:self.ratingsLabel.bounds.size];
+    self.ratingsLabel.frame = (CGRect) {
+        .origin.x = 135.0f,
+        .origin.y = 52.0f,
+        .size = ratingsLabelSize
+    };
 }
 
 #pragma mark - Property methods
