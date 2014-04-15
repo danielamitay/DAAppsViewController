@@ -9,6 +9,7 @@
 #import "DAAppViewCell.h"
 
 static NSCache *_iconCache = nil;
+static NSArray *_starRatingImages = nil;
 
 @interface DAAppViewCell ()
 
@@ -31,6 +32,25 @@ static NSCache *_iconCache = nil;
     if (self == [DAAppViewCell class]) {
         _iconCache = [[NSCache alloc] init];
         [_iconCache setCountLimit:40];
+        
+        NSInteger numberOfStars = 11;
+        NSMutableArray *starRatingImages = [[NSMutableArray alloc] initWithCapacity:numberOfStars];
+        UIImage *starsImageSheet = [UIImage imageNamed:@"DAAppsViewController.bundle/DAStarsImage"];
+        CGSize starRatingImageSize = (CGSize) {
+            .width = starsImageSheet.size.width,
+            .height = starsImageSheet.size.height / (CGFloat)numberOfStars
+        };
+        for (NSInteger starIndex = numberOfStars - 1; starIndex >= 0; starIndex--) {
+            UIGraphicsBeginImageContextWithOptions(starRatingImageSize, NO, 0.0f);
+            CGPoint starPoint = (CGPoint) {
+                .y = -starRatingImageSize.height * starIndex
+            };
+            [starsImageSheet drawAtPoint:starPoint];
+            UIImage *starRatingImage = UIGraphicsGetImageFromCurrentImageContext();
+            UIGraphicsEndImageContext();
+            [starRatingImages addObject:starRatingImage];
+        }
+        _starRatingImages = starRatingImages;
     }
 }
 
@@ -229,15 +249,7 @@ static NSCache *_iconCache = nil;
     self.noRatingsLabel.hidden = appObject.userRatingCount;
     self.starImageView.hidden = !appObject.userRatingCount;
     [self.purchaseButton setTitle:appObject.formattedPrice forState:UIControlStateNormal];
-    
-    UIImage *starsImage = [UIImage imageNamed:@"DAAppsViewController.bundle/DAStarsImage"];
-    UIGraphicsBeginImageContextWithOptions(self.starImageView.frame.size, NO, 0);
-    CGPoint starPoint = (CGPoint) {
-        .y = (self.starImageView.frame.size.height * (2 * appObject.userRating + 1)) - starsImage.size.height
-    };
-    [starsImage drawAtPoint:starPoint];
-    self.starImageView.image = UIGraphicsGetImageFromCurrentImageContext();
-    UIGraphicsEndImageContext();
+    self.starImageView.image = [_starRatingImages objectAtIndex:(2 * appObject.userRating)];
     
     UIImage *iconImage = [_iconCache objectForKey:self.appObject.iconURL];
     if (iconImage) {
