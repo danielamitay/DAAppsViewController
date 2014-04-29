@@ -58,11 +58,9 @@
 {
     _appsArray = appsArray;
     [self.tableView reloadData];
-    
-    CGPoint contentOffset = (CGPoint) {
+    self.tableView.contentOffset = (CGPoint) {
         .y = -self.tableView.contentInset.top
     };
-    [self.tableView setContentOffset:contentOffset];
 }
 
 
@@ -113,7 +111,9 @@
         NSURL *requestURL = [[NSURL alloc] initWithString:requestUrlString];
         
         NSError *requestError;
-        NSDictionary *jsonObject = [self resultsDictionaryForURL:requestURL withUserAgent:userAgent error:&requestError];
+        NSDictionary *jsonObject = [self resultsDictionaryForURL:requestURL
+                                                   withUserAgent:userAgent
+                                                           error:&requestError];
         if (requestError) {
             dispatch_async(dispatch_get_main_queue(), ^{
                 if (block) {
@@ -122,7 +122,7 @@
             });
         } else {
             NSDictionary *artistDictionary = jsonObject;
-            NSString *pageTitle = (self.pageTitle && self.pageTitle.length > 0)?self.pageTitle:[artistDictionary objectForKey:@"pageTitle"];
+            NSString *pageTitle = (self.pageTitle.length ? self.pageTitle : artistDictionary[@"pageTitle"]);
             
             NSMutableArray *mutableApps = [[NSMutableArray alloc] init];
             void(^fetch_block)(NSArray *content) = ^(NSArray *content){
@@ -133,7 +133,6 @@
                     }
                 }
             };
-            
             if ([userAgent isEqualToString:USER_AGENT_IPHONE]) {
                 if (artistDictionary[@"content"] != [NSNull null]) {
                     NSArray *content = artistDictionary[@"content"][@"content"];
@@ -153,7 +152,6 @@
                 }
                 
             }
-            
             dispatch_async(dispatch_get_main_queue(), ^{
                 self.title = pageTitle;
                 self.appsArray = mutableApps;
@@ -241,7 +239,6 @@
                     [mutableApps addObject:appObject];
                 }
             }
-            
             dispatch_async(dispatch_get_main_queue(), ^{
                 self.title = pageTitle;
                 self.appsArray = mutableApps;
@@ -281,7 +278,7 @@
         } else {
             NSDictionary *appsDictionary = jsonObject;
             NSArray *results = [appsDictionary objectForKey:@"results"];
-            NSString *pageTitle = (self.pageTitle && self.pageTitle.length > 0)?self.pageTitle:NSLocalizedString(@"Results", nil);
+            NSString *pageTitle = (self.pageTitle.length ? self.pageTitle : NSLocalizedString(@"Results",));
             
             NSMutableArray *mutableApps = [[NSMutableArray alloc] init];
             for (NSDictionary *result in results) {
@@ -311,7 +308,6 @@
                     [mutableApps addObject:appObject];
                 }
             }
-            
             dispatch_async(dispatch_get_main_queue(), ^{
                 self.title = pageTitle;
                 self.appsArray = mutableApps;
@@ -351,7 +347,7 @@
         } else {
             NSDictionary *appsDictionary = jsonObject;
             NSArray *results = [appsDictionary objectForKey:@"results"];
-            NSString *pageTitle = (self.pageTitle && self.pageTitle.length > 0)?self.pageTitle:NSLocalizedString(@"Results", nil);
+            NSString *pageTitle = (self.pageTitle.length ? self.pageTitle : NSLocalizedString(@"Results",));
             
             NSMutableArray *mutableApps = [[NSMutableArray alloc] init];
             for (NSDictionary *result in results) {
@@ -381,7 +377,6 @@
                     [mutableApps addObject:appObject];
                 }
             }
-            
             dispatch_async(dispatch_get_main_queue(), ^{
                 self.title = pageTitle;
                 self.appsArray = mutableApps;
@@ -415,9 +410,7 @@
     if (!cell) {
         cell = [[DAAppViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier];
     }
-    
     cell.appObject = [self.appsArray objectAtIndex:indexPath.row];
-    
     return cell;
 }
 
@@ -447,7 +440,8 @@
     }
     
     if ([SKStoreProductViewController class]) {
-        NSDictionary *appParameters = @{SKStoreProductParameterITunesItemIdentifier : [NSString stringWithFormat:@"%u", appObject.appId]};
+        NSString *itunesItemIdentifier = [NSString stringWithFormat:@"%u", appObject.appId];
+        NSDictionary *appParameters = @{SKStoreProductParameterITunesItemIdentifier: itunesItemIdentifier};
         SKStoreProductViewController *productViewController = [[SKStoreProductViewController alloc] init];
         [productViewController setDelegate:self];
         [productViewController loadProductWithParameters:appParameters completionBlock:nil];
