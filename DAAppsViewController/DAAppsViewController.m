@@ -172,6 +172,8 @@
                        [self loadAppsWithArtistId:artistId
                                     withUserAgent:USER_AGENT_IPHONE
                                   completionBlock:block];
+                   } else if (block) {
+                       block(result, error);
                    }
                }];
 }
