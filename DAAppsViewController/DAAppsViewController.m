@@ -122,15 +122,11 @@
             });
         } else {
             NSDictionary *artistDictionary = jsonObject;
-            NSString *pageTitle = (self.pageTitle.length ? self.pageTitle : artistDictionary[@"pageTitle"]);
-            
+      
             NSMutableArray *mutableApps = [[NSMutableArray alloc] init];
             void(^fetch_block)(NSArray *content) = ^(NSArray *content){
                 for (NSDictionary *lockup in content) {
-                    DAAppObject *appObject = [[DAAppObject alloc] initWithLockup:lockup];
-                    if (![mutableApps containsObject:appObject]) {
-                        [mutableApps addObject:appObject];
-                    }
+                    [mutableApps addObject:[lockup valueForKey:@"id"]];
                 }
             };
             if ([userAgent isEqualToString:USER_AGENT_IPHONE]) {
@@ -153,11 +149,7 @@
                 
             }
             dispatch_async(dispatch_get_main_queue(), ^{
-                self.title = pageTitle;
-                self.appsArray = mutableApps;
-                if (block) {
-                    block(TRUE, NULL);
-                }
+                 [self loadAppsWithAppIds:mutableApps completionBlock:block];
             });
         }
     });
