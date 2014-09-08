@@ -66,6 +66,48 @@
 
 #pragma mark - Loading methods
 
+- (void)loadRequestPath:(NSString *)path withCompletion:(void (^)(NSArray *results, NSError *error))completion
+{
+    NSMutableString *requestUrlString = [[NSMutableString alloc] init];
+    [requestUrlString appendString:@"http://itunes.apple.com/"];
+    [requestUrlString appendString:path];
+    [requestUrlString appendFormat:@"&entity=software"];
+    NSString *countryCode = [[NSLocale currentLocale] objectForKey:NSLocaleCountryCode];
+    if (countryCode) {
+        [requestUrlString appendFormat:@"&country=%@", countryCode];
+    }
+    NSString *languagueCode = [[NSLocale currentLocale] objectForKey:NSLocaleLanguageCode];
+    if (languagueCode) {
+        [requestUrlString appendFormat:@"&l=%@", languagueCode];
+    }
+
+    NSMutableURLRequest *request = [[NSMutableURLRequest alloc] init];
+    [request setURL:[NSURL URLWithString:requestUrlString]];
+    [request setTimeoutInterval:20.0f];
+    [request setCachePolicy:NSURLRequestReturnCacheDataElseLoad];
+
+    void (^returnWithResultsAndError)(NSArray *, NSError *) = ^void(NSArray *results, NSError *error) {
+        if (completion) {
+            completion(results, error);
+        }
+    };
+
+    [NSURLConnection sendAsynchronousRequest:request queue:[NSOperationQueue mainQueue] completionHandler:^(NSURLResponse *response, NSData *data, NSError *connectionError) {
+        if (connectionError) {
+            return returnWithResultsAndError(nil, connectionError);
+        }
+
+        NSError *jsonError;
+        NSDictionary *jsonDictionary = [NSJSONSerialization JSONObjectWithData:data options:0 error:&jsonError];
+        if (jsonError) {
+            return returnWithResultsAndError(nil, jsonError);
+        }
+
+        NSArray *results = [jsonDictionary objectForKey:@"results"];
+        returnWithResultsAndError(results, nil);
+    }];
+}
+
 - (NSDictionary *)resultsDictionaryForURL:(NSURL *)URL withUserAgent:(NSString *)userAgent error:(NSError **)error {
     NSMutableURLRequest *request = [[NSMutableURLRequest alloc] init];
     [request setURL:URL];
@@ -178,33 +220,17 @@
 - (void)loadAppsWithAppIds:(NSArray *)appIds completionBlock:(void(^)(BOOL result, NSError *error))block
 {
     self.title = NSLocalizedString(@"Loading...",);
-    
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-        NSString *appString = [appIds componentsJoinedByString:@","];
-        NSString *countryCode = [[NSLocale currentLocale] objectForKey:NSLocaleCountryCode];
-        NSMutableString *requestUrlString = [[NSMutableString alloc] init];
-        [requestUrlString appendFormat:@"http://itunes.apple.com/lookup"];
-        [requestUrlString appendFormat:@"?id=%@", appString];
-        if (countryCode) {
-            [requestUrlString appendFormat:@"&country=%@", countryCode];
-        }
-        NSString *languagueCode = [[NSLocale currentLocale] objectForKey:NSLocaleLanguageCode];
-        [requestUrlString appendFormat:@"&l=%@", languagueCode];
-        NSURL *requestURL = [[NSURL alloc] initWithString:requestUrlString];
-        
-        NSError *requestError;
-        NSDictionary *jsonObject = [self resultsDictionaryForURL:requestURL error:&requestError];
-        if (requestError) {
-            dispatch_async(dispatch_get_main_queue(), ^{
-                if (block) {
-                    block(FALSE, requestError);
-                }
-            });
+
+    NSString *appString = [appIds componentsJoinedByString:@","];
+    NSString *requestPath = [NSString stringWithFormat:@"lookup?id=%@", appString];
+    [self loadRequestPath:requestPath withCompletion:^(NSArray *results, NSError *error) {
+        if (error) {
+            if (block) {
+                block(NO, error);
+            }
         } else {
-            NSDictionary *appsDictionary = jsonObject;
-            NSArray *results = [appsDictionary objectForKey:@"results"];
-            NSString *pageTitle = (self.pageTitle && self.pageTitle.length > 0)?self.pageTitle:NSLocalizedString(@"Results", nil);
-            
+            NSString *pageTitle = (self.pageTitle.length ? self.pageTitle : NSLocalizedString(@"Results",));
+
             NSMutableArray *mutableApps = [[NSMutableArray alloc] init];
             for (NSDictionary *result in results) {
                 DAAppObject *appObject = [[DAAppObject alloc] initWithResult:result];
@@ -212,47 +238,30 @@
                     [mutableApps addObject:appObject];
                 }
             }
-            dispatch_async(dispatch_get_main_queue(), ^{
-                self.title = pageTitle;
-                self.appsArray = mutableApps;
-                if (block) {
-                    block(TRUE, NULL);
-                }
-            });
+
+            self.title = pageTitle;
+            self.appsArray = mutableApps;
+            if (block) {
+                block(YES, nil);
+            }
         }
-    });
+    }];
 }
 
 - (void)loadAppsWithBundleIds:(NSArray *)bundleIds completionBlock:(void(^)(BOOL result, NSError *error))block
 {
     self.title = NSLocalizedString(@"Loading...",);
-    
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-        NSString *bundleString = [bundleIds componentsJoinedByString:@","];
-        NSString *countryCode = [[NSLocale currentLocale] objectForKey:NSLocaleCountryCode];
-        NSMutableString *requestUrlString = [[NSMutableString alloc] init];
-        [requestUrlString appendFormat:@"http://itunes.apple.com/lookup"];
-        [requestUrlString appendFormat:@"?bundleId=%@", bundleString];
-        if (countryCode) {
-            [requestUrlString appendFormat:@"&country=%@", countryCode];
-        }
-        NSString *languagueCode = [[NSLocale currentLocale] objectForKey:NSLocaleLanguageCode];
-        [requestUrlString appendFormat:@"&l=%@", languagueCode];
-        NSURL *requestURL = [[NSURL alloc] initWithString:requestUrlString];
-        
-        NSError *requestError;
-        NSDictionary *jsonObject = [self resultsDictionaryForURL:requestURL error:&requestError];
-        if (requestError) {
-            dispatch_async(dispatch_get_main_queue(), ^{
-                if (block) {
-                    block(FALSE, requestError);
-                }
-            });
+
+    NSString *bundleString = [bundleIds componentsJoinedByString:@","];
+    NSString *requestPath = [NSString stringWithFormat:@"lookup?bundleId=%@", bundleString];
+    [self loadRequestPath:requestPath withCompletion:^(NSArray *results, NSError *error) {
+        if (error) {
+            if (block) {
+                block(NO, error);
+            }
         } else {
-            NSDictionary *appsDictionary = jsonObject;
-            NSArray *results = [appsDictionary objectForKey:@"results"];
             NSString *pageTitle = (self.pageTitle.length ? self.pageTitle : NSLocalizedString(@"Results",));
-            
+
             NSMutableArray *mutableApps = [[NSMutableArray alloc] init];
             for (NSDictionary *result in results) {
                 DAAppObject *appObject = [[DAAppObject alloc] initWithResult:result];
@@ -260,47 +269,30 @@
                     [mutableApps addObject:appObject];
                 }
             }
-            dispatch_async(dispatch_get_main_queue(), ^{
-                self.title = pageTitle;
-                self.appsArray = mutableApps;
-                if (block) {
-                    block(TRUE, NULL);
-                }
-            });
+
+            self.title = pageTitle;
+            self.appsArray = mutableApps;
+            if (block) {
+                block(YES, nil);
+            }
         }
-    });
+    }];
 }
 
 - (void)loadAppsWithSearchTerm:(NSString *)searchTerm completionBlock:(void(^)(BOOL result, NSError *error))block
 {
     self.title = NSLocalizedString(@"Loading...",);
-    
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-        NSString *countryCode = [[NSLocale currentLocale] objectForKey:NSLocaleCountryCode];
-        NSMutableString *requestUrlString = [[NSMutableString alloc] init];
-        [requestUrlString appendFormat:@"http://itunes.apple.com/search"];
-        [requestUrlString appendFormat:@"?term=%@", [searchTerm stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]];
-        if (countryCode) {
-            [requestUrlString appendFormat:@"&country=%@", countryCode];
-        }
-        [requestUrlString appendFormat:@"&entity=software"];
-        NSString *languagueCode = [[NSLocale currentLocale] objectForKey:NSLocaleLanguageCode];
-        [requestUrlString appendFormat:@"&l=%@", languagueCode];
-        NSURL *requestURL = [[NSURL alloc] initWithString:requestUrlString];
-        
-        NSError *requestError;
-        NSDictionary *jsonObject = [self resultsDictionaryForURL:requestURL error:&requestError];
-        if (requestError) {
-            dispatch_async(dispatch_get_main_queue(), ^{
-                if (block) {
-                    block(FALSE, requestError);
-                }
-            });
+
+    NSString *escapedSearchTerm = [searchTerm stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+    NSString *requestPath = [NSString stringWithFormat:@"search?term=%@", escapedSearchTerm];
+    [self loadRequestPath:requestPath withCompletion:^(NSArray *results, NSError *error) {
+        if (error) {
+            if (block) {
+                block(NO, error);
+            }
         } else {
-            NSDictionary *appsDictionary = jsonObject;
-            NSArray *results = [appsDictionary objectForKey:@"results"];
             NSString *pageTitle = (self.pageTitle.length ? self.pageTitle : NSLocalizedString(@"Results",));
-            
+
             NSMutableArray *mutableApps = [[NSMutableArray alloc] init];
             for (NSDictionary *result in results) {
                 DAAppObject *appObject = [[DAAppObject alloc] initWithResult:result];
@@ -308,15 +300,14 @@
                     [mutableApps addObject:appObject];
                 }
             }
-            dispatch_async(dispatch_get_main_queue(), ^{
-                self.title = pageTitle;
-                self.appsArray = mutableApps;
-                if (block) {
-                    block(TRUE, NULL);
-                }
-            });
+
+            self.title = pageTitle;
+            self.appsArray = mutableApps;
+            if (block) {
+                block(YES, nil);
+            }
         }
-    });
+    }];
 }
 
 
