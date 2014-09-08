@@ -207,29 +207,8 @@
             
             NSMutableArray *mutableApps = [[NSMutableArray alloc] init];
             for (NSDictionary *result in results) {
-                DAAppObject *appObject = [[DAAppObject alloc] init];
-                
-                appObject.bundleId = [result objectForKey:@"bundleId"];
-                appObject.name = [result objectForKey:@"trackName"];
-                appObject.genre = [result objectForKey:@"primaryGenreName"];
-                appObject.appId = [[result objectForKey:@"trackId"] integerValue];
-                appObject.iconIsPrerendered = DA_IS_IOS7;
-                
-                NSArray *features = [result objectForKey:@"features"];
-                appObject.isUniversal = [features containsObject:@"iosUniversal"];
-                appObject.formattedPrice = [[result objectForKey:@"formattedPrice"] uppercaseString];
-                //NSString *iconUrlString = [result objectForKey:@"artworkUrl60"];
-                NSString *iconUrlString = [result objectForKey:@"artworkUrl512"];
-                NSArray *iconUrlComponents = [iconUrlString componentsSeparatedByString:@"."];
-                NSMutableArray *mutableIconURLComponents = [[NSMutableArray alloc] initWithArray:iconUrlComponents];
-                [mutableIconURLComponents insertObject:@"128x128-75" atIndex:mutableIconURLComponents.count-1];
-                iconUrlString = [mutableIconURLComponents componentsJoinedByString:@"."];
-                
-                appObject.iconURL = [[NSURL alloc] initWithString:iconUrlString];
-                appObject.userRating = [[result objectForKey:@"averageUserRating"] floatValue];
-                appObject.userRatingCount = [[result objectForKey:@"userRatingCount"] integerValue];
-                
-                if (![mutableApps containsObject:appObject]) {
+                DAAppObject *appObject = [[DAAppObject alloc] initWithResult:result];
+                if (appObject && ![mutableApps containsObject:appObject]) {
                     [mutableApps addObject:appObject];
                 }
             }
@@ -276,29 +255,8 @@
             
             NSMutableArray *mutableApps = [[NSMutableArray alloc] init];
             for (NSDictionary *result in results) {
-                DAAppObject *appObject = [[DAAppObject alloc] init];
-                
-                appObject.bundleId = [result objectForKey:@"bundleId"];
-                appObject.name = [result objectForKey:@"trackName"];
-                appObject.genre = [result objectForKey:@"primaryGenreName"];
-                appObject.appId = [[result objectForKey:@"trackId"] integerValue];
-                appObject.iconIsPrerendered = DA_IS_IOS7;
-                
-                NSArray *features = [result objectForKey:@"features"];
-                appObject.isUniversal = [features containsObject:@"iosUniversal"];
-                appObject.formattedPrice = [[result objectForKey:@"formattedPrice"] uppercaseString];
-                //NSString *iconUrlString = [result objectForKey:@"artworkUrl60"];
-                NSString *iconUrlString = [result objectForKey:@"artworkUrl512"];
-                NSArray *iconUrlComponents = [iconUrlString componentsSeparatedByString:@"."];
-                NSMutableArray *mutableIconURLComponents = [[NSMutableArray alloc] initWithArray:iconUrlComponents];
-                [mutableIconURLComponents insertObject:@"128x128-75" atIndex:mutableIconURLComponents.count-1];
-                iconUrlString = [mutableIconURLComponents componentsJoinedByString:@"."];
-                
-                appObject.iconURL = [[NSURL alloc] initWithString:iconUrlString];
-                appObject.userRating = [[result objectForKey:@"averageUserRating"] floatValue];
-                appObject.userRatingCount = [[result objectForKey:@"userRatingCount"] integerValue];
-                
-                if (![mutableApps containsObject:appObject]) {
+                DAAppObject *appObject = [[DAAppObject alloc] initWithResult:result];
+                if (appObject && ![mutableApps containsObject:appObject]) {
                     [mutableApps addObject:appObject];
                 }
             }
@@ -345,29 +303,8 @@
             
             NSMutableArray *mutableApps = [[NSMutableArray alloc] init];
             for (NSDictionary *result in results) {
-                DAAppObject *appObject = [[DAAppObject alloc] init];
-                
-                appObject.bundleId = [result objectForKey:@"bundleId"];
-                appObject.name = [result objectForKey:@"trackName"];
-                appObject.genre = [result objectForKey:@"primaryGenreName"];
-                appObject.appId = [[result objectForKey:@"trackId"] integerValue];
-                appObject.iconIsPrerendered = DA_IS_IOS7;
-                
-                NSArray *features = [result objectForKey:@"features"];
-                appObject.isUniversal = [features containsObject:@"iosUniversal"];
-                appObject.formattedPrice = [[result objectForKey:@"formattedPrice"] uppercaseString];
-                //NSString *iconUrlString = [result objectForKey:@"artworkUrl60"];
-                NSString *iconUrlString = [result objectForKey:@"artworkUrl512"];
-                NSArray *iconUrlComponents = [iconUrlString componentsSeparatedByString:@"."];
-                NSMutableArray *mutableIconURLComponents = [[NSMutableArray alloc] initWithArray:iconUrlComponents];
-                [mutableIconURLComponents insertObject:@"128x128-75" atIndex:mutableIconURLComponents.count-1];
-                iconUrlString = [mutableIconURLComponents componentsJoinedByString:@"."];
-                
-                appObject.iconURL = [[NSURL alloc] initWithString:iconUrlString];
-                appObject.userRating = [[result objectForKey:@"averageUserRating"] floatValue];
-                appObject.userRatingCount = [[result objectForKey:@"userRatingCount"] integerValue];
-                
-                if (![mutableApps containsObject:appObject]) {
+                DAAppObject *appObject = [[DAAppObject alloc] initWithResult:result];
+                if (appObject && ![mutableApps containsObject:appObject]) {
                     [mutableApps addObject:appObject];
                 }
             }

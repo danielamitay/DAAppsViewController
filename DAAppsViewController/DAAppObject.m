@@ -10,32 +10,39 @@
 
 @implementation DAAppObject
 
-#pragma mark - Equality methods
-
-- (id)initWithLockup:(NSDictionary *)lockup
+- (id)initWithResult:(NSDictionary *)result
 {
+    NSString *kind = [result objectForKey:@"kind"];
+    if (![kind isEqualToString:@"software"]) {
+        return nil;
+    }
     self = [super init];
     if (self) {
-        _bundleId = [lockup objectForKey:@"bundle-id"];
-        _name = [lockup objectForKey:@"name"];
-        _genre = [lockup objectForKey:@"genre"];
-        _appId = [[lockup objectForKey:@"id"] integerValue];
-        _iconIsPrerendered = [[lockup objectForKey:@"icon-is-prerendered"] boolValue];
-        _isUniversal = [[lockup objectForKey:@"is_universal_app"] boolValue];
-        
-        NSArray *offers = [lockup objectForKey:@"offers"];
-        NSDictionary *offer = [offers lastObject];
-        _formattedPrice = [offer objectForKey:@"button_text"];
-        
-        NSArray *artwork = [lockup objectForKey:@"artwork"];
-        NSDictionary *artworkDictionary = [artwork objectAtIndex:MIN(artwork.count - 1, 2)];
-        NSString *iconUrlString = [artworkDictionary objectForKey:@"url"];
+        _bundleId = [result objectForKey:@"bundleId"];
+        _name = [result objectForKey:@"trackName"];
+        _genre = [result objectForKey:@"primaryGenreName"];
+        _appId = [[result objectForKey:@"trackId"] integerValue];
+        _iconIsPrerendered = DA_IS_IOS7;
+
+        NSArray *features = [result objectForKey:@"features"];
+        _isUniversal = [features containsObject:@"iosUniversal"];
+        _formattedPrice = [[result objectForKey:@"formattedPrice"] uppercaseString];
+        //NSString *iconUrlString = [result objectForKey:@"artworkUrl60"];
+        NSString *iconUrlString = [result objectForKey:@"artworkUrl512"];
+        NSArray *iconUrlComponents = [iconUrlString componentsSeparatedByString:@"."];
+        NSMutableArray *mutableIconURLComponents = [[NSMutableArray alloc] initWithArray:iconUrlComponents];
+        [mutableIconURLComponents insertObject:@"128x128-75" atIndex:mutableIconURLComponents.count-1];
+        iconUrlString = [mutableIconURLComponents componentsJoinedByString:@"."];
+
         _iconURL = [[NSURL alloc] initWithString:iconUrlString];
-        _userRating = [[lockup objectForKey:@"user_rating"] floatValue];
-        _userRatingCount = [[lockup objectForKey:@"user_rating_count"] integerValue];
+        _userRating = [[result objectForKey:@"averageUserRating"] floatValue];
+        _userRatingCount = [[result objectForKey:@"userRatingCount"] integerValue];
     }
     return self;
 }
+
+
+#pragma mark - Equality methods
 
 - (BOOL)isEqual:(id)other
 {

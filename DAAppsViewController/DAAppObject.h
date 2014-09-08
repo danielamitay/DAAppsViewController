@@ -26,6 +26,6 @@
 @property (nonatomic) CGFloat userRating;
 @property (nonatomic) BOOL isUniversal;
 
-- (id)initWithLockup:(NSDictionary *)lockup;
+- (id)initWithResult:(NSDictionary *)result;
 
 @end
