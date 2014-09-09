@@ -100,6 +100,42 @@
     }];
 }
 
+- (void)loadAppsWithPath:(NSString *)path defaultTitle:(NSString *)defaultTitle completionBlock:(void(^)(BOOL result, NSError *error))block
+{
+    self.title = NSLocalizedString(@"Loading...",);
+    [self loadRequestPath:path withCompletion:^(NSArray *results, NSError *error) {
+        if (error) {
+            if (block) {
+                block(NO, error);
+            }
+        } else {
+            NSString *localDefaultTitle = defaultTitle;
+            NSMutableArray *mutableApps = [[NSMutableArray alloc] init];
+            for (NSDictionary *result in results) {
+                BOOL isArtistWrapper = [[result objectForKey:@"wrapperType"] isEqualToString:@"artist"];
+                if (isArtistWrapper) {
+                    NSString *artistName = [result objectForKey:@"artistName"];
+                    if (artistName) {
+                        localDefaultTitle = artistName;
+                    }
+                }
+                DAAppObject *appObject = [[DAAppObject alloc] initWithResult:result];
+                if (appObject && ![mutableApps containsObject:appObject]) {
+                    [mutableApps addObject:appObject];
+                }
+            }
+            self.title = (self.pageTitle.length ? self.pageTitle : localDefaultTitle);
+            self.appsArray = mutableApps;
+            if (block) {
+                block(YES, nil);
+            }
+        }
+    }];
+}
+
+
+#pragma mark - Public methods
+
 - (void)loadAllAppsWithArtistId:(NSInteger)artistId completionBlock:(void(^)(BOOL result, NSError *error))block
 {
     [self loadAppsWithArtistId:artistId completionBlock:block];
@@ -107,125 +143,29 @@
 
 - (void)loadAppsWithArtistId:(NSInteger)artistId completionBlock:(void(^)(BOOL result, NSError *error))block
 {
-    self.title = NSLocalizedString(@"Loading...",);
-
     NSString *requestPath = [NSString stringWithFormat:@"lookup?id=%lu", artistId];
-    [self loadRequestPath:requestPath withCompletion:^(NSArray *results, NSError *error) {
-        if (error) {
-            if (block) {
-                block(NO, error);
-            }
-        } else {
-            NSString *pageTitle = (self.pageTitle.length ? self.pageTitle : NSLocalizedString(@"Results",));
-
-            NSMutableArray *mutableApps = [[NSMutableArray alloc] init];
-            for (NSDictionary *result in results) {
-                DAAppObject *appObject = [[DAAppObject alloc] initWithResult:result];
-                if (appObject && ![mutableApps containsObject:appObject]) {
-                    [mutableApps addObject:appObject];
-                }
-            }
-
-            self.title = pageTitle;
-            self.appsArray = mutableApps;
-            if (block) {
-                block(YES, nil);
-            }
-        }
-    }];
+    [self loadAppsWithPath:requestPath defaultTitle:NSLocalizedString(@"Results",) completionBlock:block];
 }
 
 - (void)loadAppsWithAppIds:(NSArray *)appIds completionBlock:(void(^)(BOOL result, NSError *error))block
 {
-    self.title = NSLocalizedString(@"Loading...",);
-
     NSString *appString = [appIds componentsJoinedByString:@","];
     NSString *requestPath = [NSString stringWithFormat:@"lookup?id=%@", appString];
-    [self loadRequestPath:requestPath withCompletion:^(NSArray *results, NSError *error) {
-        if (error) {
-            if (block) {
-                block(NO, error);
-            }
-        } else {
-            NSString *pageTitle = (self.pageTitle.length ? self.pageTitle : NSLocalizedString(@"Results",));
-
-            NSMutableArray *mutableApps = [[NSMutableArray alloc] init];
-            for (NSDictionary *result in results) {
-                DAAppObject *appObject = [[DAAppObject alloc] initWithResult:result];
-                if (appObject && ![mutableApps containsObject:appObject]) {
-                    [mutableApps addObject:appObject];
-                }
-            }
-
-            self.title = pageTitle;
-            self.appsArray = mutableApps;
-            if (block) {
-                block(YES, nil);
-            }
-        }
-    }];
+    [self loadAppsWithPath:requestPath defaultTitle:NSLocalizedString(@"Results",) completionBlock:block];
 }
 
 - (void)loadAppsWithBundleIds:(NSArray *)bundleIds completionBlock:(void(^)(BOOL result, NSError *error))block
 {
-    self.title = NSLocalizedString(@"Loading...",);
-
     NSString *bundleString = [bundleIds componentsJoinedByString:@","];
     NSString *requestPath = [NSString stringWithFormat:@"lookup?bundleId=%@", bundleString];
-    [self loadRequestPath:requestPath withCompletion:^(NSArray *results, NSError *error) {
-        if (error) {
-            if (block) {
-                block(NO, error);
-            }
-        } else {
-            NSString *pageTitle = (self.pageTitle.length ? self.pageTitle : NSLocalizedString(@"Results",));
-
-            NSMutableArray *mutableApps = [[NSMutableArray alloc] init];
-            for (NSDictionary *result in results) {
-                DAAppObject *appObject = [[DAAppObject alloc] initWithResult:result];
-                if (appObject && ![mutableApps containsObject:appObject]) {
-                    [mutableApps addObject:appObject];
-                }
-            }
-
-            self.title = pageTitle;
-            self.appsArray = mutableApps;
-            if (block) {
-                block(YES, nil);
-            }
-        }
-    }];
+    [self loadAppsWithPath:requestPath defaultTitle:NSLocalizedString(@"Results",) completionBlock:block];
 }
 
 - (void)loadAppsWithSearchTerm:(NSString *)searchTerm completionBlock:(void(^)(BOOL result, NSError *error))block
 {
-    self.title = NSLocalizedString(@"Loading...",);
-
     NSString *escapedSearchTerm = [searchTerm stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
     NSString *requestPath = [NSString stringWithFormat:@"search?term=%@", escapedSearchTerm];
-    [self loadRequestPath:requestPath withCompletion:^(NSArray *results, NSError *error) {
-        if (error) {
-            if (block) {
-                block(NO, error);
-            }
-        } else {
-            NSString *pageTitle = (self.pageTitle.length ? self.pageTitle : NSLocalizedString(@"Results",));
-
-            NSMutableArray *mutableApps = [[NSMutableArray alloc] init];
-            for (NSDictionary *result in results) {
-                DAAppObject *appObject = [[DAAppObject alloc] initWithResult:result];
-                if (appObject && ![mutableApps containsObject:appObject]) {
-                    [mutableApps addObject:appObject];
-                }
-            }
-
-            self.title = pageTitle;
-            self.appsArray = mutableApps;
-            if (block) {
-                block(YES, nil);
-            }
-        }
-    }];
+    [self loadAppsWithPath:requestPath defaultTitle:searchTerm completionBlock:block];
 }
 
 
