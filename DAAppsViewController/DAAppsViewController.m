@@ -220,7 +220,7 @@
     }
     
     if ([SKStoreProductViewController class]) {
-        NSString *itunesItemIdentifier = [NSString stringWithFormat:@"%u", appObject.appId];
+        NSString *itunesItemIdentifier = [NSString stringWithFormat:@"%lu", appObject.appId];
         NSDictionary *appParameters = @{SKStoreProductParameterITunesItemIdentifier: itunesItemIdentifier};
         SKStoreProductViewController *productViewController = [[SKStoreProductViewController alloc] init];
         [productViewController setDelegate:self];
@@ -229,7 +229,7 @@
                            animated:YES
                          completion:nil];
     } else {
-        NSString *appUrlString = [NSString stringWithFormat:@"itms-apps://itunes.apple.com/app/id%u?mt=8", appObject.appId];
+        NSString *appUrlString = [NSString stringWithFormat:@"itms-apps://itunes.apple.com/app/id%lu?mt=8", appObject.appId];
         NSURL *appURL = [[NSURL alloc] initWithString:appUrlString];
         [[UIApplication sharedApplication] openURL:appURL];
     }
