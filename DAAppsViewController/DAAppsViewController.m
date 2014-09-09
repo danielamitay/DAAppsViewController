@@ -10,21 +10,13 @@
 #import <StoreKit/StoreKit.h>
 #import "DAAppViewCell.h"
 
-#define USER_AGENT_IPHONE       @"iTunes-iPhone/6.0 (6; 16GB; dt:73)"
-#define USER_AGENT_IPAD         @"iTunes-iPad/6.0 (6; 16GB; dt:73)"
-#define DAUserAgent() \
-    ([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPhone) ? USER_AGENT_IPHONE : USER_AGENT_IPAD
-
 #define DARK_BACKGROUND_COLOR   [UIColor colorWithWhite:235.0f/255.0f alpha:1.0f]
 #define LIGHT_BACKGROUND_COLOR  [UIColor colorWithWhite:245.0f/255.0f alpha:1.0f]
 
-@interface DAAppsViewController () <NSURLConnectionDelegate, SKStoreProductViewControllerDelegate>
+@interface DAAppsViewController () <SKStoreProductViewControllerDelegate>
 
-@property (nonatomic, strong) NSURLConnection *urlConnection;
-@property (nonatomic, strong) NSMutableData *responseData;
 @property (nonatomic, strong) NSArray *appsArray;
 
-- (NSDictionary *)resultsDictionaryForURL:(NSURL *)URL error:(NSError **)error;
 - (void)presentAppObjectAtIndexPath:(NSIndexPath *)indexPath;
 
 @end
@@ -108,113 +100,39 @@
     }];
 }
 
-- (NSDictionary *)resultsDictionaryForURL:(NSURL *)URL withUserAgent:(NSString *)userAgent error:(NSError **)error {
-    NSMutableURLRequest *request = [[NSMutableURLRequest alloc] init];
-    [request setURL:URL];
-    [request setTimeoutInterval:20.0f];
-    [request setCachePolicy:NSURLRequestReturnCacheDataElseLoad];
-    [request setValue:userAgent forHTTPHeaderField:@"User-Agent"];
-    
-    NSError *connectionError;
-    NSData *result = [NSURLConnection sendSynchronousRequest:request
-                                           returningResponse:NULL
-                                                       error:&connectionError];
-    if (connectionError) {
-        *error = connectionError;
-        return nil;
-    }
-    NSError *jsonError;
-    NSDictionary *jsonDictionary = [NSJSONSerialization JSONObjectWithData:result
-                                                                   options:NSJSONReadingMutableContainers
-                                                                     error:&jsonError];
-    *error = jsonError;
-    return jsonDictionary;
-}
-
-- (NSDictionary *)resultsDictionaryForURL:(NSURL *)URL error:(NSError **)error
-{
-    return [self resultsDictionaryForURL:URL withUserAgent:DAUserAgent() error:error];
-}
-
-- (void)loadAppsWithArtistId:(NSInteger)artistId withUserAgent:(NSString *)userAgent completionBlock:(void(^)(BOOL result, NSError *error))block {
-    self.title = NSLocalizedString(@"Loading...",);
-    
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-        NSString *countryCode = [[NSLocale currentLocale] objectForKey:NSLocaleCountryCode];
-        NSMutableString *requestUrlString = [[NSMutableString alloc] init];
-        [requestUrlString appendFormat:@"http://itunes.apple.com/"];
-        if (countryCode) {
-            [requestUrlString appendFormat:@"%@/", countryCode];
-        }
-        [requestUrlString appendFormat:@"artist/id%i", artistId];
-        [requestUrlString appendFormat:@"?dataOnly=true"];
-        NSString *languagueCode = [[NSLocale currentLocale] objectForKey:NSLocaleLanguageCode];
-        [requestUrlString appendFormat:@"&l=%@", languagueCode];
-        NSURL *requestURL = [[NSURL alloc] initWithString:requestUrlString];
-        
-        NSError *requestError;
-        NSDictionary *jsonObject = [self resultsDictionaryForURL:requestURL
-                                                   withUserAgent:userAgent
-                                                           error:&requestError];
-        if (requestError) {
-            dispatch_async(dispatch_get_main_queue(), ^{
-                if (block) {
-                    block(FALSE, requestError);
-                }
-            });
-        } else {
-            NSDictionary *artistDictionary = jsonObject;
-      
-            NSMutableArray *mutableApps = [[NSMutableArray alloc] init];
-            void(^fetch_block)(NSArray *content) = ^(NSArray *content){
-                for (NSDictionary *lockup in content) {
-                    [mutableApps addObject:[lockup valueForKey:@"id"]];
-                }
-            };
-            if ([userAgent isEqualToString:USER_AGENT_IPHONE]) {
-                if (artistDictionary[@"content"] != [NSNull null]) {
-                    NSArray *content = artistDictionary[@"content"][@"content"];
-                    if ([content isKindOfClass:[NSArray class]]) {
-                        fetch_block(artistDictionary[@"content"][@"content"]);
-                    }
-                }
-            } else {
-                NSArray *stack = artistDictionary[@"stack"];
-                if ([stack isKindOfClass:[NSArray class]]) {
-                    for (NSDictionary *swoosh in stack) {
-                        NSArray *content = swoosh[@"content"];
-                        if ([content isKindOfClass:[NSArray class]]) {
-                            fetch_block(content);
-                        }
-                    }
-                }
-                
-            }
-            dispatch_async(dispatch_get_main_queue(), ^{
-                 [self loadAppsWithAppIds:mutableApps completionBlock:block];
-            });
-        }
-    });
-}
-
 - (void)loadAllAppsWithArtistId:(NSInteger)artistId completionBlock:(void(^)(BOOL result, NSError *error))block
 {
-    [self loadAppsWithArtistId:artistId
-                 withUserAgent:USER_AGENT_IPAD
-               completionBlock:^(BOOL result, NSError *error) {
-                   if (!result) {
-                       [self loadAppsWithArtistId:artistId
-                                    withUserAgent:USER_AGENT_IPHONE
-                                  completionBlock:block];
-                   } else if (block) {
-                       block(result, error);
-                   }
-               }];
+    [self loadAppsWithArtistId:artistId completionBlock:block];
 }
 
 - (void)loadAppsWithArtistId:(NSInteger)artistId completionBlock:(void(^)(BOOL result, NSError *error))block
 {
-    [self loadAppsWithArtistId:artistId withUserAgent:DAUserAgent() completionBlock:block];
+    self.title = NSLocalizedString(@"Loading...",);
+
+    NSString *requestPath = [NSString stringWithFormat:@"lookup?id=%lu", artistId];
+    [self loadRequestPath:requestPath withCompletion:^(NSArray *results, NSError *error) {
+        if (error) {
+            if (block) {
+                block(NO, error);
+            }
+        } else {
+            NSString *pageTitle = (self.pageTitle.length ? self.pageTitle : NSLocalizedString(@"Results",));
+
+            NSMutableArray *mutableApps = [[NSMutableArray alloc] init];
+            for (NSDictionary *result in results) {
+                DAAppObject *appObject = [[DAAppObject alloc] initWithResult:result];
+                if (appObject && ![mutableApps containsObject:appObject]) {
+                    [mutableApps addObject:appObject];
+                }
+            }
+
+            self.title = pageTitle;
+            self.appsArray = mutableApps;
+            if (block) {
+                block(YES, nil);
+            }
+        }
+    }];
 }
 
 - (void)loadAppsWithAppIds:(NSArray *)appIds completionBlock:(void(^)(BOOL result, NSError *error))block
