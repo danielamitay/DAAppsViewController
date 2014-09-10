@@ -13,7 +13,10 @@
 #define DARK_BACKGROUND_COLOR   [UIColor colorWithWhite:235.0f/255.0f alpha:1.0f]
 #define LIGHT_BACKGROUND_COLOR  [UIColor colorWithWhite:245.0f/255.0f alpha:1.0f]
 
-@interface DAAppsViewController () <SKStoreProductViewControllerDelegate>
+@interface DAAppsViewController () <SKStoreProductViewControllerDelegate> {
+    BOOL _isLoading;
+    NSString *_defaultTitle;
+}
 
 @property (nonatomic, strong) NSArray *appsArray;
 
@@ -59,6 +62,21 @@
 {
     _shouldShowIncompatibleApps = shouldShowIncompatibleApps;
     [self.tableView reloadData];
+}
+
+- (void)setPageTitle:(NSString *)pageTitle
+{
+    _pageTitle = pageTitle;
+    [self updateTitle];
+}
+
+- (void)updateTitle
+{
+    if (_isLoading) {
+        self.title = NSLocalizedString(@"Loading...",);
+    } else {
+        self.title = (self.pageTitle.length ? self.pageTitle : _defaultTitle);
+    }
 }
 
 
@@ -108,21 +126,24 @@
 
 - (void)loadAppsWithPath:(NSString *)path defaultTitle:(NSString *)defaultTitle completionBlock:(void(^)(BOOL result, NSError *error))block
 {
-    self.title = NSLocalizedString(@"Loading...",);
+    _isLoading = YES;
+    _defaultTitle = defaultTitle;
+    [self updateTitle];
     [self loadRequestPath:path withCompletion:^(NSArray *results, NSError *error) {
+        _isLoading = NO;
         if (error) {
+            _defaultTitle = NSLocalizedString(@"Error",);
             if (block) {
                 block(NO, error);
             }
         } else {
-            NSString *localDefaultTitle = defaultTitle;
             NSMutableArray *mutableApps = [[NSMutableArray alloc] init];
             for (NSDictionary *result in results) {
                 BOOL isArtistWrapper = [[result objectForKey:@"wrapperType"] isEqualToString:@"artist"];
                 if (isArtistWrapper) {
                     NSString *artistName = [result objectForKey:@"artistName"];
                     if (artistName) {
-                        localDefaultTitle = artistName;
+                        _defaultTitle = artistName;
                     }
                 }
                 DAAppObject *appObject = [[DAAppObject alloc] initWithResult:result];
@@ -130,12 +151,12 @@
                     [mutableApps addObject:appObject];
                 }
             }
-            self.title = (self.pageTitle.length ? self.pageTitle : localDefaultTitle);
             self.appsArray = mutableApps;
             if (block) {
                 block(YES, nil);
             }
         }
+        [self updateTitle];
     }];
 }
 
