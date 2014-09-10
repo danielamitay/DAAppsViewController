@@ -55,6 +55,12 @@
     };
 }
 
+- (void)setShouldShowIncompatibleApps:(BOOL)shouldShowIncompatibleApps
+{
+    _shouldShowIncompatibleApps = shouldShowIncompatibleApps;
+    [self.tableView reloadData];
+}
+
 
 #pragma mark - Loading methods
 
@@ -171,9 +177,19 @@
 
 #pragma mark - Table view data source
 
+- (NSArray *)compatibleAppsArray
+{
+    if (self.shouldShowIncompatibleApps) {
+        return self.appsArray;
+    } else {
+        NSPredicate *compatiblePredicate = [NSPredicate predicateWithFormat:@"isCompatible = YES"];
+        return [self.appsArray filteredArrayUsingPredicate:compatiblePredicate];
+    }
+}
+
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-    return self.appsArray.count;
+    return self.compatibleAppsArray.count;
 }
 
 - (void)tableView:(UITableView *)tableView willDisplayCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath
@@ -190,7 +206,7 @@
     if (!cell) {
         cell = [[DAAppViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier];
     }
-    cell.appObject = [self.appsArray objectAtIndex:indexPath.row];
+    cell.appObject = [self.compatibleAppsArray objectAtIndex:indexPath.row];
     return cell;
 }
 
@@ -213,7 +229,7 @@
 
 - (void)presentAppObjectAtIndexPath:(NSIndexPath *)indexPath
 {
-    DAAppObject *appObject = [self.appsArray objectAtIndex:indexPath.row];
+    DAAppObject *appObject = [self.compatibleAppsArray objectAtIndex:indexPath.row];
     
     if (self.didViewAppBlock) {
         self.didViewAppBlock(appObject.appId);

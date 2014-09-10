@@ -205,6 +205,7 @@ static NSArray *_starRatingImages = nil;
     }
 }
 
+
 #pragma mark - View methods
 
 - (void)layoutSubviews
@@ -236,6 +237,7 @@ static NSArray *_starRatingImages = nil;
         .size = ratingsLabelSize
     };
 }
+
 
 #pragma mark - Property methods
 

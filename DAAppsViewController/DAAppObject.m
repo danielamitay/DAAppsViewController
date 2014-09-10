@@ -8,6 +8,12 @@
 
 #import "DAAppObject.h"
 
+@interface DAAppObject () {
+    NSDictionary *_result;
+}
+
+@end
+
 @implementation DAAppObject
 
 - (id)initWithResult:(NSDictionary *)result
@@ -18,6 +24,8 @@
     }
     self = [super init];
     if (self) {
+        _result = result;
+
         _bundleId = [result objectForKey:@"bundleId"];
         _name = [result objectForKey:@"trackName"];
         _genre = [result objectForKey:@"primaryGenreName"];
@@ -39,6 +47,25 @@
         _userRatingCount = [[result objectForKey:@"userRatingCount"] integerValue];
     }
     return self;
+}
+
+
+#pragma mark - Compatibility
+
+- (BOOL)isCompatible
+{
+    if (self.isUniversal) {
+        return YES;
+    } else {
+        NSArray *screenshotUrls = [_result objectForKey:@"screenshotUrls"];
+        NSArray *ipadScreenshotUrls = [_result objectForKey:@"ipadScreenshotUrls"];
+        UIUserInterfaceIdiom interfaceIdiom = [[UIDevice currentDevice] userInterfaceIdiom];
+        switch (interfaceIdiom) {
+            case UIUserInterfaceIdiomPhone: return (screenshotUrls.count > 0);
+            case UIUserInterfaceIdiomPad: return (screenshotUrls.count > 0 || ipadScreenshotUrls.count > 0);
+            default: return YES; // Unknown
+        }
+    }
 }
 
 
