@@ -31,7 +31,13 @@ static NSArray *_starRatingImages = nil;
 {
     if (self == [DAAppViewCell class]) {
         _iconCache = [[NSCache alloc] init];
-        [_iconCache setCountLimit:40];
+        [_iconCache setCountLimit:100];
+        
+        // Automatically clear the icon cache if we receive a memory warning
+        [[NSNotificationCenter defaultCenter] addObserver:_iconCache
+                                                 selector:@selector(removeAllObjects)
+                                                     name:UIApplicationDidReceiveMemoryWarningNotification
+                                                   object:nil];
         
         NSInteger numberOfStars = 11;
         NSMutableArray *starRatingImages = [[NSMutableArray alloc] initWithCapacity:numberOfStars];
