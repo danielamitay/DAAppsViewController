@@ -55,15 +55,31 @@
 - (BOOL)isCompatible
 {
     if (self.isUniversal) {
+        // App is universally compatible
         return YES;
     } else {
-        NSArray *screenshotUrls = [_result objectForKey:@"screenshotUrls"];
-        NSArray *ipadScreenshotUrls = [_result objectForKey:@"ipadScreenshotUrls"];
         UIUserInterfaceIdiom interfaceIdiom = [[UIDevice currentDevice] userInterfaceIdiom];
         switch (interfaceIdiom) {
-            case UIUserInterfaceIdiomPhone: return (screenshotUrls.count > 0);
-            case UIUserInterfaceIdiomPad: return (screenshotUrls.count > 0 || ipadScreenshotUrls.count > 0);
-            default: return YES; // Unknown
+            case UIUserInterfaceIdiomPhone: {
+                // App is only compatible with Phone if it contains screenshot urls
+                NSArray *screenshotUrls = [_result objectForKey:@"screenshotUrls"];
+                return (screenshotUrls.count > 0);
+            }
+            case UIUserInterfaceIdiomPad: {
+                // App is compatible with Pad if it contains screenshot urls
+                NSArray *screenshotUrls = [_result objectForKey:@"screenshotUrls"];
+                if (screenshotUrls.count > 0) {
+                    return YES;
+                } else {
+                    // Or if it contains ipad screenshot urls
+                    NSArray *ipadScreenshotUrls = [_result objectForKey:@"ipadScreenshotUrls"];
+                    return (ipadScreenshotUrls.count > 0);
+                }
+            }
+            default: {
+                // Future interface idiom? Better to display incompatible apps than none at all
+                return YES;
+            }
         }
     }
 }
