@@ -295,7 +295,13 @@ static NSArray *_starRatingImages = nil;
                 [_iconCache setObject:iconImage forKey:iconURL];
                 dispatch_async(dispatch_get_main_queue(), ^{
                     if (self.appObject.iconURL == iconURL) {
-                        self.iconView.image = iconImage;
+                        [UIView transitionWithView:self.iconView
+                                          duration:0.5f
+                                           options:UIViewAnimationOptionTransitionCrossDissolve
+                                        animations:^{
+                                            self.iconView.image = iconImage;
+                                        }
+                                        completion:nil];
                     }
                 });
             }
