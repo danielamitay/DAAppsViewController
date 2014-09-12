@@ -24,7 +24,10 @@
 
 @property (nonatomic) NSInteger userRatingCount;
 @property (nonatomic) CGFloat userRating;
+@property (nonatomic) NSString *minimumOsVersion;
 @property (nonatomic) BOOL isUniversal;
+
+@property (nonatomic) BOOL isCompatible;
 
 - (id)initWithResult:(NSDictionary *)result;
 
