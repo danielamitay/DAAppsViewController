@@ -22,7 +22,6 @@
         _name = [result objectForKey:@"trackName"];
         _genre = [result objectForKey:@"primaryGenreName"];
         _appId = [[result objectForKey:@"trackId"] integerValue];
-        _iconIsPrerendered = DA_IS_IOS7;
 
         NSArray *features = [result objectForKey:@"features"];
         _isUniversal = [features containsObject:@"iosUniversal"];

@@ -274,7 +274,7 @@ static NSArray *_starRatingImages = nil;
                                                                  error:NULL];
             UIImage *iconImage = [UIImage imageWithData:iconData];
             
-            if (!self.appObject.iconIsPrerendered) {
+            if (!DA_IS_IOS7) {
                 UIGraphicsBeginImageContext(iconImage.size);
                 [iconImage drawAtPoint:CGPointZero];
                 CGRect imageRect = (CGRect) {

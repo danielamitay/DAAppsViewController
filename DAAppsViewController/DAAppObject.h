@@ -20,7 +20,6 @@
 @property (nonatomic, readonly) NSString *genre;
 @property (nonatomic, readonly) NSString *formattedPrice;
 @property (nonatomic, readonly) NSURL *iconURL;
-@property (nonatomic, readonly) BOOL iconIsPrerendered;
 
 @property (nonatomic, readonly) NSInteger userRatingCount;
 @property (nonatomic, readonly) CGFloat userRating;
