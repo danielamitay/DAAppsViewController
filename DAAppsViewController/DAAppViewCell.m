@@ -126,7 +126,7 @@ static NSArray *_starRatingImages = nil;
         self.noRatingsLabel.font = [UIFont systemFontOfSize:10.0f];
         self.noRatingsLabel.textColor = [UIColor colorWithWhite:99.0f/255.0f alpha:1.0f];
         self.noRatingsLabel.backgroundColor = [UIColor clearColor];
-        self.noRatingsLabel.text = @"No Ratings";
+        self.noRatingsLabel.text = NSLocalizedString(@"No Ratings",);
         self.noRatingsLabel.hidden = YES;
         CGSize noRatingsLabelSize = [self.noRatingsLabel sizeThatFits:self.noRatingsLabel.bounds.size];
         self.noRatingsLabel.frame = (CGRect) {
@@ -181,7 +181,7 @@ static NSArray *_starRatingImages = nil;
             [self.purchaseButton setBackgroundImage:buttonImageSelected forState:UIControlStateHighlighted];
         }
         [self.purchaseButton.titleLabel setFont:[UIFont boldSystemFontOfSize:13.0f]];
-        [self.purchaseButton setTitle:@"VIEW" forState:UIControlStateNormal];
+        [self.purchaseButton setTitle:[NSLocalizedString(@"View",) uppercaseString] forState:UIControlStateNormal];
         
         [self.purchaseButton addTarget:self
                                 action:@selector(purchaseButton:)
