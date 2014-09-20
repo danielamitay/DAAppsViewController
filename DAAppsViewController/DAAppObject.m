@@ -42,7 +42,7 @@
         NSString *systemVersion = [[UIDevice currentDevice] systemVersion];
         // Apps are only compatible if the current OS is above the minimum version
         if ([_minimumOsVersion compare:systemVersion options:NSNumericSearch] != NSOrderedDescending) {
-            if (self.isUniversal) {
+            if (_isUniversal) {
                 // App is universally compatible
                 _isCompatible = YES;
             } else {
