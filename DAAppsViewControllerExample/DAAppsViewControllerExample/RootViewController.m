@@ -12,9 +12,9 @@
 
 @interface RootViewController ()
 
-@property (nonatomic, strong) NSDictionary *artistsDictionary;
-@property (nonatomic, strong) NSDictionary *appsDictionary;
-@property (nonatomic, strong) NSDictionary *termsDictionary;
+@property (nonatomic, copy) NSDictionary *artistsDictionary;
+@property (nonatomic, copy) NSDictionary *appsDictionary;
+@property (nonatomic, copy) NSDictionary *termsDictionary;
 
 @end
 

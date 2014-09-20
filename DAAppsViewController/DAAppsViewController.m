@@ -18,7 +18,7 @@
     NSString *_defaultTitle;
 }
 
-@property (nonatomic, strong) NSArray *appsArray;
+@property (nonatomic, copy) NSArray *appsArray;
 
 - (void)presentAppObjectAtIndexPath:(NSIndexPath *)indexPath;
 
@@ -66,7 +66,7 @@
 
 - (void)setPageTitle:(NSString *)pageTitle
 {
-    _pageTitle = pageTitle;
+    _pageTitle = [pageTitle copy];
     [self updateTitle];
 }
 

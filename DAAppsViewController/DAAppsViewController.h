@@ -15,7 +15,7 @@
 // Customized title of the view controller.
 // It should be set before calling loadAppsWithXXX methods.
 // If it is nil, the title will be the artist/company name or 'Results'.
-@property (nonatomic, strong) NSString *pageTitle;
+@property (nonatomic, copy) NSString *pageTitle;
 
 @property (nonatomic) BOOL shouldShowIncompatibleApps;
 
