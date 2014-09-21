@@ -10,6 +10,7 @@
 
 static NSCache *_iconCache = nil;
 static NSArray *_starRatingImages = nil;
+static NSNumberFormatter *_decimalNumberFormatter = nil;
 
 @interface DAAppViewCell ()
 
@@ -57,6 +58,9 @@ static NSArray *_starRatingImages = nil;
             [starRatingImages addObject:starRatingImage];
         }
         _starRatingImages = starRatingImages;
+
+        _decimalNumberFormatter = [[NSNumberFormatter alloc] init];
+        [_decimalNumberFormatter setNumberStyle:NSNumberFormatterDecimalStyle];
     }
 }
 
@@ -252,7 +256,9 @@ static NSArray *_starRatingImages = nil;
     _appObject = appObject;
     self.nameLabel.text = appObject.name;
     self.genreLabel.text = appObject.genre;
-    self.ratingsLabel.text = [NSString stringWithFormat:@"(%i)", (int)appObject.userRatingCount];
+    NSNumber *userRatingCountNumber = [NSNumber numberWithInteger:appObject.userRatingCount];
+    NSString *formattedRatingsCount = [_decimalNumberFormatter stringFromNumber:userRatingCountNumber];
+    self.ratingsLabel.text = [NSString stringWithFormat:@"(%@)", formattedRatingsCount];
     self.ratingsLabel.hidden = !appObject.userRatingCount;
     self.noRatingsLabel.hidden = appObject.userRatingCount;
     self.starImageView.hidden = !appObject.userRatingCount;
