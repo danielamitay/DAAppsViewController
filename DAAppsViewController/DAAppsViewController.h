@@ -19,6 +19,10 @@
 
 @property (nonatomic) BOOL shouldShowIncompatibleApps;
 
+// A list of bundle ids or app ids of apps that should not be displayed.
+@property (nonatomic, copy) NSArray *blockedApps;
+
+
 - (void)loadAppsWithArtistId:(NSInteger)artistId completionBlock:(void(^)(BOOL result, NSError *error))block;
 - (void)loadAppsWithAppIds:(NSArray *)appIds completionBlock:(void(^)(BOOL result, NSError *error))block;
 - (void)loadAppsWithBundleIds:(NSArray *)bundleIds completionBlock:(void(^)(BOOL result, NSError *error))block;

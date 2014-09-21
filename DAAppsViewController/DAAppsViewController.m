@@ -64,6 +64,12 @@
     [self.tableView reloadData];
 }
 
+- (void)setBlockedApps:(NSArray *)blockedApps
+{
+    _blockedApps = blockedApps;
+    [self.tableView reloadData];
+}
+
 - (void)setPageTitle:(NSString *)pageTitle
 {
     _pageTitle = [pageTitle copy];
@@ -204,6 +210,11 @@
         return self.appsArray;
     } else {
         NSPredicate *compatiblePredicate = [NSPredicate predicateWithFormat:@"isCompatible = YES"];
+        if (self.blockedApps.count) {
+            NSPredicate *appIdsPredicate = [NSPredicate predicateWithFormat:@"NOT (appId IN %@)", self.blockedApps];
+            NSPredicate *bundleIdsPredicate = [NSPredicate predicateWithFormat:@"NOT (bundleId IN %@)", self.blockedApps];
+            compatiblePredicate = [NSCompoundPredicate andPredicateWithSubpredicates:@[compatiblePredicate, appIdsPredicate, bundleIdsPredicate]];
+        }
         return [self.appsArray filteredArrayUsingPredicate:compatiblePredicate];
     }
 }
