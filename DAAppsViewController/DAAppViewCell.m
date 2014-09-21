@@ -259,9 +259,9 @@ static NSNumberFormatter *_decimalNumberFormatter = nil;
     NSNumber *userRatingCountNumber = [NSNumber numberWithInteger:appObject.userRatingCount];
     NSString *formattedRatingsCount = [_decimalNumberFormatter stringFromNumber:userRatingCountNumber];
     self.ratingsLabel.text = [NSString stringWithFormat:@"(%@)", formattedRatingsCount];
-    self.ratingsLabel.hidden = !appObject.userRatingCount;
-    self.noRatingsLabel.hidden = appObject.userRatingCount;
-    self.starImageView.hidden = !appObject.userRatingCount;
+    self.ratingsLabel.hidden = (appObject.userRatingCount == 0);
+    self.noRatingsLabel.hidden = (appObject.userRatingCount > 0);
+    self.starImageView.hidden = (appObject.userRatingCount == 0);
     [self.purchaseButton setTitle:appObject.formattedPrice forState:UIControlStateNormal];
     self.starImageView.image = [_starRatingImages objectAtIndex:(2 * appObject.userRating)];
     
