@@ -20,7 +20,7 @@
     if (self) {
         _bundleId = [result objectForKey:@"bundleId"];
         _name = [result objectForKey:@"trackName"];
-        _genre = [result objectForKey:@"primaryGenreName"];
+        _genre = [[result objectForKey:@"genres"] objectAtIndex:0]; // for genre with different language.
         _appId = [[result objectForKey:@"trackId"] integerValue];
 
         NSArray *features = [result objectForKey:@"features"];
