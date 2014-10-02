@@ -443,7 +443,19 @@
     
     if ([SKStoreProductViewController class]) {
         NSString *itunesItemIdentifier = [NSString stringWithFormat:@"%u", appObject.appId];
-        NSDictionary *appParameters = @{SKStoreProductParameterITunesItemIdentifier: itunesItemIdentifier};
+        NSMutableDictionary *appParameters = [@{SKStoreProductParameterITunesItemIdentifier: itunesItemIdentifier} mutableCopy];
+        
+#ifdef __IPHONE_8_0
+        if (&SKStoreProductParameterAffiliateToken) {
+            if (self.affiliateToken) {
+                [appParameters setObject:self.affiliateToken forKey:SKStoreProductParameterAffiliateToken];
+                if (self.campaignToken) {
+                    [appParameters setObject:self.campaignToken forKey:SKStoreProductParameterCampaignToken];
+                }
+            }
+        }
+#endif
+        
         SKStoreProductViewController *productViewController = [[SKStoreProductViewController alloc] init];
         [productViewController setDelegate:self];
         [productViewController loadProductWithParameters:appParameters completionBlock:nil];
