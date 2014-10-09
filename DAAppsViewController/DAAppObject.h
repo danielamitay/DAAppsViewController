@@ -12,20 +12,22 @@
 
 @interface DAAppObject : NSObject
 
-@property (nonatomic) NSInteger appId;
-@property (nonatomic) NSInteger artistId;
-@property (nonatomic, copy) NSString *bundleId;
+@property (nonatomic, readonly) NSInteger appId;
+@property (nonatomic, readonly) NSInteger artistId;
+@property (nonatomic, readonly) NSString *bundleId;
 
-@property (nonatomic, copy) NSString *name;
-@property (nonatomic, copy) NSString *genre;
-@property (nonatomic, copy) NSString *formattedPrice;
-@property (nonatomic, copy) NSURL *iconURL;
-@property (nonatomic) BOOL iconIsPrerendered;
+@property (nonatomic, readonly) NSString *name;
+@property (nonatomic, readonly) NSString *genre;
+@property (nonatomic, readonly) NSString *formattedPrice;
+@property (nonatomic, readonly) NSURL *iconURL;
 
-@property (nonatomic) NSInteger userRatingCount;
-@property (nonatomic) CGFloat userRating;
-@property (nonatomic) BOOL isUniversal;
+@property (nonatomic, readonly) NSInteger userRatingCount;
+@property (nonatomic, readonly) CGFloat userRating;
+@property (nonatomic, readonly) NSString *minimumOsVersion;
+@property (nonatomic, readonly) BOOL isUniversal;
 
-- (id)initWithLockup:(NSDictionary *)lockup;
+@property (nonatomic, readonly) BOOL isCompatible;
+
+- (id)initWithResult:(NSDictionary *)result;
 
 @end

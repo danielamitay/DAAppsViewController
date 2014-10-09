@@ -10,21 +10,16 @@
 #import <StoreKit/StoreKit.h>
 #import "DAAppViewCell.h"
 
-#define USER_AGENT_IPHONE       @"iTunes-iPhone/6.0 (6; 16GB; dt:73)"
-#define USER_AGENT_IPAD         @"iTunes-iPad/6.0 (6; 16GB; dt:73)"
-#define DAUserAgent() \
-    ([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPhone) ? USER_AGENT_IPHONE : USER_AGENT_IPAD
-
 #define DARK_BACKGROUND_COLOR   [UIColor colorWithWhite:235.0f/255.0f alpha:1.0f]
 #define LIGHT_BACKGROUND_COLOR  [UIColor colorWithWhite:245.0f/255.0f alpha:1.0f]
 
-@interface DAAppsViewController () <NSURLConnectionDelegate, SKStoreProductViewControllerDelegate>
+@interface DAAppsViewController () <SKStoreProductViewControllerDelegate> {
+    BOOL _isLoading;
+    NSString *_defaultTitle;
+}
 
-@property (nonatomic, strong) NSURLConnection *urlConnection;
-@property (nonatomic, strong) NSMutableData *responseData;
-@property (nonatomic, strong) NSArray *appsArray;
+@property (nonatomic, copy) NSArray *appsArray;
 
-- (NSDictionary *)resultsDictionaryForURL:(NSURL *)URL error:(NSError **)error;
 - (void)presentAppObjectAtIndexPath:(NSIndexPath *)indexPath;
 
 @end
@@ -63,339 +58,170 @@
     };
 }
 
+- (void)setShouldShowIncompatibleApps:(BOOL)shouldShowIncompatibleApps
+{
+    _shouldShowIncompatibleApps = shouldShowIncompatibleApps;
+    [self.tableView reloadData];
+}
+
+- (void)setBlockedApps:(NSArray *)blockedApps
+{
+    _blockedApps = blockedApps;
+    [self.tableView reloadData];
+}
+
+- (void)setPageTitle:(NSString *)pageTitle
+{
+    _pageTitle = [pageTitle copy];
+    [self updateTitle];
+}
+
+- (void)updateTitle
+{
+    if (_isLoading) {
+        self.title = NSLocalizedString(@"Loading...",);
+    } else {
+        self.title = (self.pageTitle.length ? self.pageTitle : _defaultTitle);
+    }
+}
+
 
 #pragma mark - Loading methods
 
-- (NSDictionary *)resultsDictionaryForURL:(NSURL *)URL withUserAgent:(NSString *)userAgent error:(NSError **)error {
+- (void)loadRequestPath:(NSString *)path withCompletion:(void (^)(NSArray *results, NSError *error))completion
+{
+    NSMutableString *requestUrlString = [[NSMutableString alloc] init];
+    [requestUrlString appendString:@"http://itunes.apple.com/"];
+    [requestUrlString appendString:path];
+    [requestUrlString appendFormat:@"&entity=software"];
+    NSString *countryCode = [[NSLocale currentLocale] objectForKey:NSLocaleCountryCode];
+    if (countryCode) {
+        [requestUrlString appendFormat:@"&country=%@", countryCode];
+    }
+    NSString *languagueCode = [[NSLocale currentLocale] objectForKey:NSLocaleLanguageCode];
+    if (languagueCode) {
+        [requestUrlString appendFormat:@"&l=%@", languagueCode];
+    }
+
     NSMutableURLRequest *request = [[NSMutableURLRequest alloc] init];
-    [request setURL:URL];
+    [request setURL:[NSURL URLWithString:requestUrlString]];
     [request setTimeoutInterval:20.0f];
     [request setCachePolicy:NSURLRequestReturnCacheDataElseLoad];
-    [request setValue:userAgent forHTTPHeaderField:@"User-Agent"];
-    
-    NSError *connectionError;
-    NSData *result = [NSURLConnection sendSynchronousRequest:request
-                                           returningResponse:NULL
-                                                       error:&connectionError];
-    if (connectionError) {
-        *error = connectionError;
-        return nil;
-    }
-    NSError *jsonError;
-    NSDictionary *jsonDictionary = [NSJSONSerialization JSONObjectWithData:result
-                                                                   options:NSJSONReadingMutableContainers
-                                                                     error:&jsonError];
-    *error = jsonError;
-    return jsonDictionary;
+
+    void (^returnWithResultsAndError)(NSArray *, NSError *) = ^void(NSArray *results, NSError *error) {
+        if (completion) {
+            completion(results, error);
+        }
+    };
+
+    [NSURLConnection sendAsynchronousRequest:request queue:[NSOperationQueue mainQueue] completionHandler:^(NSURLResponse *response, NSData *data, NSError *connectionError) {
+        if (connectionError) {
+            return returnWithResultsAndError(nil, connectionError);
+        }
+
+        NSError *jsonError;
+        NSDictionary *jsonDictionary = [NSJSONSerialization JSONObjectWithData:data options:0 error:&jsonError];
+        if (jsonError) {
+            return returnWithResultsAndError(nil, jsonError);
+        }
+
+        NSArray *results = [jsonDictionary objectForKey:@"results"];
+        returnWithResultsAndError(results, nil);
+    }];
 }
 
-- (NSDictionary *)resultsDictionaryForURL:(NSURL *)URL error:(NSError **)error
+- (void)loadAppsWithPath:(NSString *)path defaultTitle:(NSString *)defaultTitle completionBlock:(void(^)(BOOL result, NSError *error))block
 {
-    return [self resultsDictionaryForURL:URL withUserAgent:DAUserAgent() error:error];
+    _isLoading = YES;
+    _defaultTitle = defaultTitle;
+    [self updateTitle];
+    [self loadRequestPath:path withCompletion:^(NSArray *results, NSError *error) {
+        _isLoading = NO;
+        if (error) {
+            _defaultTitle = NSLocalizedString(@"Error",);
+            if (block) {
+                block(NO, error);
+            }
+        } else {
+            NSMutableArray *mutableApps = [[NSMutableArray alloc] init];
+            for (NSDictionary *result in results) {
+                BOOL isArtistWrapper = [[result objectForKey:@"wrapperType"] isEqualToString:@"artist"];
+                if (isArtistWrapper) {
+                    NSString *artistName = [result objectForKey:@"artistName"];
+                    if (artistName) {
+                        _defaultTitle = artistName;
+                    }
+                }
+                DAAppObject *appObject = [[DAAppObject alloc] initWithResult:result];
+                if (appObject && ![mutableApps containsObject:appObject]) {
+                    [mutableApps addObject:appObject];
+                }
+            }
+            self.appsArray = mutableApps;
+            if (block) {
+                block(YES, nil);
+            }
+        }
+        [self updateTitle];
+    }];
 }
 
-- (void)loadAppsWithArtistId:(NSInteger)artistId withUserAgent:(NSString *)userAgent completionBlock:(void(^)(BOOL result, NSError *error))block {
-    self.title = NSLocalizedString(@"Loading...",);
-    
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-        NSString *countryCode = [[NSLocale currentLocale] objectForKey:NSLocaleCountryCode];
-        NSMutableString *requestUrlString = [[NSMutableString alloc] init];
-        [requestUrlString appendFormat:@"http://itunes.apple.com/"];
-        if (countryCode) {
-            [requestUrlString appendFormat:@"%@/", countryCode];
-        }
-        [requestUrlString appendFormat:@"artist/id%i", artistId];
-        [requestUrlString appendFormat:@"?dataOnly=true"];
-        NSString *languagueCode = [[NSLocale currentLocale] objectForKey:NSLocaleLanguageCode];
-        [requestUrlString appendFormat:@"&l=%@", languagueCode];
-        NSURL *requestURL = [[NSURL alloc] initWithString:requestUrlString];
-        
-        NSError *requestError;
-        NSDictionary *jsonObject = [self resultsDictionaryForURL:requestURL
-                                                   withUserAgent:userAgent
-                                                           error:&requestError];
-        if (requestError) {
-            dispatch_async(dispatch_get_main_queue(), ^{
-                if (block) {
-                    block(FALSE, requestError);
-                }
-            });
-        } else {
-            NSDictionary *artistDictionary = jsonObject;
-            NSString *pageTitle = (self.pageTitle.length ? self.pageTitle : artistDictionary[@"pageTitle"]);
-            
-            NSMutableArray *mutableApps = [[NSMutableArray alloc] init];
-            void(^fetch_block)(NSArray *content) = ^(NSArray *content){
-                for (NSDictionary *lockup in content) {
-                    DAAppObject *appObject = [[DAAppObject alloc] initWithLockup:lockup];
-                    if (![mutableApps containsObject:appObject]) {
-                        [mutableApps addObject:appObject];
-                    }
-                }
-            };
-            if ([userAgent isEqualToString:USER_AGENT_IPHONE]) {
-                if (artistDictionary[@"content"] != [NSNull null]) {
-                    NSArray *content = artistDictionary[@"content"][@"content"];
-                    if ([content isKindOfClass:[NSArray class]]) {
-                        fetch_block(artistDictionary[@"content"][@"content"]);
-                    }
-                }
-            } else {
-                NSArray *stack = artistDictionary[@"stack"];
-                if ([stack isKindOfClass:[NSArray class]]) {
-                    for (NSDictionary *swoosh in stack) {
-                        NSArray *content = swoosh[@"content"];
-                        if ([content isKindOfClass:[NSArray class]]) {
-                            fetch_block(content);
-                        }
-                    }
-                }
-                
-            }
-            dispatch_async(dispatch_get_main_queue(), ^{
-                self.title = pageTitle;
-                self.appsArray = mutableApps;
-                if (block) {
-                    block(TRUE, NULL);
-                }
-            });
-        }
-    });
-}
+
+#pragma mark - Public methods
 
 - (void)loadAllAppsWithArtistId:(NSInteger)artistId completionBlock:(void(^)(BOOL result, NSError *error))block
 {
-    [self loadAppsWithArtistId:artistId
-                 withUserAgent:USER_AGENT_IPAD
-               completionBlock:^(BOOL result, NSError *error) {
-                   if (!result) {
-                       [self loadAppsWithArtistId:artistId
-                                    withUserAgent:USER_AGENT_IPHONE
-                                  completionBlock:block];
-                   } else if (block) {
-                       block(result, error);
-                   }
-               }];
+    [self loadAppsWithArtistId:artistId completionBlock:block];
 }
 
 - (void)loadAppsWithArtistId:(NSInteger)artistId completionBlock:(void(^)(BOOL result, NSError *error))block
 {
-    [self loadAppsWithArtistId:artistId withUserAgent:DAUserAgent() completionBlock:block];
+    NSString *requestPath = [NSString stringWithFormat:@"lookup?id=%i", (int)artistId];
+    [self loadAppsWithPath:requestPath defaultTitle:NSLocalizedString(@"Results",) completionBlock:block];
 }
 
 - (void)loadAppsWithAppIds:(NSArray *)appIds completionBlock:(void(^)(BOOL result, NSError *error))block
 {
-    self.title = NSLocalizedString(@"Loading...",);
-    
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-        NSString *appString = [appIds componentsJoinedByString:@","];
-        NSString *countryCode = [[NSLocale currentLocale] objectForKey:NSLocaleCountryCode];
-        NSMutableString *requestUrlString = [[NSMutableString alloc] init];
-        [requestUrlString appendFormat:@"http://itunes.apple.com/lookup"];
-        [requestUrlString appendFormat:@"?id=%@", appString];
-        if (countryCode) {
-            [requestUrlString appendFormat:@"&country=%@", countryCode];
-        }
-        NSString *languagueCode = [[NSLocale currentLocale] objectForKey:NSLocaleLanguageCode];
-        [requestUrlString appendFormat:@"&l=%@", languagueCode];
-        NSURL *requestURL = [[NSURL alloc] initWithString:requestUrlString];
-        
-        NSError *requestError;
-        NSDictionary *jsonObject = [self resultsDictionaryForURL:requestURL error:&requestError];
-        if (requestError) {
-            dispatch_async(dispatch_get_main_queue(), ^{
-                if (block) {
-                    block(FALSE, requestError);
-                }
-            });
-        } else {
-            NSDictionary *appsDictionary = jsonObject;
-            NSArray *results = [appsDictionary objectForKey:@"results"];
-            NSString *pageTitle = (self.pageTitle && self.pageTitle.length > 0)?self.pageTitle:NSLocalizedString(@"Results", nil);
-            
-            NSMutableArray *mutableApps = [[NSMutableArray alloc] init];
-            for (NSDictionary *result in results) {
-                DAAppObject *appObject = [[DAAppObject alloc] init];
-                
-                appObject.bundleId = [result objectForKey:@"bundleId"];
-                appObject.name = [result objectForKey:@"trackName"];
-                appObject.genre = [result objectForKey:@"primaryGenreName"];
-                appObject.appId = [[result objectForKey:@"trackId"] integerValue];
-                appObject.iconIsPrerendered = DA_IS_IOS7;
-                
-                NSArray *features = [result objectForKey:@"features"];
-                appObject.isUniversal = [features containsObject:@"iosUniversal"];
-                appObject.formattedPrice = [[result objectForKey:@"formattedPrice"] uppercaseString];
-                //NSString *iconUrlString = [result objectForKey:@"artworkUrl60"];
-                NSString *iconUrlString = [result objectForKey:@"artworkUrl512"];
-                NSArray *iconUrlComponents = [iconUrlString componentsSeparatedByString:@"."];
-                NSMutableArray *mutableIconURLComponents = [[NSMutableArray alloc] initWithArray:iconUrlComponents];
-                [mutableIconURLComponents insertObject:@"128x128-75" atIndex:mutableIconURLComponents.count-1];
-                iconUrlString = [mutableIconURLComponents componentsJoinedByString:@"."];
-                
-                appObject.iconURL = [[NSURL alloc] initWithString:iconUrlString];
-                appObject.userRating = [[result objectForKey:@"averageUserRating"] floatValue];
-                appObject.userRatingCount = [[result objectForKey:@"userRatingCount"] integerValue];
-                
-                if (![mutableApps containsObject:appObject]) {
-                    [mutableApps addObject:appObject];
-                }
-            }
-            dispatch_async(dispatch_get_main_queue(), ^{
-                self.title = pageTitle;
-                self.appsArray = mutableApps;
-                if (block) {
-                    block(TRUE, NULL);
-                }
-            });
-        }
-    });
+    NSString *appString = [appIds componentsJoinedByString:@","];
+    NSString *requestPath = [NSString stringWithFormat:@"lookup?id=%@", appString];
+    [self loadAppsWithPath:requestPath defaultTitle:NSLocalizedString(@"Results",) completionBlock:block];
 }
 
 - (void)loadAppsWithBundleIds:(NSArray *)bundleIds completionBlock:(void(^)(BOOL result, NSError *error))block
 {
-    self.title = NSLocalizedString(@"Loading...",);
-    
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-        NSString *bundleString = [bundleIds componentsJoinedByString:@","];
-        NSString *countryCode = [[NSLocale currentLocale] objectForKey:NSLocaleCountryCode];
-        NSMutableString *requestUrlString = [[NSMutableString alloc] init];
-        [requestUrlString appendFormat:@"http://itunes.apple.com/lookup"];
-        [requestUrlString appendFormat:@"?bundleId=%@", bundleString];
-        if (countryCode) {
-            [requestUrlString appendFormat:@"&country=%@", countryCode];
-        }
-        NSString *languagueCode = [[NSLocale currentLocale] objectForKey:NSLocaleLanguageCode];
-        [requestUrlString appendFormat:@"&l=%@", languagueCode];
-        NSURL *requestURL = [[NSURL alloc] initWithString:requestUrlString];
-        
-        NSError *requestError;
-        NSDictionary *jsonObject = [self resultsDictionaryForURL:requestURL error:&requestError];
-        if (requestError) {
-            dispatch_async(dispatch_get_main_queue(), ^{
-                if (block) {
-                    block(FALSE, requestError);
-                }
-            });
-        } else {
-            NSDictionary *appsDictionary = jsonObject;
-            NSArray *results = [appsDictionary objectForKey:@"results"];
-            NSString *pageTitle = (self.pageTitle.length ? self.pageTitle : NSLocalizedString(@"Results",));
-            
-            NSMutableArray *mutableApps = [[NSMutableArray alloc] init];
-            for (NSDictionary *result in results) {
-                DAAppObject *appObject = [[DAAppObject alloc] init];
-                
-                appObject.bundleId = [result objectForKey:@"bundleId"];
-                appObject.name = [result objectForKey:@"trackName"];
-                appObject.genre = [result objectForKey:@"primaryGenreName"];
-                appObject.appId = [[result objectForKey:@"trackId"] integerValue];
-                appObject.iconIsPrerendered = DA_IS_IOS7;
-                
-                NSArray *features = [result objectForKey:@"features"];
-                appObject.isUniversal = [features containsObject:@"iosUniversal"];
-                appObject.formattedPrice = [[result objectForKey:@"formattedPrice"] uppercaseString];
-                //NSString *iconUrlString = [result objectForKey:@"artworkUrl60"];
-                NSString *iconUrlString = [result objectForKey:@"artworkUrl512"];
-                NSArray *iconUrlComponents = [iconUrlString componentsSeparatedByString:@"."];
-                NSMutableArray *mutableIconURLComponents = [[NSMutableArray alloc] initWithArray:iconUrlComponents];
-                [mutableIconURLComponents insertObject:@"128x128-75" atIndex:mutableIconURLComponents.count-1];
-                iconUrlString = [mutableIconURLComponents componentsJoinedByString:@"."];
-                
-                appObject.iconURL = [[NSURL alloc] initWithString:iconUrlString];
-                appObject.userRating = [[result objectForKey:@"averageUserRating"] floatValue];
-                appObject.userRatingCount = [[result objectForKey:@"userRatingCount"] integerValue];
-                
-                if (![mutableApps containsObject:appObject]) {
-                    [mutableApps addObject:appObject];
-                }
-            }
-            dispatch_async(dispatch_get_main_queue(), ^{
-                self.title = pageTitle;
-                self.appsArray = mutableApps;
-                if (block) {
-                    block(TRUE, NULL);
-                }
-            });
-        }
-    });
+    NSString *bundleString = [bundleIds componentsJoinedByString:@","];
+    NSString *requestPath = [NSString stringWithFormat:@"lookup?bundleId=%@", bundleString];
+    [self loadAppsWithPath:requestPath defaultTitle:NSLocalizedString(@"Results",) completionBlock:block];
 }
 
 - (void)loadAppsWithSearchTerm:(NSString *)searchTerm completionBlock:(void(^)(BOOL result, NSError *error))block
 {
-    self.title = NSLocalizedString(@"Loading...",);
-    
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-        NSString *countryCode = [[NSLocale currentLocale] objectForKey:NSLocaleCountryCode];
-        NSMutableString *requestUrlString = [[NSMutableString alloc] init];
-        [requestUrlString appendFormat:@"http://itunes.apple.com/search"];
-        [requestUrlString appendFormat:@"?term=%@", [searchTerm stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]];
-        if (countryCode) {
-            [requestUrlString appendFormat:@"&country=%@", countryCode];
-        }
-        [requestUrlString appendFormat:@"&entity=software"];
-        NSString *languagueCode = [[NSLocale currentLocale] objectForKey:NSLocaleLanguageCode];
-        [requestUrlString appendFormat:@"&l=%@", languagueCode];
-        NSURL *requestURL = [[NSURL alloc] initWithString:requestUrlString];
-        
-        NSError *requestError;
-        NSDictionary *jsonObject = [self resultsDictionaryForURL:requestURL error:&requestError];
-        if (requestError) {
-            dispatch_async(dispatch_get_main_queue(), ^{
-                if (block) {
-                    block(FALSE, requestError);
-                }
-            });
-        } else {
-            NSDictionary *appsDictionary = jsonObject;
-            NSArray *results = [appsDictionary objectForKey:@"results"];
-            NSString *pageTitle = (self.pageTitle.length ? self.pageTitle : NSLocalizedString(@"Results",));
-            
-            NSMutableArray *mutableApps = [[NSMutableArray alloc] init];
-            for (NSDictionary *result in results) {
-                DAAppObject *appObject = [[DAAppObject alloc] init];
-                
-                appObject.bundleId = [result objectForKey:@"bundleId"];
-                appObject.name = [result objectForKey:@"trackName"];
-                appObject.genre = [result objectForKey:@"primaryGenreName"];
-                appObject.appId = [[result objectForKey:@"trackId"] integerValue];
-                appObject.iconIsPrerendered = DA_IS_IOS7;
-                
-                NSArray *features = [result objectForKey:@"features"];
-                appObject.isUniversal = [features containsObject:@"iosUniversal"];
-                appObject.formattedPrice = [[result objectForKey:@"formattedPrice"] uppercaseString];
-                //NSString *iconUrlString = [result objectForKey:@"artworkUrl60"];
-                NSString *iconUrlString = [result objectForKey:@"artworkUrl512"];
-                NSArray *iconUrlComponents = [iconUrlString componentsSeparatedByString:@"."];
-                NSMutableArray *mutableIconURLComponents = [[NSMutableArray alloc] initWithArray:iconUrlComponents];
-                [mutableIconURLComponents insertObject:@"128x128-75" atIndex:mutableIconURLComponents.count-1];
-                iconUrlString = [mutableIconURLComponents componentsJoinedByString:@"."];
-                
-                appObject.iconURL = [[NSURL alloc] initWithString:iconUrlString];
-                appObject.userRating = [[result objectForKey:@"averageUserRating"] floatValue];
-                appObject.userRatingCount = [[result objectForKey:@"userRatingCount"] integerValue];
-                
-                if (![mutableApps containsObject:appObject]) {
-                    [mutableApps addObject:appObject];
-                }
-            }
-            dispatch_async(dispatch_get_main_queue(), ^{
-                self.title = pageTitle;
-                self.appsArray = mutableApps;
-                if (block) {
-                    block(TRUE, NULL);
-                }
-            });
-        }
-    });
+    NSString *escapedSearchTerm = [searchTerm stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+    NSString *requestPath = [NSString stringWithFormat:@"search?term=%@", escapedSearchTerm];
+    [self loadAppsWithPath:requestPath defaultTitle:searchTerm completionBlock:block];
 }
 
 
 #pragma mark - Table view data source
 
+- (NSArray *)compatibleAppsArray
+{
+    if (self.shouldShowIncompatibleApps) {
+        return self.appsArray;
+    } else {
+        NSPredicate *compatiblePredicate = [NSPredicate predicateWithFormat:@"isCompatible = YES"];
+        if (self.blockedApps.count) {
+            NSPredicate *appIdsPredicate = [NSPredicate predicateWithFormat:@"NOT (appId IN %@)", self.blockedApps];
+            NSPredicate *bundleIdsPredicate = [NSPredicate predicateWithFormat:@"NOT (bundleId IN %@)", self.blockedApps];
+            compatiblePredicate = [NSCompoundPredicate andPredicateWithSubpredicates:@[compatiblePredicate, appIdsPredicate, bundleIdsPredicate]];
+        }
+        return [self.appsArray filteredArrayUsingPredicate:compatiblePredicate];
+    }
+}
+
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-    return self.appsArray.count;
+    return self.compatibleAppsArray.count;
 }
 
 - (void)tableView:(UITableView *)tableView willDisplayCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath
@@ -412,7 +238,7 @@
     if (!cell) {
         cell = [[DAAppViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier];
     }
-    cell.appObject = [self.appsArray objectAtIndex:indexPath.row];
+    cell.appObject = [self.compatibleAppsArray objectAtIndex:indexPath.row];
     return cell;
 }
 
@@ -435,14 +261,14 @@
 
 - (void)presentAppObjectAtIndexPath:(NSIndexPath *)indexPath
 {
-    DAAppObject *appObject = [self.appsArray objectAtIndex:indexPath.row];
+    DAAppObject *appObject = [self.compatibleAppsArray objectAtIndex:indexPath.row];
     
     if (self.didViewAppBlock) {
         self.didViewAppBlock(appObject.appId);
     }
     
     if ([SKStoreProductViewController class]) {
-        NSString *itunesItemIdentifier = [NSString stringWithFormat:@"%u", appObject.appId];
+        NSString *itunesItemIdentifier = [NSString stringWithFormat:@"%i",  (int)appObject.appId];
         NSMutableDictionary *appParameters = [@{SKStoreProductParameterITunesItemIdentifier: itunesItemIdentifier} mutableCopy];
         
 #ifdef __IPHONE_8_0
@@ -463,7 +289,7 @@
                            animated:YES
                          completion:nil];
     } else {
-        NSString *appUrlString = [NSString stringWithFormat:@"itms-apps://itunes.apple.com/app/id%u?mt=8", appObject.appId];
+        NSString *appUrlString = [NSString stringWithFormat:@"itms-apps://itunes.apple.com/app/id%i?mt=8", (int)appObject.appId];
         NSURL *appURL = [[NSURL alloc] initWithString:appUrlString];
         [[UIApplication sharedApplication] openURL:appURL];
     }

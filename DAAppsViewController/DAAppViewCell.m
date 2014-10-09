@@ -10,6 +10,7 @@
 
 static NSCache *_iconCache = nil;
 static NSArray *_starRatingImages = nil;
+static NSNumberFormatter *_decimalNumberFormatter = nil;
 
 @interface DAAppViewCell ()
 
@@ -31,7 +32,13 @@ static NSArray *_starRatingImages = nil;
 {
     if (self == [DAAppViewCell class]) {
         _iconCache = [[NSCache alloc] init];
-        [_iconCache setCountLimit:40];
+        [_iconCache setCountLimit:100];
+        
+        // Automatically clear the icon cache if we receive a memory warning
+        [[NSNotificationCenter defaultCenter] addObserver:_iconCache
+                                                 selector:@selector(removeAllObjects)
+                                                     name:UIApplicationDidReceiveMemoryWarningNotification
+                                                   object:nil];
         
         NSInteger numberOfStars = 11;
         NSMutableArray *starRatingImages = [[NSMutableArray alloc] initWithCapacity:numberOfStars];
@@ -51,6 +58,9 @@ static NSArray *_starRatingImages = nil;
             [starRatingImages addObject:starRatingImage];
         }
         _starRatingImages = starRatingImages;
+
+        _decimalNumberFormatter = [[NSNumberFormatter alloc] init];
+        [_decimalNumberFormatter setNumberStyle:NSNumberFormatterDecimalStyle];
     }
 }
 
@@ -83,77 +93,77 @@ static NSArray *_starRatingImages = nil;
         cellImageShadowView.image = [UIImage imageNamed:@"DAAppsViewController.bundle/DAShadowImage"];
         [self addSubview:cellImageShadowView];
         
-        self.iconView = [[UIImageView alloc] init];
-        self.iconView.frame = (CGRect) {
+        _iconView = [[UIImageView alloc] init];
+        _iconView.frame = (CGRect) {
             .origin.x = 12.0f,
             .origin.y = 9.0f,
             .size.width = 64.0f,
             .size.height = 64.0f
         };
-        self.iconView.contentMode = UIViewContentModeScaleAspectFit;
-        [self addSubview:self.iconView];
+        _iconView.contentMode = UIViewContentModeScaleAspectFit;
+        [self addSubview:_iconView];
         
-        self.nameLabel = [[UILabel alloc] init];
-        self.nameLabel.font = [UIFont boldSystemFontOfSize:14.0f];
-        self.nameLabel.backgroundColor = [UIColor clearColor];
-        self.nameLabel.textColor = [UIColor colorWithWhite:78.0f/255.0f alpha:1.0f];
-        [self addSubview:self.nameLabel];
+        _nameLabel = [[UILabel alloc] init];
+        _nameLabel.font = [UIFont boldSystemFontOfSize:14.0f];
+        _nameLabel.backgroundColor = [UIColor clearColor];
+        _nameLabel.textColor = [UIColor colorWithWhite:78.0f/255.0f alpha:1.0f];
+        [self addSubview:_nameLabel];
         
-        self.genreLabel = [[UILabel alloc] init];
-        self.genreLabel.font = [UIFont systemFontOfSize:10.0f];
-        self.genreLabel.backgroundColor = [UIColor clearColor];
-        self.genreLabel.textColor = [UIColor colorWithWhite:99.0f/255.0f alpha:1.0f];
-        [self addSubview:self.genreLabel];
+        _genreLabel = [[UILabel alloc] init];
+        _genreLabel.font = [UIFont systemFontOfSize:10.0f];
+        _genreLabel.backgroundColor = [UIColor clearColor];
+        _genreLabel.textColor = [UIColor colorWithWhite:99.0f/255.0f alpha:1.0f];
+        [self addSubview:_genreLabel];
         
-        self.starImageView = [[UIImageView alloc] init];
-        self.starImageView.frame = (CGRect) {
+        _starImageView = [[UIImageView alloc] init];
+        _starImageView.frame = (CGRect) {
             .origin.x = 88.0f,
             .origin.y = 54.0f,
             .size.width = 44.0f,
             .size.height = 9.5f
         };
-        self.starImageView.contentMode = UIViewContentModeScaleAspectFill;
-        self.starImageView.clipsToBounds = YES;
-        [self addSubview:self.starImageView];
+        _starImageView.contentMode = UIViewContentModeScaleAspectFill;
+        _starImageView.clipsToBounds = YES;
+        [self addSubview:_starImageView];
         
-        self.noRatingsLabel = [[UILabel alloc] init];
-        self.noRatingsLabel.font = [UIFont systemFontOfSize:10.0f];
-        self.noRatingsLabel.textColor = [UIColor colorWithWhite:99.0f/255.0f alpha:1.0f];
-        self.noRatingsLabel.backgroundColor = [UIColor clearColor];
-        self.noRatingsLabel.text = @"No Ratings";
-        self.noRatingsLabel.hidden = YES;
-        CGSize noRatingsLabelSize = [self.noRatingsLabel sizeThatFits:self.noRatingsLabel.bounds.size];
-        self.noRatingsLabel.frame = (CGRect) {
+        _noRatingsLabel = [[UILabel alloc] init];
+        _noRatingsLabel.font = [UIFont systemFontOfSize:10.0f];
+        _noRatingsLabel.textColor = [UIColor colorWithWhite:99.0f/255.0f alpha:1.0f];
+        _noRatingsLabel.backgroundColor = [UIColor clearColor];
+        _noRatingsLabel.text = NSLocalizedString(@"No Ratings",);
+        _noRatingsLabel.hidden = YES;
+        CGSize noRatingsLabelSize = [_noRatingsLabel sizeThatFits:_noRatingsLabel.bounds.size];
+        _noRatingsLabel.frame = (CGRect) {
             .origin.x = 88.0f,
             .origin.y = 54.0f,
             .size = noRatingsLabelSize
         };
-        [self addSubview:self.noRatingsLabel];
+        [self addSubview:_noRatingsLabel];
         
-        self.ratingsLabel = [[UILabel alloc] init];
-        self.ratingsLabel.font = [UIFont systemFontOfSize:10.0f];
-        self.ratingsLabel.textColor = [UIColor colorWithWhite:90.0f/255.0f alpha:1.0f];
-        self.ratingsLabel.backgroundColor = [UIColor clearColor];
-        [self addSubview:self.ratingsLabel];
+        _ratingsLabel = [[UILabel alloc] init];
+        _ratingsLabel.font = [UIFont systemFontOfSize:10.0f];
+        _ratingsLabel.textColor = [UIColor colorWithWhite:90.0f/255.0f alpha:1.0f];
+        _ratingsLabel.backgroundColor = [UIColor clearColor];
+        [self addSubview:_ratingsLabel];
         
-        self.purchaseButton = [UIButton buttonWithType:UIButtonTypeCustom];
-        self.purchaseButton.frame = (CGRect) {
+        _purchaseButton = [UIButton buttonWithType:UIButtonTypeCustom];
+        _purchaseButton.frame = (CGRect) {
             .origin.x = self.frame.size.width - 67.0f,
             .origin.y = 28.0f,
             .size.width = 59.0f,
             .size.height = (DA_IS_IOS7 ? 26.0f : 25.0f)
         };
-        self.purchaseButton.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin;
+        _purchaseButton.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin;
         
         if (DA_IS_IOS7) {
             UIColor *titleColor = [UIColor colorWithRed:0.0f green:0.49f blue:0.96f alpha:1.0f];
-            [self.purchaseButton setTitleColor:titleColor forState:UIControlStateNormal];
-            [self.purchaseButton setTitleColor:[UIColor whiteColor] forState:UIControlStateHighlighted];
+            [_purchaseButton setTitleColor:titleColor forState:UIControlStateNormal];
+            [_purchaseButton setTitleColor:[UIColor whiteColor] forState:UIControlStateHighlighted];
 
-            self.purchaseButton.layer.borderColor = titleColor.CGColor;
-            self.purchaseButton.layer.borderWidth = 1.0f;
-            self.purchaseButton.layer.cornerRadius = 4.0f;
-            self.purchaseButton.layer.masksToBounds = YES;
+            _purchaseButton.layer.borderColor = titleColor.CGColor;
+            _purchaseButton.layer.borderWidth = 1.0f;
+            _purchaseButton.layer.cornerRadius = 4.0f;
+            _purchaseButton.layer.masksToBounds = YES;
             
             CGRect rect = CGRectMake(0.0f, 0.0f, 2.0f, 2.0f);
             UIGraphicsBeginImageContextWithOptions(rect.size, NO, 0);
@@ -162,25 +172,25 @@ static NSArray *_starRatingImages = nil;
             CGContextFillRect(context, rect);
             UIImage *coloredImage = UIGraphicsGetImageFromCurrentImageContext();
             UIGraphicsEndImageContext();
-            [self.purchaseButton setBackgroundImage:coloredImage forState:UIControlStateHighlighted];
+            [_purchaseButton setBackgroundImage:coloredImage forState:UIControlStateHighlighted];
         } else {
             UIColor *titleColor = [UIColor colorWithWhite:105.0f/255.0f alpha:1.0f];
-            [self.purchaseButton setTitleColor:titleColor forState:UIControlStateNormal];
-            [self.purchaseButton setTitleShadowColor:[UIColor whiteColor] forState:UIControlStateNormal];
-            [self.purchaseButton.titleLabel setShadowOffset:CGSizeMake(0.0f, 1.0f)];
+            [_purchaseButton setTitleColor:titleColor forState:UIControlStateNormal];
+            [_purchaseButton setTitleShadowColor:[UIColor whiteColor] forState:UIControlStateNormal];
+            [_purchaseButton.titleLabel setShadowOffset:CGSizeMake(0.0f, 1.0f)];
             
             UIImage *buttonImage = [UIImage imageNamed:@"DAAppsViewController.bundle/DAButtonImage"];
             UIImage *buttonImageSelected = [UIImage imageNamed:@"DAAppsViewController.bundle/DAButtonImageSelected"];
-            [self.purchaseButton setBackgroundImage:buttonImage forState:UIControlStateNormal];
-            [self.purchaseButton setBackgroundImage:buttonImageSelected forState:UIControlStateHighlighted];
+            [_purchaseButton setBackgroundImage:buttonImage forState:UIControlStateNormal];
+            [_purchaseButton setBackgroundImage:buttonImageSelected forState:UIControlStateHighlighted];
         }
-        [self.purchaseButton.titleLabel setFont:[UIFont boldSystemFontOfSize:13.0f]];
-        [self.purchaseButton setTitle:@"VIEW" forState:UIControlStateNormal];
+        [_purchaseButton.titleLabel setFont:[UIFont boldSystemFontOfSize:13.0f]];
+        [_purchaseButton setTitle:[NSLocalizedString(@"View",) uppercaseString] forState:UIControlStateNormal];
         
-        [self.purchaseButton addTarget:self
+        [_purchaseButton addTarget:self
                                 action:@selector(purchaseButton:)
                       forControlEvents:UIControlEventTouchUpInside];
-        [self setAccessoryView:self.purchaseButton];
+        [self setAccessoryView:_purchaseButton];
     }
     return self;
 }
@@ -204,6 +214,7 @@ static NSArray *_starRatingImages = nil;
         [tableView.delegate tableView:tableView accessoryButtonTappedForRowWithIndexPath:pathOfTheCell];
     }
 }
+
 
 #pragma mark - View methods
 
@@ -237,6 +248,7 @@ static NSArray *_starRatingImages = nil;
     };
 }
 
+
 #pragma mark - Property methods
 
 - (void)setAppObject:(DAAppObject *)appObject
@@ -244,10 +256,12 @@ static NSArray *_starRatingImages = nil;
     _appObject = appObject;
     self.nameLabel.text = appObject.name;
     self.genreLabel.text = appObject.genre;
-    self.ratingsLabel.text = [NSString stringWithFormat:@"(%i)", appObject.userRatingCount];
-    self.ratingsLabel.hidden = !appObject.userRatingCount;
-    self.noRatingsLabel.hidden = appObject.userRatingCount;
-    self.starImageView.hidden = !appObject.userRatingCount;
+    NSNumber *userRatingCountNumber = [NSNumber numberWithInteger:appObject.userRatingCount];
+    NSString *formattedRatingsCount = [_decimalNumberFormatter stringFromNumber:userRatingCountNumber];
+    self.ratingsLabel.text = [NSString stringWithFormat:@"(%@)", formattedRatingsCount];
+    self.ratingsLabel.hidden = (appObject.userRatingCount == 0);
+    self.noRatingsLabel.hidden = (appObject.userRatingCount > 0);
+    self.starImageView.hidden = (appObject.userRatingCount == 0);
     [self.purchaseButton setTitle:appObject.formattedPrice forState:UIControlStateNormal];
     self.starImageView.image = [_starRatingImages objectAtIndex:(2 * appObject.userRating)];
     
@@ -266,7 +280,7 @@ static NSArray *_starRatingImages = nil;
                                                                  error:NULL];
             UIImage *iconImage = [UIImage imageWithData:iconData];
             
-            if (!self.appObject.iconIsPrerendered) {
+            if (!DA_IS_IOS7) {
                 UIGraphicsBeginImageContext(iconImage.size);
                 [iconImage drawAtPoint:CGPointZero];
                 CGRect imageRect = (CGRect) {
@@ -293,7 +307,13 @@ static NSArray *_starRatingImages = nil;
                 [_iconCache setObject:iconImage forKey:iconURL];
                 dispatch_async(dispatch_get_main_queue(), ^{
                     if (self.appObject.iconURL == iconURL) {
-                        self.iconView.image = iconImage;
+                        [UIView transitionWithView:self.iconView
+                                          duration:0.5f
+                                           options:UIViewAnimationOptionTransitionCrossDissolve
+                                        animations:^{
+                                            self.iconView.image = iconImage;
+                                        }
+                                        completion:nil];
                     }
                 });
             }

@@ -10,32 +10,73 @@
 
 @implementation DAAppObject
 
-#pragma mark - Equality methods
-
-- (id)initWithLockup:(NSDictionary *)lockup
+- (id)initWithResult:(NSDictionary *)result
 {
+    NSString *kind = [result objectForKey:@"kind"];
+    if (![kind isEqualToString:@"software"]) {
+        return nil;
+    }
     self = [super init];
     if (self) {
-        _bundleId = [lockup objectForKey:@"bundle-id"];
-        _name = [lockup objectForKey:@"name"];
-        _genre = [lockup objectForKey:@"genre"];
-        _appId = [[lockup objectForKey:@"id"] integerValue];
-        _iconIsPrerendered = [[lockup objectForKey:@"icon-is-prerendered"] boolValue];
-        _isUniversal = [[lockup objectForKey:@"is_universal_app"] boolValue];
-        
-        NSArray *offers = [lockup objectForKey:@"offers"];
-        NSDictionary *offer = [offers lastObject];
-        _formattedPrice = [offer objectForKey:@"button_text"];
-        
-        NSArray *artwork = [lockup objectForKey:@"artwork"];
-        NSDictionary *artworkDictionary = [artwork objectAtIndex:MIN(artwork.count - 1, 2)];
-        NSString *iconUrlString = [artworkDictionary objectForKey:@"url"];
+        _bundleId = [result objectForKey:@"bundleId"];
+        _name = [result objectForKey:@"trackName"];
+        _genre = [[result objectForKey:@"genres"] objectAtIndex:0]; // for genre with different language.
+        _appId = [[result objectForKey:@"trackId"] integerValue];
+
+        NSArray *features = [result objectForKey:@"features"];
+        _isUniversal = [features containsObject:@"iosUniversal"];
+        _minimumOsVersion = [result objectForKey:@"minimumOsVersion"];
+        _formattedPrice = [[result objectForKey:@"formattedPrice"] uppercaseString];
+        //NSString *iconUrlString = [result objectForKey:@"artworkUrl60"];
+        NSString *iconUrlString = [result objectForKey:@"artworkUrl512"];
+        NSArray *iconUrlComponents = [iconUrlString componentsSeparatedByString:@"."];
+        NSMutableArray *mutableIconURLComponents = [[NSMutableArray alloc] initWithArray:iconUrlComponents];
+        [mutableIconURLComponents insertObject:@"128x128-75" atIndex:mutableIconURLComponents.count-1];
+        iconUrlString = [mutableIconURLComponents componentsJoinedByString:@"."];
+
         _iconURL = [[NSURL alloc] initWithString:iconUrlString];
-        _userRating = [[lockup objectForKey:@"user_rating"] floatValue];
-        _userRatingCount = [[lockup objectForKey:@"user_rating_count"] integerValue];
+        _userRating = [[result objectForKey:@"averageUserRating"] floatValue];
+        _userRatingCount = [[result objectForKey:@"userRatingCount"] integerValue];
+
+        // App compatibility check
+        NSString *systemVersion = [[UIDevice currentDevice] systemVersion];
+        // Apps are only compatible if the current OS is above the minimum version
+        if ([_minimumOsVersion compare:systemVersion options:NSNumericSearch] != NSOrderedDescending) {
+            if (_isUniversal) {
+                // App is universally compatible
+                _isCompatible = YES;
+            } else {
+                UIUserInterfaceIdiom interfaceIdiom = [[UIDevice currentDevice] userInterfaceIdiom];
+                switch (interfaceIdiom) {
+                    case UIUserInterfaceIdiomPhone: {
+                        // App is only compatible with Phone if it contains screenshot urls
+                        NSArray *screenshotUrls = [result objectForKey:@"screenshotUrls"];
+                        _isCompatible = (screenshotUrls.count > 0);
+                    }   break;
+                    case UIUserInterfaceIdiomPad: {
+                        // App is compatible with Pad if it contains screenshot urls
+                        NSArray *screenshotUrls = [result objectForKey:@"screenshotUrls"];
+                        if (screenshotUrls.count > 0) {
+                            _isCompatible = YES;
+                        } else {
+                            // Or if it contains ipad screenshot urls
+                            NSArray *ipadScreenshotUrls = [result objectForKey:@"ipadScreenshotUrls"];
+                            _isCompatible = (ipadScreenshotUrls.count > 0);
+                        }
+                    }   break;
+                    default: {
+                        // Future interface idiom? Better to display incompatible apps than none at all
+                        _isCompatible = YES;
+                    }   break;
+                }
+            }
+        }
     }
     return self;
 }
+
+
+#pragma mark - Equality methods
 
 - (BOOL)isEqual:(id)other
 {
