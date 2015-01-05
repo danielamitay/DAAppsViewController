@@ -7,6 +7,7 @@
 //
 
 #import <Foundation/Foundation.h>
+#import <CoreGraphics/CoreGraphics.h> // For CGFloat
 
 #define DA_IS_IOS7 ([[[UIDevice currentDevice] systemVersion] floatValue] >= 7.0)
 

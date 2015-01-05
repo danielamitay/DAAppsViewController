@@ -7,6 +7,7 @@
 //
 
 #import "DAAppObject.h"
+#import <UIKit/UIKit.h> // For UIDevice, UIUserInterfaceIdiom
 
 @implementation DAAppObject
 
