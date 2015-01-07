@@ -176,7 +176,7 @@
 
 - (void)loadAppsWithArtistId:(NSInteger)artistId completionBlock:(void(^)(BOOL result, NSError *error))block
 {
-    NSString *requestPath = [NSString stringWithFormat:@"lookup?id=%i", (int)artistId];
+    NSString *requestPath = [NSString stringWithFormat:@"lookup?id=%ld", (long)artistId];
     [self loadAppsWithPath:requestPath defaultTitle:NSLocalizedString(@"Results",) completionBlock:block];
 }
 
@@ -268,7 +268,7 @@
     }
     
     if ([SKStoreProductViewController class]) {
-        NSString *itunesItemIdentifier = [NSString stringWithFormat:@"%i", (int)appObject.appId];
+        NSString *itunesItemIdentifier = [NSString stringWithFormat:@"%ld", (long)appObject.appId];
         NSDictionary *appParameters = @{SKStoreProductParameterITunesItemIdentifier: itunesItemIdentifier};
         SKStoreProductViewController *productViewController = [[SKStoreProductViewController alloc] init];
         [productViewController setDelegate:self];
@@ -277,7 +277,7 @@
                            animated:YES
                          completion:nil];
     } else {
-        NSString *appUrlString = [NSString stringWithFormat:@"itms-apps://itunes.apple.com/app/id%i?mt=8", (int)appObject.appId];
+        NSString *appUrlString = [NSString stringWithFormat:@"itms-apps://itunes.apple.com/app/id%ld?mt=8", (long)appObject.appId];
         NSURL *appURL = [[NSURL alloc] initWithString:appUrlString];
         [[UIApplication sharedApplication] openURL:appURL];
     }
