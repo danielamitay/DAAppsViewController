@@ -106,8 +106,8 @@
     NSMutableURLRequest *request = [[NSMutableURLRequest alloc] init];
     [request setURL:[NSURL URLWithString:requestUrlString]];
     [request setTimeoutInterval:20.0f];
-    [request setCachePolicy:NSURLRequestReturnCacheDataElseLoad];
-
+    [request setCachePolicy:NSURLRequestReloadRevalidatingCacheData]; // NSURLRequestReturnCacheDataElseLoad
+    
     void (^returnWithResultsAndError)(NSArray *, NSError *) = ^void(NSArray *results, NSError *error) {
         if (completion) {
             completion(results, error);
@@ -143,8 +143,11 @@
                 block(NO, error);
             }
         } else {
+            NSString *userCountryCode = [[[[NSLocale preferredLanguages] objectAtIndex:0] uppercaseString] substringToIndex:2];
+            
             NSMutableArray *mutableApps = [[NSMutableArray alloc] init];
-            for (NSDictionary *result in results) {
+            for (NSDictionary *result in results)
+            {
                 BOOL isArtistWrapper = [[result objectForKey:@"wrapperType"] isEqualToString:@"artist"];
                 if (isArtistWrapper) {
                     NSString *artistName = [result objectForKey:@"artistName"];
@@ -152,9 +155,22 @@
                         _defaultTitle = artistName;
                     }
                 }
+                
+
                 DAAppObject *appObject = [[DAAppObject alloc] initWithResult:result];
-                if (appObject && ![mutableApps containsObject:appObject]) {
-                    [mutableApps addObject:appObject];
+                if (appObject && ![mutableApps containsObject:appObject])
+                {
+                    // check language..
+                    NSArray *qSupportedLang = [result objectForKey:@"languageCodesISO2A"];
+//                       NSLog(@"code:%@ langs:%@ desc:%@", userCountryCode, qSupportedLang, [result objectForKey:@"trackCensoredName"]);
+                    
+                    
+                    if ([qSupportedLang containsObject:@"EN"] // has en.
+                        || [qSupportedLang containsObject:userCountryCode] // match
+                        )
+                    {
+                        [mutableApps addObject:appObject];
+                    }
                 }
             }
             self.appsArray = mutableApps;
