@@ -23,6 +23,11 @@
 @property (nonatomic, copy) NSArray *blockedApps;
 
 
+#ifdef __IPHONE_8_0
+@property (nonatomic, strong) NSString *affiliateToken;
+@property (nonatomic, strong) NSString *campaignToken;
+#endif
+
 - (void)loadAppsWithArtistId:(NSInteger)artistId completionBlock:(void(^)(BOOL result, NSError *error))block;
 - (void)loadAppsWithAppIds:(NSArray *)appIds completionBlock:(void(^)(BOOL result, NSError *error))block;
 - (void)loadAppsWithBundleIds:(NSArray *)bundleIds completionBlock:(void(^)(BOOL result, NSError *error))block;
