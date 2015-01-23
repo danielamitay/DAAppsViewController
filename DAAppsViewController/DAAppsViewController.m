@@ -106,8 +106,8 @@
     NSMutableURLRequest *request = [[NSMutableURLRequest alloc] init];
     [request setURL:[NSURL URLWithString:requestUrlString]];
     [request setTimeoutInterval:20.0f];
-    [request setCachePolicy:NSURLRequestReturnCacheDataElseLoad];
-
+    [request setCachePolicy:NSURLRequestReloadRevalidatingCacheData]; // NSURLRequestReturnCacheDataElseLoad
+    
     void (^returnWithResultsAndError)(NSArray *, NSError *) = ^void(NSArray *results, NSError *error) {
         if (completion) {
             completion(results, error);
@@ -162,7 +162,8 @@
                 {
                     // check language..
                     NSArray *qSupportedLang = [result objectForKey:@"languageCodesISO2A"];
-                       NSLog(@"code:%@ langs:%@", userCountryCode, qSupportedLang);
+                       NSLog(@"code:%@ langs:%@ desc:%@", userCountryCode, qSupportedLang, [result objectForKey:@"trackCensoredName"]);
+                    
                     
                     if ([qSupportedLang containsObject:@"EN"] // has en.
                         || [qSupportedLang containsObject:userCountryCode] // match
