@@ -237,11 +237,13 @@
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-    return self.compatibleAppsArray.count;
+    return self.compatibleAppsArray.count + 1;
 }
 
 - (void)tableView:(UITableView *)tableView willDisplayCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath
 {
+    if (indexPath.row>=self.compatibleAppsArray.count) return;
+
     if (!DA_IS_IOS7) {
         cell.backgroundColor = (indexPath.row % 2 ? DARK_BACKGROUND_COLOR : LIGHT_BACKGROUND_COLOR);
     }
@@ -249,12 +251,17 @@
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
+
     static NSString *CellIdentifier = @"Cell";
-    DAAppViewCell *cell = (DAAppViewCell *)[tableView dequeueReusableCellWithIdentifier:CellIdentifier];
-    if (!cell) {
+    DAAppViewCell *cell = (DAAppViewCell *) [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
+    if (!cell)
+    {
         cell = [[DAAppViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier];
     }
-    cell.appObject = [self.compatibleAppsArray objectAtIndex:indexPath.row];
+    if (indexPath.row >= self.compatibleAppsArray.count)
+    {
+        cell.appObject = nil;
+    } else cell.appObject = [self.compatibleAppsArray objectAtIndex:indexPath.row];
     return cell;
 }
 
@@ -263,12 +270,16 @@
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
+    if (indexPath.row>=self.compatibleAppsArray.count) return;
+
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
     [self presentAppObjectAtIndexPath:indexPath];
 }
 
 - (void)tableView:(UITableView *)tableView accessoryButtonTappedForRowWithIndexPath:(NSIndexPath *)indexPath
 {
+    if (indexPath.row>=self.compatibleAppsArray.count) return;
+
     [self presentAppObjectAtIndexPath:indexPath];
 }
 
