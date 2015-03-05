@@ -253,6 +253,15 @@ static NSNumberFormatter *_decimalNumberFormatter = nil;
 
 - (void)setAppObject:(DAAppObject *)appObject
 {
+    if (appObject==nil)
+    {
+        // for empty row..
+        for (UIView *qView in [self subviews]) qView.hidden = YES;
+        self.purchaseButton.hidden = YES;
+        return;
+    } else
+        for (UIView *qView in [self subviews]) qView.hidden = NO;
+
     _appObject = appObject;
     self.nameLabel.text = appObject.name;
     self.genreLabel.text = appObject.genre;
