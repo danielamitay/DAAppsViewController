@@ -107,6 +107,8 @@ static NSNumberFormatter *_decimalNumberFormatter = nil;
         _nameLabel.font = [UIFont boldSystemFontOfSize:14.0f];
         _nameLabel.backgroundColor = [UIColor clearColor];
         _nameLabel.textColor = [UIColor colorWithWhite:78.0f/255.0f alpha:1.0f];
+        _nameLabel.lineBreakMode = NSLineBreakByWordWrapping;
+        _nameLabel.numberOfLines = 2;
         [self addSubview:_nameLabel];
         
         _genreLabel = [[UILabel alloc] init];
@@ -118,7 +120,7 @@ static NSNumberFormatter *_decimalNumberFormatter = nil;
         _starImageView = [[UIImageView alloc] init];
         _starImageView.frame = (CGRect) {
             .origin.x = 88.0f,
-            .origin.y = 54.0f,
+            .origin.y = 64.0f,
             .size.width = 44.0f,
             .size.height = 9.5f
         };
@@ -135,7 +137,7 @@ static NSNumberFormatter *_decimalNumberFormatter = nil;
         CGSize noRatingsLabelSize = [_noRatingsLabel sizeThatFits:_noRatingsLabel.bounds.size];
         _noRatingsLabel.frame = (CGRect) {
             .origin.x = 88.0f,
-            .origin.y = 54.0f,
+            .origin.y = 64.0f,
             .size = noRatingsLabelSize
         };
         [self addSubview:_noRatingsLabel];
@@ -154,6 +156,8 @@ static NSNumberFormatter *_decimalNumberFormatter = nil;
             .size.height = (DA_IS_IOS7 ? 26.0f : 25.0f)
         };
         _purchaseButton.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin;
+        
+//        _purchaseButton.backgroundColor = [UIColor blueColor];
         
         if (DA_IS_IOS7) {
             UIColor *titleColor = [UIColor colorWithRed:0.0f green:0.49f blue:0.96f alpha:1.0f];
@@ -236,14 +240,14 @@ static NSNumberFormatter *_decimalNumberFormatter = nil;
     CGSize genreLabelSize = [self.genreLabel sizeThatFits:self.genreLabel.bounds.size];
     self.genreLabel.frame = (CGRect) {
         .origin.x = 88.0f,
-        .origin.y = 39.0f,
+        .origin.y = 53.0f,
         .size = genreLabelSize
     };
     
     CGSize ratingsLabelSize = [self.ratingsLabel sizeThatFits:self.ratingsLabel.bounds.size];
     self.ratingsLabel.frame = (CGRect) {
         .origin.x = 135.0f,
-        .origin.y = 52.0f,
+        .origin.y = 62.0f,
         .size = ratingsLabelSize
     };
 }
