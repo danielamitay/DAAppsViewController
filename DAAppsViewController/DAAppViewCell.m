@@ -85,7 +85,7 @@ static NSNumberFormatter *_decimalNumberFormatter = nil;
         UIImageView *cellImageShadowView = [[UIImageView alloc] init];
         cellImageShadowView.frame = (CGRect) {
             .origin.x = 11.0f,
-            .origin.y = 8.0f,
+            .origin.y = 10.0f,
             .size.width = 66.0f,
             .size.height = 67.0f
         };
@@ -96,7 +96,7 @@ static NSNumberFormatter *_decimalNumberFormatter = nil;
         _iconView = [[UIImageView alloc] init];
         _iconView.frame = (CGRect) {
             .origin.x = 12.0f,
-            .origin.y = 9.0f,
+            .origin.y = 12.0f,
             .size.width = 64.0f,
             .size.height = 64.0f
         };
@@ -105,6 +105,7 @@ static NSNumberFormatter *_decimalNumberFormatter = nil;
         
         _nameLabel = [[UILabel alloc] init];
         _nameLabel.font = [UIFont boldSystemFontOfSize:14.0f];
+//        _nameLabel.minimumFontSize = 14.0f;
         _nameLabel.backgroundColor = [UIColor clearColor];
         _nameLabel.textColor = [UIColor colorWithWhite:78.0f/255.0f alpha:1.0f];
         _nameLabel.lineBreakMode = NSLineBreakByWordWrapping;
@@ -120,7 +121,7 @@ static NSNumberFormatter *_decimalNumberFormatter = nil;
         _starImageView = [[UIImageView alloc] init];
         _starImageView.frame = (CGRect) {
             .origin.x = 88.0f,
-            .origin.y = 64.0f,
+            .origin.y = 61.0f,
             .size.width = 44.0f,
             .size.height = 9.5f
         };
@@ -137,7 +138,7 @@ static NSNumberFormatter *_decimalNumberFormatter = nil;
         CGSize noRatingsLabelSize = [_noRatingsLabel sizeThatFits:_noRatingsLabel.bounds.size];
         _noRatingsLabel.frame = (CGRect) {
             .origin.x = 88.0f,
-            .origin.y = 64.0f,
+            .origin.y = 61.0f,
             .size = noRatingsLabelSize
         };
         [self addSubview:_noRatingsLabel];
@@ -232,7 +233,7 @@ static NSNumberFormatter *_decimalNumberFormatter = nil;
     }];
     self.nameLabel.frame = (CGRect) {
         .origin.x = 88.0f,
-        .origin.y = 19.0f,
+        .origin.y = 16.0f,
         .size.width = MIN(nameLabelSize.width, maxNameLabelWidth),
         .size.height = nameLabelSize.height
     };
@@ -240,14 +241,14 @@ static NSNumberFormatter *_decimalNumberFormatter = nil;
     CGSize genreLabelSize = [self.genreLabel sizeThatFits:self.genreLabel.bounds.size];
     self.genreLabel.frame = (CGRect) {
         .origin.x = 88.0f,
-        .origin.y = 53.0f,
+        .origin.y = 48.0f,
         .size = genreLabelSize
     };
     
     CGSize ratingsLabelSize = [self.ratingsLabel sizeThatFits:self.ratingsLabel.bounds.size];
     self.ratingsLabel.frame = (CGRect) {
         .origin.x = 135.0f,
-        .origin.y = 62.0f,
+        .origin.y = 59.0f,
         .size = ratingsLabelSize
     };
 }
