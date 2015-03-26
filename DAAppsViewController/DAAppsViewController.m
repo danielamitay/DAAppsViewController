@@ -106,7 +106,7 @@
     NSMutableURLRequest *request = [[NSMutableURLRequest alloc] init];
     [request setURL:[NSURL URLWithString:requestUrlString]];
     [request setTimeoutInterval:20.0f];
-    [request setCachePolicy:NSURLRequestReloadRevalidatingCacheData]; // NSURLRequestReturnCacheDataElseLoad
+    [request setCachePolicy:NSURLRequestReloadIgnoringLocalAndRemoteCacheData]; //  NSURLRequestReloadRevalidatingCacheData, NSURLRequestReturnCacheDataElseLoad
     
     void (^returnWithResultsAndError)(NSArray *, NSError *) = ^void(NSArray *results, NSError *error) {
         if (completion) {
