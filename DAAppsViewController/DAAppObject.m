@@ -28,13 +28,7 @@
         _isUniversal = [features containsObject:@"iosUniversal"];
         _minimumOsVersion = [result objectForKey:@"minimumOsVersion"];
         _formattedPrice = [[result objectForKey:@"formattedPrice"] uppercaseString];
-        //NSString *iconUrlString = [result objectForKey:@"artworkUrl60"];
-        NSString *iconUrlString = [result objectForKey:@"artworkUrl512"];
-        NSArray *iconUrlComponents = [iconUrlString componentsSeparatedByString:@"."];
-        NSMutableArray *mutableIconURLComponents = [[NSMutableArray alloc] initWithArray:iconUrlComponents];
-        [mutableIconURLComponents insertObject:@"128x128-75" atIndex:mutableIconURLComponents.count-1];
-        iconUrlString = [mutableIconURLComponents componentsJoinedByString:@"."];
-
+        NSString *iconUrlString = [result objectForKey:@"artworkUrl100"];
         _iconURL = [[NSURL alloc] initWithString:iconUrlString];
         _userRating = [[result objectForKey:@"averageUserRating"] floatValue];
         _userRatingCount = [[result objectForKey:@"userRatingCount"] integerValue];
