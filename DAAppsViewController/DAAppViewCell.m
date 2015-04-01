@@ -274,23 +274,27 @@ static NSNumberFormatter *_decimalNumberFormatter = nil;
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
             NSURLRequest *urlRequest = [NSURLRequest requestWithURL:iconURL
                                                         cachePolicy:NSURLRequestReturnCacheDataElseLoad
-                                                    timeoutInterval:10.0f];
+                                                    timeoutInterval:15.0f];
             NSData *iconData = [NSURLConnection sendSynchronousRequest:urlRequest
                                                      returningResponse:NULL
                                                                  error:NULL];
             UIImage *iconImage = [UIImage imageWithData:iconData];
             
+            CGSize finalSize = _iconView.bounds.size;
+            UIGraphicsBeginImageContextWithOptions(finalSize, YES, 0.0f);
+            [iconImage drawInRect:(CGRect) {
+                .size = finalSize
+            }];
+            
             if (!DA_IS_IOS7) {
-                UIGraphicsBeginImageContext(iconImage.size);
-                [iconImage drawAtPoint:CGPointZero];
-                CGRect imageRect = (CGRect) {
-                    .size = iconImage.size
-                };
-                [[UIImage imageNamed:@"DAAppsViewController.bundle/DAOverlayImage"] drawInRect:imageRect];
-                iconImage = UIGraphicsGetImageFromCurrentImageContext();
-                UIGraphicsEndImageContext();
+                [[UIImage imageNamed:@"DAAppsViewController.bundle/DAOverlayImage"] drawInRect:(CGRect) {
+                    .size = finalSize
+                }];
             }
             
+            UIImage *resizedImage = UIGraphicsGetImageFromCurrentImageContext();
+            UIGraphicsEndImageContext();
+
             CGImageRef maskRef = [UIImage imageNamed:@"DAAppsViewController.bundle/DAMaskImage"].CGImage;
             CGImageRef mask = CGImageMaskCreate(CGImageGetWidth(maskRef),
                                                 CGImageGetHeight(maskRef),
@@ -298,20 +302,20 @@ static NSNumberFormatter *_decimalNumberFormatter = nil;
                                                 CGImageGetBitsPerPixel(maskRef),
                                                 CGImageGetBytesPerRow(maskRef),
                                                 CGImageGetDataProvider(maskRef), NULL, false);
-            CGImageRef maskedImageRef = CGImageCreateWithMask([iconImage CGImage], mask);
-            iconImage = [UIImage imageWithCGImage:maskedImageRef];
+            CGImageRef maskedImageRef = CGImageCreateWithMask([resizedImage CGImage], mask);
+            UIImage *maskedImage = [UIImage imageWithCGImage:maskedImageRef];
             CGImageRelease(mask);
             CGImageRelease(maskedImageRef);
             
-            if (iconImage) {
-                [_iconCache setObject:iconImage forKey:iconURL];
+            if (maskedImage) {
+                [_iconCache setObject:maskedImage forKey:iconURL];
                 dispatch_async(dispatch_get_main_queue(), ^{
                     if (self.appObject.iconURL == iconURL) {
                         [UIView transitionWithView:self.iconView
                                           duration:0.5f
                                            options:UIViewAnimationOptionTransitionCrossDissolve
                                         animations:^{
-                                            self.iconView.image = iconImage;
+                                            self.iconView.image = maskedImage;
                                         }
                                         completion:nil];
                     }
