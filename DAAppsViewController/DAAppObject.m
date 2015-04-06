@@ -32,7 +32,8 @@
         NSString *iconUrlString = [result objectForKey:@"artworkUrl512"];
         NSArray *iconUrlComponents = [iconUrlString componentsSeparatedByString:@"."];
         NSMutableArray *mutableIconURLComponents = [[NSMutableArray alloc] initWithArray:iconUrlComponents];
-        [mutableIconURLComponents insertObject:@"128x128-75" atIndex:mutableIconURLComponents.count-1];
+        // not always has 128x128...
+//        [mutableIconURLComponents insertObject:@"128x128-75" atIndex:mutableIconURLComponents.count-1];
         iconUrlString = [mutableIconURLComponents componentsJoinedByString:@"."];
 
         _iconURL = [[NSURL alloc] initWithString:iconUrlString];

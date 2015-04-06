@@ -85,7 +85,7 @@ static NSNumberFormatter *_decimalNumberFormatter = nil;
         UIImageView *cellImageShadowView = [[UIImageView alloc] init];
         cellImageShadowView.frame = (CGRect) {
             .origin.x = 11.0f,
-            .origin.y = 8.0f,
+            .origin.y = 10.0f,
             .size.width = 66.0f,
             .size.height = 67.0f
         };
@@ -96,7 +96,7 @@ static NSNumberFormatter *_decimalNumberFormatter = nil;
         _iconView = [[UIImageView alloc] init];
         _iconView.frame = (CGRect) {
             .origin.x = 12.0f,
-            .origin.y = 9.0f,
+            .origin.y = 12.0f,
             .size.width = 64.0f,
             .size.height = 64.0f
         };
@@ -105,8 +105,11 @@ static NSNumberFormatter *_decimalNumberFormatter = nil;
         
         _nameLabel = [[UILabel alloc] init];
         _nameLabel.font = [UIFont boldSystemFontOfSize:14.0f];
+//        _nameLabel.minimumFontSize = 14.0f;
         _nameLabel.backgroundColor = [UIColor clearColor];
         _nameLabel.textColor = [UIColor colorWithWhite:78.0f/255.0f alpha:1.0f];
+        _nameLabel.lineBreakMode = NSLineBreakByWordWrapping;
+        _nameLabel.numberOfLines = 2;
         [self addSubview:_nameLabel];
         
         _genreLabel = [[UILabel alloc] init];
@@ -118,7 +121,7 @@ static NSNumberFormatter *_decimalNumberFormatter = nil;
         _starImageView = [[UIImageView alloc] init];
         _starImageView.frame = (CGRect) {
             .origin.x = 88.0f,
-            .origin.y = 54.0f,
+            .origin.y = 61.0f,
             .size.width = 44.0f,
             .size.height = 9.5f
         };
@@ -135,7 +138,7 @@ static NSNumberFormatter *_decimalNumberFormatter = nil;
         CGSize noRatingsLabelSize = [_noRatingsLabel sizeThatFits:_noRatingsLabel.bounds.size];
         _noRatingsLabel.frame = (CGRect) {
             .origin.x = 88.0f,
-            .origin.y = 54.0f,
+            .origin.y = 61.0f,
             .size = noRatingsLabelSize
         };
         [self addSubview:_noRatingsLabel];
@@ -154,6 +157,8 @@ static NSNumberFormatter *_decimalNumberFormatter = nil;
             .size.height = (DA_IS_IOS7 ? 26.0f : 25.0f)
         };
         _purchaseButton.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin;
+        
+//        _purchaseButton.backgroundColor = [UIColor blueColor];
         
         if (DA_IS_IOS7) {
             UIColor *titleColor = [UIColor colorWithRed:0.0f green:0.49f blue:0.96f alpha:1.0f];
@@ -228,7 +233,7 @@ static NSNumberFormatter *_decimalNumberFormatter = nil;
     }];
     self.nameLabel.frame = (CGRect) {
         .origin.x = 88.0f,
-        .origin.y = 19.0f,
+        .origin.y = 16.0f,
         .size.width = MIN(nameLabelSize.width, maxNameLabelWidth),
         .size.height = nameLabelSize.height
     };
@@ -236,14 +241,14 @@ static NSNumberFormatter *_decimalNumberFormatter = nil;
     CGSize genreLabelSize = [self.genreLabel sizeThatFits:self.genreLabel.bounds.size];
     self.genreLabel.frame = (CGRect) {
         .origin.x = 88.0f,
-        .origin.y = 39.0f,
+        .origin.y = 48.0f,
         .size = genreLabelSize
     };
     
     CGSize ratingsLabelSize = [self.ratingsLabel sizeThatFits:self.ratingsLabel.bounds.size];
     self.ratingsLabel.frame = (CGRect) {
         .origin.x = 135.0f,
-        .origin.y = 52.0f,
+        .origin.y = 59.0f,
         .size = ratingsLabelSize
     };
 }
@@ -253,6 +258,15 @@ static NSNumberFormatter *_decimalNumberFormatter = nil;
 
 - (void)setAppObject:(DAAppObject *)appObject
 {
+    if (appObject==nil)
+    {
+        // for empty row..
+        for (UIView *qView in [self subviews]) qView.hidden = YES;
+        self.purchaseButton.hidden = YES;
+        return;
+    } else
+        for (UIView *qView in [self subviews]) qView.hidden = NO;
+
     _appObject = appObject;
     self.nameLabel.text = appObject.name;
     self.genreLabel.text = appObject.genre;

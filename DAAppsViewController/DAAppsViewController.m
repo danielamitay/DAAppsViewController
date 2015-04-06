@@ -106,8 +106,8 @@
     NSMutableURLRequest *request = [[NSMutableURLRequest alloc] init];
     [request setURL:[NSURL URLWithString:requestUrlString]];
     [request setTimeoutInterval:20.0f];
-    [request setCachePolicy:NSURLRequestReturnCacheDataElseLoad];
-
+    [request setCachePolicy:NSURLRequestReloadRevalidatingCacheData]; //NSURLRequestReturnCacheDataElseLoad
+    
     void (^returnWithResultsAndError)(NSArray *, NSError *) = ^void(NSArray *results, NSError *error) {
         if (completion) {
             completion(results, error);
@@ -143,8 +143,11 @@
                 block(NO, error);
             }
         } else {
+            NSString *userCountryCode = [[[[NSLocale preferredLanguages] objectAtIndex:0] uppercaseString] substringToIndex:2];
+            
             NSMutableArray *mutableApps = [[NSMutableArray alloc] init];
-            for (NSDictionary *result in results) {
+            for (NSDictionary *result in results)
+            {
                 BOOL isArtistWrapper = [[result objectForKey:@"wrapperType"] isEqualToString:@"artist"];
                 if (isArtistWrapper) {
                     NSString *artistName = [result objectForKey:@"artistName"];
@@ -152,9 +155,22 @@
                         _defaultTitle = artistName;
                     }
                 }
+                
+
                 DAAppObject *appObject = [[DAAppObject alloc] initWithResult:result];
-                if (appObject && ![mutableApps containsObject:appObject]) {
-                    [mutableApps addObject:appObject];
+                if (appObject && ![mutableApps containsObject:appObject])
+                {
+                    // check language..
+                    NSArray *qSupportedLang = [result objectForKey:@"languageCodesISO2A"];
+//                       NSLog(@"code:%@ langs:%@ desc:%@", userCountryCode, qSupportedLang, [result objectForKey:@"trackCensoredName"]);
+                    
+                    
+                    if ([qSupportedLang containsObject:@"EN"] // has en.
+                        || [qSupportedLang containsObject:userCountryCode] // match
+                        )
+                    {
+                        [mutableApps addObject:appObject];
+                    }
                 }
             }
             self.appsArray = mutableApps;
@@ -221,11 +237,13 @@
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-    return self.compatibleAppsArray.count;
+    return self.compatibleAppsArray.count + 1;
 }
 
 - (void)tableView:(UITableView *)tableView willDisplayCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath
 {
+    if (indexPath.row>=self.compatibleAppsArray.count) return;
+
     if (!DA_IS_IOS7) {
         cell.backgroundColor = (indexPath.row % 2 ? DARK_BACKGROUND_COLOR : LIGHT_BACKGROUND_COLOR);
     }
@@ -233,12 +251,17 @@
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
+
     static NSString *CellIdentifier = @"Cell";
-    DAAppViewCell *cell = (DAAppViewCell *)[tableView dequeueReusableCellWithIdentifier:CellIdentifier];
-    if (!cell) {
+    DAAppViewCell *cell = (DAAppViewCell *) [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
+    if (!cell)
+    {
         cell = [[DAAppViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier];
     }
-    cell.appObject = [self.compatibleAppsArray objectAtIndex:indexPath.row];
+    if (indexPath.row >= self.compatibleAppsArray.count)
+    {
+        cell.appObject = nil;
+    } else cell.appObject = [self.compatibleAppsArray objectAtIndex:indexPath.row];
     return cell;
 }
 
@@ -247,12 +270,16 @@
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
+    if (indexPath.row>=self.compatibleAppsArray.count) return;
+
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
     [self presentAppObjectAtIndexPath:indexPath];
 }
 
 - (void)tableView:(UITableView *)tableView accessoryButtonTappedForRowWithIndexPath:(NSIndexPath *)indexPath
 {
+    if (indexPath.row>=self.compatibleAppsArray.count) return;
+
     [self presentAppObjectAtIndexPath:indexPath];
 }
 
