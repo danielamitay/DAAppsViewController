@@ -104,15 +104,15 @@ static NSNumberFormatter *_decimalNumberFormatter = nil;
         [self addSubview:_iconView];
         
         _nameLabel = [[UILabel alloc] init];
-        _nameLabel.font = [UIFont boldSystemFontOfSize:14.0f];
+        _nameLabel.font = [UIFont systemFontOfSize:12.0f];
         _nameLabel.backgroundColor = [UIColor clearColor];
-        _nameLabel.textColor = [UIColor colorWithWhite:78.0f/255.0f alpha:1.0f];
+        _nameLabel.textColor = [UIColor blackColor];
         [self addSubview:_nameLabel];
         
         _genreLabel = [[UILabel alloc] init];
         _genreLabel.font = [UIFont systemFontOfSize:10.0f];
         _genreLabel.backgroundColor = [UIColor clearColor];
-        _genreLabel.textColor = [UIColor colorWithWhite:99.0f/255.0f alpha:1.0f];
+        _genreLabel.textColor = [UIColor darkGrayColor];
         [self addSubview:_genreLabel];
         
         _starImageView = [[UIImageView alloc] init];
@@ -128,7 +128,7 @@ static NSNumberFormatter *_decimalNumberFormatter = nil;
         
         _noRatingsLabel = [[UILabel alloc] init];
         _noRatingsLabel.font = [UIFont systemFontOfSize:10.0f];
-        _noRatingsLabel.textColor = [UIColor colorWithWhite:99.0f/255.0f alpha:1.0f];
+        _noRatingsLabel.textColor = [UIColor darkGrayColor];
         _noRatingsLabel.backgroundColor = [UIColor clearColor];
         _noRatingsLabel.text = NSLocalizedString(@"No Ratings",);
         _noRatingsLabel.hidden = YES;
@@ -142,7 +142,7 @@ static NSNumberFormatter *_decimalNumberFormatter = nil;
         
         _ratingsLabel = [[UILabel alloc] init];
         _ratingsLabel.font = [UIFont systemFontOfSize:10.0f];
-        _ratingsLabel.textColor = [UIColor colorWithWhite:90.0f/255.0f alpha:1.0f];
+        _ratingsLabel.textColor = [UIColor darkGrayColor];
         _ratingsLabel.backgroundColor = [UIColor clearColor];
         [self addSubview:_ratingsLabel];
         
@@ -150,7 +150,7 @@ static NSNumberFormatter *_decimalNumberFormatter = nil;
         _purchaseButton.frame = (CGRect) {
             .origin.x = self.frame.size.width - 67.0f,
             .origin.y = 28.0f,
-            .size.width = 59.0f,
+            .size.width = 56.0f,
             .size.height = (DA_IS_IOS7 ? 26.0f : 25.0f)
         };
         _purchaseButton.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin;
@@ -184,7 +184,7 @@ static NSNumberFormatter *_decimalNumberFormatter = nil;
             [_purchaseButton setBackgroundImage:buttonImage forState:UIControlStateNormal];
             [_purchaseButton setBackgroundImage:buttonImageSelected forState:UIControlStateHighlighted];
         }
-        [_purchaseButton.titleLabel setFont:[UIFont boldSystemFontOfSize:13.0f]];
+        [_purchaseButton.titleLabel setFont:[UIFont boldSystemFontOfSize:12.0f]];
         [_purchaseButton setTitle:[NSLocalizedString(@"View",) uppercaseString] forState:UIControlStateNormal];
         
         [_purchaseButton addTarget:self
@@ -228,7 +228,7 @@ static NSNumberFormatter *_decimalNumberFormatter = nil;
     }];
     self.nameLabel.frame = (CGRect) {
         .origin.x = 88.0f,
-        .origin.y = 19.0f,
+        .origin.y = 20.0f,
         .size.width = MIN(nameLabelSize.width, maxNameLabelWidth),
         .size.height = nameLabelSize.height
     };
@@ -236,7 +236,7 @@ static NSNumberFormatter *_decimalNumberFormatter = nil;
     CGSize genreLabelSize = [self.genreLabel sizeThatFits:self.genreLabel.bounds.size];
     self.genreLabel.frame = (CGRect) {
         .origin.x = 88.0f,
-        .origin.y = 39.0f,
+        .origin.y = 38.0f,
         .size = genreLabelSize
     };
     
