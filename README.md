@@ -10,6 +10,12 @@
 - Add the **StoreKit** framework to your project.
 - `#import "DAAppsViewController.h"`
 
+### App Transport Security Settings
+
+As of iOS 9.0, App Transport Security (ATS) is enforcing additional security requirements for HTTP-based networking requests. As a result, the images that `DAAppsViewController` attempts to load from Apple are unable to load without the proper exceptions. To make sure that everything works as expected, make sure to add the following settings to your app's Info.plist file. If your app has `NSAllowsArbitraryLoads: true` enabled, then this is unnecessary.
+
+![App Transport Security Settings](https://github.com/danielamitay/DAAppsViewController/raw/master/app-transport.jpg)
+
 ## Usage
 
 Example project included (DAAppsViewControllerExample)
