@@ -91,7 +91,7 @@
 - (void)loadRequestPath:(NSString *)path withCompletion:(void (^)(NSArray *results, NSError *error))completion
 {
     NSMutableString *requestUrlString = [[NSMutableString alloc] init];
-    [requestUrlString appendString:@"http://itunes.apple.com/"];
+    [requestUrlString appendString:@"https://itunes.apple.com/"];
     [requestUrlString appendString:path];
     [requestUrlString appendFormat:@"&entity=software"];
     NSString *countryCode = [[NSLocale currentLocale] objectForKey:NSLocaleCountryCode];
