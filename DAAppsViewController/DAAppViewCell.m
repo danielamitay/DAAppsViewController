@@ -12,6 +12,25 @@ static NSCache *_iconCache = nil;
 static NSArray *_starRatingImages = nil;
 static NSNumberFormatter *_decimalNumberFormatter = nil;
 
+@interface UIImage (DAAppViewCell)
++ (UIImage *)imageNamedFromMainBundleOrFramework:(NSString *)name;
+@end
+
+@implementation UIImage (DAAppViewCell)
+
++ (UIImage *)imageNamedFromMainBundleOrFramework:(NSString *)name
+{
+    UIImage *image = [UIImage imageNamed:name];
+    if (!image) {
+        // Try to load from bundle
+        NSBundle *bundle = [NSBundle bundleForClass:[DAAppViewCell class]];
+        image = [UIImage imageNamed:name inBundle:bundle compatibleWithTraitCollection:nil];
+    }
+    
+    return image;
+}
+@end
+
 @interface DAAppViewCell ()
 
 @property (nonatomic, strong) UIImageView *iconView;
@@ -42,7 +61,12 @@ static NSNumberFormatter *_decimalNumberFormatter = nil;
         
         NSInteger numberOfStars = 11;
         NSMutableArray *starRatingImages = [[NSMutableArray alloc] initWithCapacity:numberOfStars];
-        UIImage *starsImageSheet = [UIImage imageNamed:@"DAAppsViewController.bundle/DAStarsImage"];
+        UIImage *starsImageSheet = [UIImage imageNamedFromMainBundleOrFramework:@"DAAppsViewController.bundle/DAStarsImage"];
+        if (!starsImageSheet) {
+            // Try to load from bundle
+            NSBundle *bundle = [NSBundle bundleForClass:[self class]];
+            starsImageSheet = [UIImage imageNamed:@"DAAppsViewController.bundle/DAStarsImage" inBundle:bundle compatibleWithTraitCollection:nil];
+        }
         CGSize starRatingImageSize = (CGSize) {
             .width = starsImageSheet.size.width,
             .height = starsImageSheet.size.height / (CGFloat)numberOfStars
@@ -90,7 +114,7 @@ static NSNumberFormatter *_decimalNumberFormatter = nil;
             .size.height = 67.0f
         };
         cellImageShadowView.contentMode = UIViewContentModeScaleAspectFit;
-        cellImageShadowView.image = [UIImage imageNamed:@"DAAppsViewController.bundle/DAShadowImage"];
+        cellImageShadowView.image = [UIImage imageNamedFromMainBundleOrFramework:@"DAAppsViewController.bundle/DAShadowImage"];
         [self addSubview:cellImageShadowView];
         
         _iconView = [[UIImageView alloc] init];
@@ -179,8 +203,8 @@ static NSNumberFormatter *_decimalNumberFormatter = nil;
             [_purchaseButton setTitleShadowColor:[UIColor whiteColor] forState:UIControlStateNormal];
             [_purchaseButton.titleLabel setShadowOffset:CGSizeMake(0.0f, 1.0f)];
             
-            UIImage *buttonImage = [UIImage imageNamed:@"DAAppsViewController.bundle/DAButtonImage"];
-            UIImage *buttonImageSelected = [UIImage imageNamed:@"DAAppsViewController.bundle/DAButtonImageSelected"];
+            UIImage *buttonImage = [UIImage imageNamedFromMainBundleOrFramework:@"DAAppsViewController.bundle/DAButtonImage"];
+            UIImage *buttonImageSelected = [UIImage imageNamedFromMainBundleOrFramework:@"DAAppsViewController.bundle/DAButtonImageSelected"];
             [_purchaseButton setBackgroundImage:buttonImage forState:UIControlStateNormal];
             [_purchaseButton setBackgroundImage:buttonImageSelected forState:UIControlStateHighlighted];
         }
@@ -269,7 +293,7 @@ static NSNumberFormatter *_decimalNumberFormatter = nil;
     if (iconImage) {
         self.iconView.image = iconImage;
     } else {
-        self.iconView.image = [UIImage imageNamed:@"DAAppsViewController.bundle/DAPlaceholderImage"];
+        self.iconView.image = [UIImage imageNamedFromMainBundleOrFramework:@"DAAppsViewController.bundle/DAPlaceholderImage"];
         NSURL *iconURL = self.appObject.iconURL;
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
             NSURLRequest *urlRequest = [NSURLRequest requestWithURL:iconURL
@@ -287,7 +311,7 @@ static NSNumberFormatter *_decimalNumberFormatter = nil;
                 }];
                 
                 if (!DA_IS_IOS7) {
-                    [[UIImage imageNamed:@"DAAppsViewController.bundle/DAOverlayImage"] drawInRect:(CGRect) {
+                    [[UIImage imageNamedFromMainBundleOrFramework:@"DAAppsViewController.bundle/DAOverlayImage"] drawInRect:(CGRect) {
                         .size = finalSize
                     }];
                 }
@@ -295,7 +319,7 @@ static NSNumberFormatter *_decimalNumberFormatter = nil;
                 UIImage *resizedImage = UIGraphicsGetImageFromCurrentImageContext();
                 UIGraphicsEndImageContext();
                 
-                CGImageRef maskRef = [UIImage imageNamed:@"DAAppsViewController.bundle/DAMaskImage"].CGImage;
+                CGImageRef maskRef = [UIImage imageNamedFromMainBundleOrFramework:@"DAAppsViewController.bundle/DAMaskImage"].CGImage;
                 CGImageRef mask = CGImageMaskCreate(CGImageGetWidth(maskRef),
                                                     CGImageGetHeight(maskRef),
                                                     CGImageGetBitsPerComponent(maskRef),
