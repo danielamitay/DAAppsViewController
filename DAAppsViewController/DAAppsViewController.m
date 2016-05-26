@@ -9,6 +9,7 @@
 #import "DAAppsViewController.h"
 #import <StoreKit/StoreKit.h>
 #import "DAAppViewCell.h"
+#import "SKStoreProductViewControllerLandscape.h"
 
 #define DARK_BACKGROUND_COLOR   [UIColor colorWithWhite:235.0f/255.0f alpha:1.0f]
 #define LIGHT_BACKGROUND_COLOR  [UIColor colorWithWhite:245.0f/255.0f alpha:1.0f]
@@ -270,7 +271,7 @@
     if ([SKStoreProductViewController class]) {
         NSString *itunesItemIdentifier = [NSString stringWithFormat:@"%ld", (long)appObject.appId];
         NSDictionary *appParameters = @{SKStoreProductParameterITunesItemIdentifier: itunesItemIdentifier};
-        SKStoreProductViewController *productViewController = [[SKStoreProductViewController alloc] init];
+        SKStoreProductViewControllerLandscape *productViewController = [[SKStoreProductViewControllerLandscape alloc] init];
         [productViewController setDelegate:self];
         [productViewController loadProductWithParameters:appParameters completionBlock:nil];
         [self presentViewController:productViewController
