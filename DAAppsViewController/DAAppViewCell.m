@@ -150,7 +150,7 @@ static NSNumberFormatter *_decimalNumberFormatter = nil;
         _purchaseButton.frame = (CGRect) {
             .origin.x = self.frame.size.width - 67.0f,
             .origin.y = 28.0f,
-            .size.width = 59.0f,
+            .size.width = 100.0f,
             .size.height = (DA_IS_IOS7 ? 26.0f : 25.0f)
         };
         _purchaseButton.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin;
@@ -222,7 +222,7 @@ static NSNumberFormatter *_decimalNumberFormatter = nil;
 {
     [super layoutSubviews];
     
-    CGFloat maxNameLabelWidth = self.bounds.size.width - 165.0f;
+    CGFloat maxNameLabelWidth = CGRectGetWidth(self.bounds) - CGRectGetWidth(self.purchaseButton.bounds) - CGRectGetWidth(self.iconView.bounds) - 40.0f;
     CGSize nameLabelSize = [self.nameLabel sizeThatFits:(CGSize) {
         .width = maxNameLabelWidth
     }];
