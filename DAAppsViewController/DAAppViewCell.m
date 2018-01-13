@@ -69,9 +69,7 @@ static NSNumberFormatter *_decimalNumberFormatter = nil;
     self = [super initWithStyle:style reuseIdentifier:reuseIdentifier];
     if (self) {
         self.selectionStyle = UITableViewCellSelectionStyleGray;
-        if ([self respondsToSelector:@selector(setSeparatorInset:)]) {
-            self.separatorInset = UIEdgeInsetsZero;
-        }
+        self.separatorInset = UIEdgeInsetsZero;
         
         UIView *cellTopWhiteLine = [[UIView alloc] init];
         cellTopWhiteLine.frame = (CGRect) {
