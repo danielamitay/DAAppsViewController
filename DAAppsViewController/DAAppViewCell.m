@@ -304,47 +304,49 @@ static NSNumberFormatter *_decimalNumberFormatter = nil;
                                                                  error:NULL];
             UIImage *iconImage = [UIImage imageWithData:iconData];
             if (iconImage) {
-                CGSize finalSize = _iconView.bounds.size;
-                UIGraphicsBeginImageContextWithOptions(finalSize, YES, 0.0f);
-                [iconImage drawInRect:(CGRect) {
-                    .size = finalSize
-                }];
-                
-                if (!DA_IS_IOS7) {
-                    [[UIImage imageNamedFromMainBundleOrFramework:@"DAAppsViewController.bundle/DAOverlayImage"] drawInRect:(CGRect) {
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    CGSize finalSize = _iconView.bounds.size;
+                    UIGraphicsBeginImageContextWithOptions(finalSize, YES, 0.0f);
+                    [iconImage drawInRect:(CGRect) {
                         .size = finalSize
                     }];
-                }
-                
-                UIImage *resizedImage = UIGraphicsGetImageFromCurrentImageContext();
-                UIGraphicsEndImageContext();
-                
-                CGImageRef maskRef = [UIImage imageNamedFromMainBundleOrFramework:@"DAAppsViewController.bundle/DAMaskImage"].CGImage;
-                CGImageRef mask = CGImageMaskCreate(CGImageGetWidth(maskRef),
-                                                    CGImageGetHeight(maskRef),
-                                                    CGImageGetBitsPerComponent(maskRef),
-                                                    CGImageGetBitsPerPixel(maskRef),
-                                                    CGImageGetBytesPerRow(maskRef),
-                                                    CGImageGetDataProvider(maskRef), NULL, false);
-                CGImageRef maskedImageRef = CGImageCreateWithMask([resizedImage CGImage], mask);
-                UIImage *maskedImage = [UIImage imageWithCGImage:maskedImageRef];
-                CGImageRelease(mask);
-                CGImageRelease(maskedImageRef);
-                
-                if (maskedImage) {
-                    [_iconCache setObject:maskedImage forKey:iconURL];
-                    dispatch_async(dispatch_get_main_queue(), ^{
-                        if (self.appObject.iconURL == iconURL) {
-                            [UIView transitionWithView:self.iconView
-                                              duration:0.5f
-                                               options:UIViewAnimationOptionTransitionCrossDissolve
-                                            animations:^{
-                                                self.iconView.image = maskedImage;
-                                            }
-                                            completion:nil];
-                        }
-                    });
-                }
+
+                    if (!DA_IS_IOS7) {
+                        [[UIImage imageNamedFromMainBundleOrFramework:@"DAAppsViewController.bundle/DAOverlayImage"] drawInRect:(CGRect) {
+                            .size = finalSize
+                        }];
+                    }
+
+                    UIImage *resizedImage = UIGraphicsGetImageFromCurrentImageContext();
+                    UIGraphicsEndImageContext();
+
+                    CGImageRef maskRef = [UIImage imageNamedFromMainBundleOrFramework:@"DAAppsViewController.bundle/DAMaskImage"].CGImage;
+                    CGImageRef mask = CGImageMaskCreate(CGImageGetWidth(maskRef),
+                                                        CGImageGetHeight(maskRef),
+                                                        CGImageGetBitsPerComponent(maskRef),
+                                                        CGImageGetBitsPerPixel(maskRef),
+                                                        CGImageGetBytesPerRow(maskRef),
+                                                        CGImageGetDataProvider(maskRef), NULL, false);
+                    CGImageRef maskedImageRef = CGImageCreateWithMask([resizedImage CGImage], mask);
+                    UIImage *maskedImage = [UIImage imageWithCGImage:maskedImageRef];
+                    CGImageRelease(mask);
+                    CGImageRelease(maskedImageRef);
+
+                    if (maskedImage) {
+                        [_iconCache setObject:maskedImage forKey:iconURL];
+                        dispatch_async(dispatch_get_main_queue(), ^{
+                            if (self.appObject.iconURL == iconURL) {
+                                [UIView transitionWithView:self.iconView
+                                                  duration:0.5f
+                                                   options:UIViewAnimationOptionTransitionCrossDissolve
+                                                animations:^{
+                                                    self.iconView.image = maskedImage;
+                                                }
+                                                completion:nil];
+                            }
+                        });
+                    }
+                });
             }
         });
     }
