@@ -25,6 +25,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		25DAA9672178E51C00303C09 /* DAAppsViewController.podspec */ = {isa = PBXFileReference; lastKnownFileType = text; name = DAAppsViewController.podspec; path = ../DAAppsViewController.podspec; sourceTree = "<group>"; };
 		631EF346170E2AB500031F79 /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = System/Library/Frameworks/StoreKit.framework; sourceTree = SDKROOT; };
 		631EF34B170F6A6E00031F79 /* DAAppObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DAAppObject.h; sourceTree = "<group>"; };
 		631EF34C170F6A6E00031F79 /* DAAppObject.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DAAppObject.m; sourceTree = "<group>"; };
@@ -129,6 +130,7 @@
 				63948AD2170CE7B10065D68A /* DAAppViewCell.m */,
 				631EF34B170F6A6E00031F79 /* DAAppObject.h */,
 				631EF34C170F6A6E00031F79 /* DAAppObject.m */,
+				25DAA9672178E51C00303C09 /* DAAppsViewController.podspec */,
 				63FBB7CF171E99090047BD03 /* DAAppsViewController.bundle */,
 			);
 			name = DAAppsViewController;
