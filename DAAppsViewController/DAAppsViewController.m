@@ -38,7 +38,11 @@
     }
     
     UIView *tableFooterView = [[UIView alloc] init];
-    tableFooterView.backgroundColor = [UIColor whiteColor];
+    if (@available(iOS 13.0, *)) {
+        tableFooterView.backgroundColor = [UIColor separatorColor];
+    } else {
+        tableFooterView.backgroundColor = [UIColor whiteColor];
+    }
     tableFooterView.frame = (CGRect) {
         .size.width = self.tableView.frame.size.width,
         .size.height = 1.0f
