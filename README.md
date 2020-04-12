@@ -59,7 +59,7 @@ DAAppsViewController *appsViewController = [[DAAppsViewController alloc] init];
 
 ### Compatibility
 
-iOS5.0+
+iOS 8.0+
 
 ### Automatic Reference Counting (ARC) support
 

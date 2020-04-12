@@ -38,7 +38,11 @@
     }
     
     UIView *tableFooterView = [[UIView alloc] init];
-    tableFooterView.backgroundColor = [UIColor whiteColor];
+    if (@available(iOS 13.0, *)) {
+        tableFooterView.backgroundColor = [UIColor separatorColor];
+    } else {
+        tableFooterView.backgroundColor = [UIColor whiteColor];
+    }
     tableFooterView.frame = (CGRect) {
         .size.width = self.tableView.frame.size.width,
         .size.height = 1.0f
@@ -271,16 +275,12 @@
         NSString *itunesItemIdentifier = [NSString stringWithFormat:@"%ld",  (long)appObject.appId];
         NSMutableDictionary *appParameters = [@{SKStoreProductParameterITunesItemIdentifier: itunesItemIdentifier} mutableCopy];
         
-#ifdef __IPHONE_8_0
-        if (&SKStoreProductParameterAffiliateToken) {
-            if (self.affiliateToken) {
-                [appParameters setObject:self.affiliateToken forKey:SKStoreProductParameterAffiliateToken];
-                if (self.campaignToken) {
-                    [appParameters setObject:self.campaignToken forKey:SKStoreProductParameterCampaignToken];
-                }
+        if (self.affiliateToken) {
+            [appParameters setObject:self.affiliateToken forKey:SKStoreProductParameterAffiliateToken];
+            if (self.campaignToken) {
+                [appParameters setObject:self.campaignToken forKey:SKStoreProductParameterCampaignToken];
             }
         }
-#endif
         
         SKStoreProductViewController *productViewController = [[SKStoreProductViewController alloc] init];
         [productViewController setDelegate:self];
