@@ -94,10 +94,6 @@
     [requestUrlString appendString:@"https://itunes.apple.com/"];
     [requestUrlString appendString:path];
     [requestUrlString appendFormat:@"&entity=software"];
-    NSString *countryCode = [[NSLocale currentLocale] objectForKey:NSLocaleCountryCode];
-    if (countryCode) {
-        [requestUrlString appendFormat:@"&country=%@", countryCode];
-    }
     NSString *languagueCode = [[NSLocale currentLocale] objectForKey:NSLocaleLanguageCode];
     if (languagueCode) {
         [requestUrlString appendFormat:@"&l=%@", languagueCode];
