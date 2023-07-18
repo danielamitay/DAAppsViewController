@@ -11,6 +11,7 @@
 static NSCache *_iconCache = nil;
 static NSArray *_starRatingImages = nil;
 static NSNumberFormatter *_decimalNumberFormatter = nil;
+static CGSize const DAAppIconSize = {64, 64};
 
 @interface UIImage (DAAppViewCell)
 + (UIImage *)imageNamedFromMainBundleOrFramework:(NSString *)name;
@@ -123,8 +124,7 @@ static NSNumberFormatter *_decimalNumberFormatter = nil;
         _iconView.frame = (CGRect) {
             .origin.x = 12.0f,
             .origin.y = 9.0f,
-            .size.width = 64.0f,
-            .size.height = 64.0f
+            .size = DAAppIconSize,
         };
         _iconView.contentMode = UIViewContentModeScaleAspectFit;
         [self addSubview:_iconView];
@@ -322,15 +322,14 @@ static NSNumberFormatter *_decimalNumberFormatter = nil;
                                                                  error:NULL];
             UIImage *iconImage = [UIImage imageWithData:iconData];
             if (iconImage) {
-                CGSize finalSize = _iconView.bounds.size;
-                UIGraphicsBeginImageContextWithOptions(finalSize, YES, 0.0f);
+                UIGraphicsBeginImageContextWithOptions(DAAppIconSize, YES, 0.0f);
                 [iconImage drawInRect:(CGRect) {
-                    .size = finalSize
+                    .size = DAAppIconSize
                 }];
                 
                 if (!DA_IS_IOS7) {
                     [[UIImage imageNamedFromMainBundleOrFramework:@"DAAppsViewController.bundle/DAOverlayImage"] drawInRect:(CGRect) {
-                        .size = finalSize
+                        .size = DAAppIconSize
                     }];
                 }
                 
