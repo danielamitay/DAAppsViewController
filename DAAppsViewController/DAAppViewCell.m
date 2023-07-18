@@ -335,7 +335,7 @@ static CGSize const DAAppIconSize = {64, 64};
                     dispatch_async(dispatch_get_main_queue(), ^{
                         if (self.appObject.iconURL == iconURL) {
                             [UIView transitionWithView:self.iconView
-                                              duration:0.5f
+                                              duration:0.3
                                                options:UIViewAnimationOptionTransitionCrossDissolve
                                             animations:^{
                                                 self.iconView.image = maskedImage;
