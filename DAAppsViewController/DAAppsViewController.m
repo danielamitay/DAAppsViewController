@@ -10,9 +10,6 @@
 #import <StoreKit/StoreKit.h>
 #import "DAAppViewCell.h"
 
-#define DARK_BACKGROUND_COLOR   [UIColor colorWithWhite:235.0f/255.0f alpha:1.0f]
-#define LIGHT_BACKGROUND_COLOR  [UIColor colorWithWhite:245.0f/255.0f alpha:1.0f]
-
 @interface DAAppsViewController () <SKStoreProductViewControllerDelegate> {
     BOOL _isLoading;
     NSString *_defaultTitle;
@@ -33,9 +30,6 @@
     [super viewDidLoad];
     
     self.tableView.rowHeight = 83.0f;
-    if (!DA_IS_IOS7) {
-        self.tableView.backgroundColor = DARK_BACKGROUND_COLOR;
-    }
     
     UIView *tableFooterView = [[UIView alloc] init];
     if (@available(iOS 13.0, *)) {
@@ -226,13 +220,6 @@
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
     return self.compatibleAppsArray.count;
-}
-
-- (void)tableView:(UITableView *)tableView willDisplayCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    if (!DA_IS_IOS7) {
-        cell.backgroundColor = (indexPath.row % 2 ? DARK_BACKGROUND_COLOR : LIGHT_BACKGROUND_COLOR);
-    }
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath

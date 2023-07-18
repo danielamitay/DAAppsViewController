@@ -193,39 +193,27 @@ static CGSize const DAAppIconSize = {64, 64};
             .origin.x = self.frame.size.width - 67.0f,
             .origin.y = 28.0f,
             .size.width = 56.0f,
-            .size.height = (DA_IS_IOS7 ? 26.0f : 25.0f)
+            .size.height = 26.0f,
         };
         _purchaseButton.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin;
         
-        if (DA_IS_IOS7) {
-            UIColor *titleColor = [UIColor systemBlueColor];
-            [_purchaseButton setTitleColor:titleColor forState:UIControlStateNormal];
-            [_purchaseButton setTitleColor:[UIColor whiteColor] forState:UIControlStateHighlighted];
+        UIColor *titleColor = [UIColor systemBlueColor];
+        [_purchaseButton setTitleColor:titleColor forState:UIControlStateNormal];
+        [_purchaseButton setTitleColor:[UIColor whiteColor] forState:UIControlStateHighlighted];
 
-            _purchaseButton.layer.borderColor = titleColor.CGColor;
-            _purchaseButton.layer.borderWidth = 1.0f;
-            _purchaseButton.layer.cornerRadius = 4.0f;
-            _purchaseButton.layer.masksToBounds = YES;
-            
-            CGRect rect = CGRectMake(0.0f, 0.0f, 2.0f, 2.0f);
-            UIGraphicsBeginImageContextWithOptions(rect.size, NO, 0);
-            CGContextRef context = UIGraphicsGetCurrentContext();
-            CGContextSetFillColorWithColor(context, titleColor.CGColor);
-            CGContextFillRect(context, rect);
-            UIImage *coloredImage = UIGraphicsGetImageFromCurrentImageContext();
-            UIGraphicsEndImageContext();
-            [_purchaseButton setBackgroundImage:coloredImage forState:UIControlStateHighlighted];
-        } else {
-            UIColor *titleColor = [UIColor colorWithWhite:105.0f/255.0f alpha:1.0f];
-            [_purchaseButton setTitleColor:titleColor forState:UIControlStateNormal];
-            [_purchaseButton setTitleShadowColor:[UIColor whiteColor] forState:UIControlStateNormal];
-            [_purchaseButton.titleLabel setShadowOffset:CGSizeMake(0.0f, 1.0f)];
-            
-            UIImage *buttonImage = [UIImage imageNamedFromMainBundleOrFramework:@"DAAppsViewController.bundle/DAButtonImage"];
-            UIImage *buttonImageSelected = [UIImage imageNamedFromMainBundleOrFramework:@"DAAppsViewController.bundle/DAButtonImageSelected"];
-            [_purchaseButton setBackgroundImage:buttonImage forState:UIControlStateNormal];
-            [_purchaseButton setBackgroundImage:buttonImageSelected forState:UIControlStateHighlighted];
-        }
+        _purchaseButton.layer.borderColor = titleColor.CGColor;
+        _purchaseButton.layer.borderWidth = 1.0f;
+        _purchaseButton.layer.cornerRadius = 4.0f;
+        _purchaseButton.layer.masksToBounds = YES;
+
+        CGRect rect = CGRectMake(0.0f, 0.0f, 2.0f, 2.0f);
+        UIGraphicsBeginImageContextWithOptions(rect.size, NO, 0);
+        CGContextRef context = UIGraphicsGetCurrentContext();
+        CGContextSetFillColorWithColor(context, titleColor.CGColor);
+        CGContextFillRect(context, rect);
+        UIImage *coloredImage = UIGraphicsGetImageFromCurrentImageContext();
+        UIGraphicsEndImageContext();
+        [_purchaseButton setBackgroundImage:coloredImage forState:UIControlStateHighlighted];
         [_purchaseButton.titleLabel setFont:[UIFont boldSystemFontOfSize:12.0f]];
         [_purchaseButton setTitle:[NSLocalizedString(@"View",) uppercaseString] forState:UIControlStateNormal];
         
@@ -326,12 +314,6 @@ static CGSize const DAAppIconSize = {64, 64};
                 [iconImage drawInRect:(CGRect) {
                     .size = DAAppIconSize
                 }];
-                
-                if (!DA_IS_IOS7) {
-                    [[UIImage imageNamedFromMainBundleOrFramework:@"DAAppsViewController.bundle/DAOverlayImage"] drawInRect:(CGRect) {
-                        .size = DAAppIconSize
-                    }];
-                }
                 
                 UIImage *resizedImage = UIGraphicsGetImageFromCurrentImageContext();
                 UIGraphicsEndImageContext();
