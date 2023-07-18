@@ -2,8 +2,7 @@
 //  RootViewController.h
 //  DAAppsViewControllerExample
 //
-//  Created by Daniel Amitay on 4/9/13.
-//  Copyright (c) 2013 Daniel Amitay. All rights reserved.
+//  Created by Daniel Amitay on 7/18/23.
 //
 
 #import <UIKit/UIKit.h>

@@ -2,8 +2,7 @@
 //  RootViewController.m
 //  DAAppsViewControllerExample
 //
-//  Created by Daniel Amitay on 4/9/13.
-//  Copyright (c) 2013 Daniel Amitay. All rights reserved.
+//  Created by Daniel Amitay on 7/18/23.
 //
 
 #import "RootViewController.h"
@@ -23,28 +22,28 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    
+
     self.tableView.rowHeight = 44.0f;
     self.title = @"DAAppsViewController";
-    
+
     self.navigationItem.backBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"Back"
-                                                                             style:UIBarButtonItemStyleBordered
+                                                                             style:UIBarButtonItemStylePlain
                                                                             target:nil
                                                                             action:nil];
-    
+
     self.artistsDictionary = [NSDictionary dictionaryWithObjectsAndKeys:
                               @356087517, @"Daniel Amitay",
                               @284417353, @"Apple",
                               @284882218, @"Facebook",
                               @281956209, @"Google",
                               nil];
-    
+
     self.appsDictionary = [NSDictionary dictionaryWithObjectsAndKeys:
                            @[@592447445,@333903271,@284882215,@288429040,@403639508,@310633997], @"Social Apps",
                            @[@575647534,@498151501,@482453112,@582790430,@543421080,@493136154], @"Slick Apps",
                            @[@284993459,@383463868,@377342622,@489321253], @"Cool Tech",
                            nil];
-    
+
     self.termsDictionary = [NSDictionary dictionaryWithObjectsAndKeys:
                             @"Angry", @"Angry",
                             @"Sleep", @"Sleep",
@@ -111,7 +110,7 @@
     {
         cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleValue1 reuseIdentifier:CellIdentifier];
     }
-    
+
     switch (indexPath.section)
     {
         case 0:
@@ -126,7 +125,7 @@
         default:
             break;
     }
-    
+
     return cell;
 }
 
