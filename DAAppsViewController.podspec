@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name     = 'DAAppsViewController'
-  s.version  = '1.4.0'
+  s.version  = '1.5.0'
   s.platform = :ios, '8.0'
   s.license  = 'MIT'
   s.summary  = 'DAAppsViewController is a simple way of displaying apps from the App Store in an aesthetically similar manner.'
