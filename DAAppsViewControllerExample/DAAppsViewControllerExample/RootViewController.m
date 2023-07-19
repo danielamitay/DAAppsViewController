@@ -39,7 +39,7 @@
                               nil];
 
     self.appsDictionary = [NSDictionary dictionaryWithObjectsAndKeys:
-                           @[@592447445,@333903271,@284882215,@288429040,@403639508,@310633997], @"Social Apps",
+                           @[@447188370, @333903271,@6446901002,@284882215,@389801252,@288429040,@310633997], @"Social Apps",
                            @[@575647534,@498151501,@482453112,@582790430,@543421080,@493136154], @"Slick Apps",
                            @[@284993459,@383463868,@377342622,@489321253], @"Cool Tech",
                            nil];
@@ -51,30 +51,20 @@
                             nil];
 }
 
-- (void)didReceiveMemoryWarning
-{
-    [super didReceiveMemoryWarning];
-}
-
 
 #pragma mark - Table view data source
 
 - (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section
 {
-    switch (section)
-    {
+    switch (section) {
         case 0:
             return @"By Artist Identifier (NSInteger)";
-            break;
         case 1:
             return @"By App Identifiers (NSArray)";
-            break;
         case 2:
             return @"By Search Term (NSString)";
-            break;
         default:
             return nil;
-            break;
     }
 }
 
@@ -85,20 +75,15 @@
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-    switch (section)
-    {
+    switch (section) {
         case 0:
             return self.artistsDictionary.allKeys.count;
-            break;
         case 1:
             return self.appsDictionary.allKeys.count;
-            break;
         case 2:
             return self.termsDictionary.allKeys.count;
-            break;
         default:
             return 1;
-            break;
     }
 }
 
@@ -106,13 +91,11 @@
 {
     static NSString *CellIdentifier = @"Cell";
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
-    if (!cell)
-    {
+    if (!cell) {
         cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleValue1 reuseIdentifier:CellIdentifier];
     }
 
-    switch (indexPath.section)
-    {
+    switch (indexPath.section) {
         case 0:
             cell.textLabel.text = [self.artistsDictionary.allKeys objectAtIndex:indexPath.row];
             break;
@@ -135,30 +118,23 @@
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
     DAAppsViewController *appsViewController = [[DAAppsViewController alloc] init];
-    switch (indexPath.section)
-    {
-        case 0:
-        {
+    switch (indexPath.section) {
+        case 0: {
             NSString *key = [self.artistsDictionary.allKeys objectAtIndex:indexPath.row];
             NSNumber *number = [self.artistsDictionary objectForKey:key];
             [appsViewController loadAppsWithArtistId:number.integerValue completionBlock:nil];
-        }
-            break;
-        case 1:
-        {
+        } break;
+        case 1: {
             NSString *key = [self.appsDictionary.allKeys objectAtIndex:indexPath.row];
             NSArray *values = [self.appsDictionary objectForKey:key];
             appsViewController.pageTitle = key;
             [appsViewController loadAppsWithAppIds:values completionBlock:nil];
-        }
-            break;
-        case 2:
-        {
+        } break;
+        case 2: {
             NSString *key = [self.termsDictionary.allKeys objectAtIndex:indexPath.row];
             NSString *term = [self.termsDictionary objectForKey:key];
             [appsViewController loadAppsWithSearchTerm:term completionBlock:nil];
-        }
-            break;
+        } break;
         default:
             break;
     }
