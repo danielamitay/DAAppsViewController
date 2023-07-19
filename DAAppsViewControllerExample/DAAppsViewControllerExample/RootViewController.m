@@ -62,7 +62,7 @@
         case 1:
             return @"By App Identifiers (NSArray)";
         case 2:
-            return @"By Search Term (NSString)";
+            return @"By Search Term (NSString) + Modal Presentation";
         default:
             return nil;
     }
@@ -117,28 +117,47 @@
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    DAAppsViewController *appsViewController = [[DAAppsViewController alloc] init];
     switch (indexPath.section) {
         case 0: {
             NSString *key = [self.artistsDictionary.allKeys objectAtIndex:indexPath.row];
             NSNumber *number = [self.artistsDictionary objectForKey:key];
+            DAAppsViewController *appsViewController = [[DAAppsViewController alloc] init];
             [appsViewController loadAppsWithArtistId:number.integerValue completionBlock:nil];
+            [self.navigationController pushViewController:appsViewController animated:YES];
         } break;
         case 1: {
             NSString *key = [self.appsDictionary.allKeys objectAtIndex:indexPath.row];
             NSArray *values = [self.appsDictionary objectForKey:key];
+            DAAppsViewController *appsViewController = [[DAAppsViewController alloc] init];
             appsViewController.pageTitle = key;
             [appsViewController loadAppsWithAppIds:values completionBlock:nil];
+            [self.navigationController pushViewController:appsViewController animated:YES];
         } break;
         case 2: {
             NSString *key = [self.termsDictionary.allKeys objectAtIndex:indexPath.row];
             NSString *term = [self.termsDictionary objectForKey:key];
+            DAAppsViewController *appsViewController = [[DAAppsViewController alloc] init];
             [appsViewController loadAppsWithSearchTerm:term completionBlock:nil];
+            UINavigationController *modalNavController = [[UINavigationController alloc] init];
+            appsViewController.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"Done"
+                                                                                                   style:UIBarButtonItemStyleDone
+                                                                                                  target:self
+                                                                                                  action:@selector(dismissModal)];
+            [modalNavController setViewControllers:@[appsViewController]];
+            modalNavController.modalPresentationStyle = UIModalPresentationFormSheet;
+            [self presentViewController:modalNavController animated:YES completion:nil];
+            [tableView deselectRowAtIndexPath:indexPath animated:YES];
         } break;
         default:
             break;
     }
-    [self.navigationController pushViewController:appsViewController animated:YES];
+}
+
+- (void)dismissModal
+{
+    if (self.presentedViewController) {
+        [self dismissViewControllerAnimated:YES completion:nil];
+    }
 }
 
 @end
