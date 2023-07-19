@@ -30,18 +30,6 @@
     [super viewDidLoad];
     
     self.tableView.rowHeight = 83.0f;
-    
-    UIView *tableFooterView = [[UIView alloc] init];
-    if (@available(iOS 13.0, *)) {
-        tableFooterView.backgroundColor = [UIColor separatorColor];
-    } else {
-        tableFooterView.backgroundColor = [UIColor whiteColor];
-    }
-    tableFooterView.frame = (CGRect) {
-        .size.width = self.tableView.frame.size.width,
-        .size.height = 1.0f
-    };
-    self.tableView.tableFooterView = tableFooterView;
 }
 
 
@@ -51,9 +39,6 @@
 {
     _appsArray = appsArray;
     [self.tableView reloadData];
-    self.tableView.contentOffset = (CGPoint) {
-        .y = -self.tableView.contentInset.top
-    };
 }
 
 - (void)setShouldShowIncompatibleApps:(BOOL)shouldShowIncompatibleApps
