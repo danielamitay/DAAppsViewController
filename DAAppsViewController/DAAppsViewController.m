@@ -29,7 +29,7 @@
 {
     [super viewDidLoad];
     
-    self.tableView.rowHeight = 83.0f;
+    self.tableView.rowHeight = 82.0f;
 }
 
 

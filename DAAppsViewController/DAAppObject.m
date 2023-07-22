@@ -30,7 +30,7 @@
         _formattedPrice = [[result objectForKey:@"formattedPrice"] uppercaseString];
         NSString *artworkUrl100 = [result objectForKey:@"artworkUrl100"];
         NSString *artworkUrl512 = [result objectForKey:@"artworkUrl512"];
-        NSString *iconUrlString = (artworkUrl100.length ? artworkUrl100 : artworkUrl512);
+        NSString *iconUrlString = (artworkUrl512.length ? artworkUrl512 : artworkUrl100);
         _iconURL = [[NSURL alloc] initWithString:iconUrlString];
         _userRating = [[result objectForKey:@"averageUserRating"] floatValue];
         _userRatingCount = [[result objectForKey:@"userRatingCount"] integerValue];

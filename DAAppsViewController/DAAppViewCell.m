@@ -104,18 +104,17 @@ static CGSize const DAAppIconSize = {64, 64};
         }
         [self addSubview:cellTopWhiteLine];
         
-        UIImageView *cellImageShadowView = [[UIImageView alloc] init];
-        cellImageShadowView.frame = (CGRect) {
-            .origin.x = 11.0f,
-            .origin.y = 8.0f,
-            .size.width = 66.0f,
-            .size.height = 67.0f
-        };
-        cellImageShadowView.contentMode = UIViewContentModeScaleAspectFit;
-        cellImageShadowView.image = [UIImage imageNamedFromMainBundleOrFramework:@"DAAppsViewController.bundle/DAShadowImage"];
-        [self addSubview:cellImageShadowView];
-        
         _iconView = [[UIImageView alloc] init];
+        _iconView.layer.cornerRadius = 11.0;
+        _iconView.layer.masksToBounds = YES;
+        _iconView.layer.borderWidth = 1.0;
+        _iconView.layer.borderColor = [UIColor colorWithWhite:0.5 alpha:0.1].CGColor;
+        if (@available(iOS 13.0, *)) {
+            _iconView.layer.cornerCurve = kCACornerCurveContinuous;
+            _iconView.backgroundColor = [UIColor tertiarySystemGroupedBackgroundColor];
+        } else {
+            _iconView.backgroundColor = [UIColor colorWithWhite:0.5 alpha:0.2];
+        }
         _iconView.frame = (CGRect) {
             .origin.x = 12.0f,
             .origin.y = 9.0f,
@@ -298,7 +297,7 @@ static CGSize const DAAppIconSize = {64, 64};
     if (iconImage) {
         self.iconView.image = iconImage;
     } else {
-        self.iconView.image = [UIImage imageNamedFromMainBundleOrFramework:@"DAAppsViewController.bundle/DAPlaceholderImage"];
+        self.iconView.image = nil;
         NSURL *iconURL = self.appObject.iconURL;
         NSURLRequest *request = [NSURLRequest requestWithURL:iconURL
                                                  cachePolicy:NSURLRequestReturnCacheDataElseLoad
@@ -307,34 +306,19 @@ static CGSize const DAAppIconSize = {64, 64};
             UIImage *iconImage = [UIImage imageWithData:data];
             if (iconImage) {
                 UIGraphicsBeginImageContextWithOptions(DAAppIconSize, YES, 0.0f);
-                [iconImage drawInRect:(CGRect) {
-                    .size = DAAppIconSize
-                }];
-
+                [iconImage drawInRect:(CGRect) { .size = DAAppIconSize }];
                 UIImage *resizedImage = UIGraphicsGetImageFromCurrentImageContext();
                 UIGraphicsEndImageContext();
 
-                CGImageRef maskRef = [UIImage imageNamedFromMainBundleOrFramework:@"DAAppsViewController.bundle/DAMaskImage"].CGImage;
-                CGImageRef mask = CGImageMaskCreate(CGImageGetWidth(maskRef),
-                                                    CGImageGetHeight(maskRef),
-                                                    CGImageGetBitsPerComponent(maskRef),
-                                                    CGImageGetBitsPerPixel(maskRef),
-                                                    CGImageGetBytesPerRow(maskRef),
-                                                    CGImageGetDataProvider(maskRef), NULL, false);
-                CGImageRef maskedImageRef = CGImageCreateWithMask([resizedImage CGImage], mask);
-                UIImage *maskedImage = [UIImage imageWithCGImage:maskedImageRef];
-                CGImageRelease(mask);
-                CGImageRelease(maskedImageRef);
-
-                if (maskedImage) {
-                    [_iconCache setObject:maskedImage forKey:iconURL];
+                if (resizedImage) {
+                    [_iconCache setObject:resizedImage forKey:iconURL];
                     dispatch_async(dispatch_get_main_queue(), ^{
                         if (self.appObject.iconURL == iconURL) {
                             [UIView transitionWithView:self.iconView
                                               duration:0.3
                                                options:UIViewAnimationOptionTransitionCrossDissolve
                                             animations:^{
-                                                self.iconView.image = maskedImage;
+                                                self.iconView.image = resizedImage;
                                             }
                                             completion:nil];
                         }
