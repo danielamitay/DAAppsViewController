@@ -152,11 +152,6 @@
 
 #pragma mark - Public methods
 
-- (void)loadAllAppsWithArtistId:(NSInteger)artistId completionBlock:(void(^)(BOOL result, NSError *error))block
-{
-    [self loadAppsWithArtistId:artistId completionBlock:block];
-}
-
 - (void)loadAppsWithArtistId:(NSInteger)artistId completionBlock:(void(^)(BOOL result, NSError *error))block
 {
     NSString *requestPath = [NSString stringWithFormat:@"lookup?id=%ld", (long)artistId];
@@ -238,33 +233,16 @@
 - (void)presentAppObjectAtIndexPath:(NSIndexPath *)indexPath
 {
     DAAppObject *appObject = [self.compatibleAppsArray objectAtIndex:indexPath.row];
-    
-    if (self.didViewAppBlock) {
-        self.didViewAppBlock(appObject.appId);
-    }
-    
-    if ([SKStoreProductViewController class]) {
-        NSString *itunesItemIdentifier = [NSString stringWithFormat:@"%ld",  (long)appObject.appId];
-        NSMutableDictionary *appParameters = [@{SKStoreProductParameterITunesItemIdentifier: itunesItemIdentifier} mutableCopy];
-        
-        if (self.affiliateToken) {
-            [appParameters setObject:self.affiliateToken forKey:SKStoreProductParameterAffiliateToken];
-            if (self.campaignToken) {
-                [appParameters setObject:self.campaignToken forKey:SKStoreProductParameterCampaignToken];
-            }
-        }
-        
-        SKStoreProductViewController *productViewController = [[SKStoreProductViewController alloc] init];
-        [productViewController setDelegate:self];
-        [productViewController loadProductWithParameters:appParameters completionBlock:nil];
-        [self presentViewController:productViewController
-                           animated:YES
-                         completion:nil];
-    } else {
-        NSString *appUrlString = [NSString stringWithFormat:@"itms-apps://itunes.apple.com/app/id%ld?mt=8", (long)appObject.appId];
-        NSURL *appURL = [[NSURL alloc] initWithString:appUrlString];
-        [[UIApplication sharedApplication] openURL:appURL];
-    }
+
+    NSString *itunesItemIdentifier = [NSString stringWithFormat:@"%ld",  (long)appObject.appId];
+    NSDictionary<NSString *, id> *parameters = @{ SKStoreProductParameterITunesItemIdentifier: itunesItemIdentifier };
+
+    SKStoreProductViewController *productViewController = [[SKStoreProductViewController alloc] init];
+    [productViewController setDelegate:self];
+    [productViewController loadProductWithParameters:parameters completionBlock:nil];
+    [self presentViewController:productViewController
+                       animated:YES
+                     completion:nil];
 }
 
 

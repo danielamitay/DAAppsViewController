@@ -10,8 +10,6 @@
 
 @interface DAAppsViewController : UITableViewController
 
-@property (nonatomic, copy) void(^didViewAppBlock)(NSInteger appId);
-
 // Customized title of the view controller.
 // It should be set before calling loadAppsWithXXX methods.
 // If it is nil, the title will be the artist/company name or 'Results'.
@@ -22,19 +20,9 @@
 // A list of bundle ids or app ids of apps that should not be displayed.
 @property (nonatomic, copy) NSArray *blockedApps;
 
-
-#ifdef __IPHONE_8_0
-@property (nonatomic, strong) NSString *affiliateToken;
-@property (nonatomic, strong) NSString *campaignToken;
-#endif
-
 - (void)loadAppsWithArtistId:(NSInteger)artistId completionBlock:(void(^)(BOOL result, NSError *error))block;
 - (void)loadAppsWithAppIds:(NSArray *)appIds completionBlock:(void(^)(BOOL result, NSError *error))block;
 - (void)loadAppsWithBundleIds:(NSArray *)bundleIds completionBlock:(void(^)(BOOL result, NSError *error))block;
 - (void)loadAppsWithSearchTerm:(NSString *)searchTerm completionBlock:(void(^)(BOOL result, NSError *error))block;
-
-
-// DEPRECATED (use `shouldShowIncompatibleApps` instead)
-- (void)loadAllAppsWithArtistId:(NSInteger)artistId completionBlock:(void(^)(BOOL result, NSError *error))block DEPRECATED_ATTRIBUTE;
 
 @end
