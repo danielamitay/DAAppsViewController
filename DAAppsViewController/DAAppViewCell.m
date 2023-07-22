@@ -292,7 +292,11 @@ static CGSize const DAAppIconSize = {64, 64};
     self.ratingsLabel.hidden = (appObject.userRatingCount == 0);
     self.noRatingsLabel.hidden = (appObject.userRatingCount > 0);
     self.starImageView.hidden = (appObject.userRatingCount == 0);
-    [self.purchaseButton setTitle:appObject.formattedPrice forState:UIControlStateNormal];
+    if (appObject.formattedPrice) {
+        [self.purchaseButton setTitle:appObject.formattedPrice forState:UIControlStateNormal];
+    } else {
+        [self.purchaseButton setTitle:[NSLocalizedString(@"View",) uppercaseString] forState:UIControlStateNormal];
+    }
     self.starImageView.image = [_starRatingImages objectAtIndex:(2 * appObject.userRating)];
     
     UIImage *iconImage = [_iconCache objectForKey:self.appObject.iconURL];
