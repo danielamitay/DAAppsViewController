@@ -93,24 +93,24 @@
 
     void (^returnWithResultsAndError)(NSArray *, NSError *) = ^void(NSArray *results, NSError *error) {
         if (completion) {
-            completion(results, error);
+            dispatch_async(dispatch_get_main_queue(), ^{
+                completion(results, error);
+            });
         }
     };
 
-    [NSURLConnection sendAsynchronousRequest:request queue:[NSOperationQueue mainQueue] completionHandler:^(NSURLResponse *response, NSData *data, NSError *connectionError) {
-        if (connectionError) {
-            return returnWithResultsAndError(nil, connectionError);
+    [[[NSURLSession sharedSession] dataTaskWithRequest:request completionHandler:^(NSData *data, id res, NSError *err) {
+        if (err) {
+            return returnWithResultsAndError(nil, err);
         }
-
         NSError *jsonError;
         NSDictionary *jsonDictionary = [NSJSONSerialization JSONObjectWithData:data options:0 error:&jsonError];
         if (jsonError) {
             return returnWithResultsAndError(nil, jsonError);
         }
-
         NSArray *results = [jsonDictionary objectForKey:@"results"];
         returnWithResultsAndError(results, nil);
-    }];
+    }] resume];
 }
 
 - (void)loadAppsWithPath:(NSString *)path defaultTitle:(NSString *)defaultTitle completionBlock:(void(^)(BOOL result, NSError *error))block
@@ -174,7 +174,8 @@
 
 - (void)loadAppsWithSearchTerm:(NSString *)searchTerm completionBlock:(void(^)(BOOL result, NSError *error))block
 {
-    NSString *escapedSearchTerm = [searchTerm stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+    NSCharacterSet *allowedCharacters = [NSCharacterSet whitespaceAndNewlineCharacterSet].invertedSet;
+    NSString *escapedSearchTerm = [searchTerm stringByAddingPercentEncodingWithAllowedCharacters:allowedCharacters];
     NSString *requestPath = [NSString stringWithFormat:@"search?term=%@", escapedSearchTerm];
     [self loadAppsWithPath:requestPath defaultTitle:searchTerm completionBlock:block];
 }

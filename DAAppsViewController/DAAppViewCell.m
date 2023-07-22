@@ -63,11 +63,6 @@ static CGSize const DAAppIconSize = {64, 64};
         NSInteger numberOfStars = 11;
         NSMutableArray *starRatingImages = [[NSMutableArray alloc] initWithCapacity:numberOfStars];
         UIImage *starsImageSheet = [UIImage imageNamedFromMainBundleOrFramework:@"DAAppsViewController.bundle/DAStarsImage"];
-        if (!starsImageSheet) {
-            // Try to load from bundle
-            NSBundle *bundle = [NSBundle bundleForClass:[self class]];
-            starsImageSheet = [UIImage imageNamed:@"DAAppsViewController.bundle/DAStarsImage" inBundle:bundle compatibleWithTraitCollection:nil];
-        }
         CGSize starRatingImageSize = (CGSize) {
             .width = starsImageSheet.size.width,
             .height = starsImageSheet.size.height / (CGFloat)numberOfStars
@@ -305,23 +300,20 @@ static CGSize const DAAppIconSize = {64, 64};
     } else {
         self.iconView.image = [UIImage imageNamedFromMainBundleOrFramework:@"DAAppsViewController.bundle/DAPlaceholderImage"];
         NSURL *iconURL = self.appObject.iconURL;
-        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-            NSURLRequest *urlRequest = [NSURLRequest requestWithURL:iconURL
-                                                        cachePolicy:NSURLRequestReturnCacheDataElseLoad
-                                                    timeoutInterval:15.0f];
-            NSData *iconData = [NSURLConnection sendSynchronousRequest:urlRequest
-                                                     returningResponse:NULL
-                                                                 error:NULL];
-            UIImage *iconImage = [UIImage imageWithData:iconData];
+        NSURLRequest *request = [NSURLRequest requestWithURL:iconURL
+                                                 cachePolicy:NSURLRequestReturnCacheDataElseLoad
+                                             timeoutInterval:15.0f];
+        [[[NSURLSession sharedSession] dataTaskWithRequest:request completionHandler:^(NSData *data, id res, NSError *err) {
+            UIImage *iconImage = [UIImage imageWithData:data];
             if (iconImage) {
                 UIGraphicsBeginImageContextWithOptions(DAAppIconSize, YES, 0.0f);
                 [iconImage drawInRect:(CGRect) {
                     .size = DAAppIconSize
                 }];
-                
+
                 UIImage *resizedImage = UIGraphicsGetImageFromCurrentImageContext();
                 UIGraphicsEndImageContext();
-                
+
                 CGImageRef maskRef = [UIImage imageNamedFromMainBundleOrFramework:@"DAAppsViewController.bundle/DAMaskImage"].CGImage;
                 CGImageRef mask = CGImageMaskCreate(CGImageGetWidth(maskRef),
                                                     CGImageGetHeight(maskRef),
@@ -333,7 +325,7 @@ static CGSize const DAAppIconSize = {64, 64};
                 UIImage *maskedImage = [UIImage imageWithCGImage:maskedImageRef];
                 CGImageRelease(mask);
                 CGImageRelease(maskedImageRef);
-                
+
                 if (maskedImage) {
                     [_iconCache setObject:maskedImage forKey:iconURL];
                     dispatch_async(dispatch_get_main_queue(), ^{
@@ -349,7 +341,7 @@ static CGSize const DAAppIconSize = {64, 64};
                     });
                 }
             }
-        });
+        }] resume];
     }
 }
 
