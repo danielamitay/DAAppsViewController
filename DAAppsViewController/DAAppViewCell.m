@@ -9,37 +9,13 @@
 #import "DAAppViewCell.h"
 
 static NSCache *_iconCache = nil;
-static NSArray *_starRatingImages = nil;
-static NSNumberFormatter *_decimalNumberFormatter = nil;
 static CGSize const DAAppIconSize = {64, 64};
-
-@interface UIImage (DAAppViewCell)
-+ (UIImage *)imageNamedFromMainBundleOrFramework:(NSString *)name;
-@end
-
-@implementation UIImage (DAAppViewCell)
-
-+ (UIImage *)imageNamedFromMainBundleOrFramework:(NSString *)name
-{
-    UIImage *image = [UIImage imageNamed:name];
-    if (!image) {
-        // Try to load from bundle
-        NSBundle *bundle = [NSBundle bundleForClass:[DAAppViewCell class]];
-        image = [UIImage imageNamed:name inBundle:bundle compatibleWithTraitCollection:nil];
-    }
-    
-    return image;
-}
-@end
 
 @interface DAAppViewCell ()
 
 @property (nonatomic, strong) UIImageView *iconView;
 @property (nonatomic, strong) UILabel *nameLabel;
 @property (nonatomic, strong) UILabel *genreLabel;
-@property (nonatomic, strong) UIImageView *starImageView;
-@property (nonatomic, strong) UILabel *noRatingsLabel;
-@property (nonatomic, strong) UILabel *ratingsLabel;
 @property (nonatomic, strong) UIButton *purchaseButton;
 
 - (void)purchaseButton:(UIButton *)button;
@@ -59,28 +35,6 @@ static CGSize const DAAppIconSize = {64, 64};
                                                  selector:@selector(removeAllObjects)
                                                      name:UIApplicationDidReceiveMemoryWarningNotification
                                                    object:nil];
-        
-        NSInteger numberOfStars = 11;
-        NSMutableArray *starRatingImages = [[NSMutableArray alloc] initWithCapacity:numberOfStars];
-        UIImage *starsImageSheet = [UIImage imageNamedFromMainBundleOrFramework:@"DAAppsViewController.bundle/DAStarsImage"];
-        CGSize starRatingImageSize = (CGSize) {
-            .width = starsImageSheet.size.width,
-            .height = starsImageSheet.size.height / (CGFloat)numberOfStars
-        };
-        for (NSInteger starIndex = numberOfStars - 1; starIndex >= 0; starIndex--) {
-            UIGraphicsBeginImageContextWithOptions(starRatingImageSize, NO, 0.0f);
-            CGPoint starPoint = (CGPoint) {
-                .y = -starRatingImageSize.height * starIndex
-            };
-            [starsImageSheet drawAtPoint:starPoint];
-            UIImage *starRatingImage = UIGraphicsGetImageFromCurrentImageContext();
-            UIGraphicsEndImageContext();
-            [starRatingImages addObject:starRatingImage];
-        }
-        _starRatingImages = starRatingImages;
-
-        _decimalNumberFormatter = [[NSNumberFormatter alloc] init];
-        [_decimalNumberFormatter setNumberStyle:NSNumberFormatterDecimalStyle];
     }
 }
 
@@ -115,16 +69,12 @@ static CGSize const DAAppIconSize = {64, 64};
         } else {
             _iconView.backgroundColor = [UIColor colorWithWhite:0.5 alpha:0.2];
         }
-        _iconView.frame = (CGRect) {
-            .origin.x = 12.0f,
-            .origin.y = 9.0f,
-            .size = DAAppIconSize,
-        };
         _iconView.contentMode = UIViewContentModeScaleAspectFit;
         [self addSubview:_iconView];
         
         _nameLabel = [[UILabel alloc] init];
-        _nameLabel.font = [UIFont systemFontOfSize:12.0f];
+        _nameLabel.numberOfLines = 2;
+        _nameLabel.font = [UIFont systemFontOfSize:16.0f];
         _nameLabel.backgroundColor = [UIColor clearColor];
         if (@available(iOS 13.0, *)) {
             _nameLabel.textColor = [UIColor labelColor];
@@ -134,7 +84,7 @@ static CGSize const DAAppIconSize = {64, 64};
         [self addSubview:_nameLabel];
         
         _genreLabel = [[UILabel alloc] init];
-        _genreLabel.font = [UIFont systemFontOfSize:10.0f];
+        _genreLabel.font = [UIFont systemFontOfSize:13.0f];
         _genreLabel.backgroundColor = [UIColor clearColor];
         if (@available(iOS 13.0, *)) {
             _genreLabel.textColor = [UIColor secondaryLabelColor];
@@ -142,79 +92,61 @@ static CGSize const DAAppIconSize = {64, 64};
             _genreLabel.textColor = [UIColor darkGrayColor];
         }
         [self addSubview:_genreLabel];
-        
-        _starImageView = [[UIImageView alloc] init];
-        _starImageView.frame = (CGRect) {
-            .origin.x = 88.0f,
-            .origin.y = 54.0f,
-            .size.width = 44.0f,
-            .size.height = 9.5f
-        };
-        _starImageView.contentMode = UIViewContentModeScaleAspectFill;
-        _starImageView.clipsToBounds = YES;
-        [self addSubview:_starImageView];
-        
-        _noRatingsLabel = [[UILabel alloc] init];
-        _noRatingsLabel.font = [UIFont systemFontOfSize:10.0f];
-        if (@available(iOS 13.0, *)) {
-            _noRatingsLabel.textColor = [UIColor secondaryLabelColor];
-        } else {
-            _noRatingsLabel.textColor = [UIColor darkGrayColor];
-        }
-        _noRatingsLabel.backgroundColor = [UIColor clearColor];
-        _noRatingsLabel.text = NSLocalizedString(@"No Ratings",);
-        _noRatingsLabel.hidden = YES;
-        CGSize noRatingsLabelSize = [_noRatingsLabel sizeThatFits:_noRatingsLabel.bounds.size];
-        _noRatingsLabel.frame = (CGRect) {
-            .origin.x = 88.0f,
-            .origin.y = 54.0f,
-            .size = noRatingsLabelSize
-        };
-        [self addSubview:_noRatingsLabel];
-        
-        _ratingsLabel = [[UILabel alloc] init];
-        _ratingsLabel.font = [UIFont systemFontOfSize:10.0f];
-        if (@available(iOS 13.0, *)) {
-            _ratingsLabel.textColor = [UIColor secondaryLabelColor];
-        } else {
-            _ratingsLabel.textColor = [UIColor darkGrayColor];
-        }
-        _ratingsLabel.backgroundColor = [UIColor clearColor];
-        [self addSubview:_ratingsLabel];
-        
-        _purchaseButton = [UIButton buttonWithType:UIButtonTypeCustom];
-        _purchaseButton.frame = (CGRect) {
-            .origin.x = self.frame.size.width - 67.0f,
-            .origin.y = 28.0f,
-            .size.width = 56.0f,
-            .size.height = 26.0f,
-        };
-        _purchaseButton.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin;
-        
-        UIColor *titleColor = [UIColor systemBlueColor];
-        [_purchaseButton setTitleColor:titleColor forState:UIControlStateNormal];
-        [_purchaseButton setTitleColor:[UIColor whiteColor] forState:UIControlStateHighlighted];
 
-        _purchaseButton.layer.borderColor = titleColor.CGColor;
-        _purchaseButton.layer.borderWidth = 1.0f;
-        _purchaseButton.layer.cornerRadius = 4.0f;
+        _purchaseButton = [UIButton buttonWithType:UIButtonTypeCustom];
+        _purchaseButton.layer.cornerRadius = 14.0f;
         _purchaseButton.layer.masksToBounds = YES;
 
+        UIColor *buttonColor = [UIColor colorWithWhite:0.75 alpha:0.2];
         CGRect rect = CGRectMake(0.0f, 0.0f, 2.0f, 2.0f);
         UIGraphicsBeginImageContextWithOptions(rect.size, NO, 0);
         CGContextRef context = UIGraphicsGetCurrentContext();
-        CGContextSetFillColorWithColor(context, titleColor.CGColor);
+        CGContextSetFillColorWithColor(context, buttonColor.CGColor);
         CGContextFillRect(context, rect);
         UIImage *coloredImage = UIGraphicsGetImageFromCurrentImageContext();
         UIGraphicsEndImageContext();
-        [_purchaseButton setBackgroundImage:coloredImage forState:UIControlStateHighlighted];
-        [_purchaseButton.titleLabel setFont:[UIFont boldSystemFontOfSize:12.0f]];
+        [_purchaseButton setBackgroundImage:coloredImage forState:UIControlStateNormal];
+        [_purchaseButton.titleLabel setFont:[UIFont boldSystemFontOfSize:15.0f]];
         [_purchaseButton setTitle:[NSLocalizedString(@"View",) uppercaseString] forState:UIControlStateNormal];
-        
+        [_purchaseButton setTitleColor:[UIColor systemBlueColor] forState:UIControlStateNormal];
         [_purchaseButton addTarget:self
                                 action:@selector(purchaseButton:)
                       forControlEvents:UIControlEventTouchUpInside];
-        [self setAccessoryView:_purchaseButton];
+        [self addSubview:_purchaseButton];
+
+        UILayoutGuide *aboveNameGuide = [UILayoutGuide new];
+        [self addLayoutGuide:aboveNameGuide];
+        UILayoutGuide *belowGenreGuide = [UILayoutGuide new];
+        [self addLayoutGuide:belowGenreGuide];
+
+        _iconView.translatesAutoresizingMaskIntoConstraints = NO;
+        _nameLabel.translatesAutoresizingMaskIntoConstraints = NO;
+        _genreLabel.translatesAutoresizingMaskIntoConstraints = NO;
+        _purchaseButton.translatesAutoresizingMaskIntoConstraints = NO;
+        [NSLayoutConstraint activateConstraints:@[
+            [_iconView.leftAnchor constraintEqualToAnchor:self.leftAnchor constant:12.0],
+            [_iconView.centerYAnchor constraintEqualToAnchor:self.centerYAnchor],
+            [_iconView.widthAnchor constraintEqualToConstant:DAAppIconSize.width],
+            [_iconView.heightAnchor constraintEqualToConstant:DAAppIconSize.height],
+
+            [aboveNameGuide.topAnchor constraintEqualToAnchor:self.topAnchor],
+            [aboveNameGuide.heightAnchor constraintEqualToAnchor:belowGenreGuide.heightAnchor],
+            [belowGenreGuide.bottomAnchor constraintEqualToAnchor:self.bottomAnchor],
+
+            [_nameLabel.topAnchor constraintEqualToAnchor:aboveNameGuide.bottomAnchor],
+            [_nameLabel.leftAnchor constraintEqualToAnchor:_iconView.rightAnchor constant:12.0],
+            [_nameLabel.rightAnchor constraintLessThanOrEqualToAnchor:_purchaseButton.leftAnchor constant:-10.0],
+
+            [_genreLabel.topAnchor constraintEqualToAnchor:_nameLabel.bottomAnchor constant:3.0],
+            [_genreLabel.leftAnchor constraintEqualToAnchor:_nameLabel.leftAnchor],
+            [_genreLabel.rightAnchor constraintLessThanOrEqualToAnchor:_purchaseButton.leftAnchor constant:-10.0],
+            [_genreLabel.bottomAnchor constraintEqualToAnchor:belowGenreGuide.topAnchor],
+
+            [_purchaseButton.rightAnchor constraintEqualToAnchor:self.rightAnchor constant:-21.0],
+            [_purchaseButton.centerYAnchor constraintEqualToAnchor:self.centerYAnchor],
+            [_purchaseButton.widthAnchor constraintEqualToConstant:72.0],
+            [_purchaseButton.heightAnchor constraintEqualToConstant:28.0],
+        ]];
     }
     return self;
 }
@@ -240,39 +172,6 @@ static CGSize const DAAppIconSize = {64, 64};
 }
 
 
-#pragma mark - View methods
-
-- (void)layoutSubviews
-{
-    [super layoutSubviews];
-    
-    CGFloat maxNameLabelWidth = self.bounds.size.width - 165.0f;
-    CGSize nameLabelSize = [self.nameLabel sizeThatFits:(CGSize) {
-        .width = maxNameLabelWidth
-    }];
-    self.nameLabel.frame = (CGRect) {
-        .origin.x = 88.0f,
-        .origin.y = 20.0f,
-        .size.width = MIN(nameLabelSize.width, maxNameLabelWidth),
-        .size.height = nameLabelSize.height
-    };
-    
-    CGSize genreLabelSize = [self.genreLabel sizeThatFits:self.genreLabel.bounds.size];
-    self.genreLabel.frame = (CGRect) {
-        .origin.x = 88.0f,
-        .origin.y = 38.0f,
-        .size = genreLabelSize
-    };
-    
-    CGSize ratingsLabelSize = [self.ratingsLabel sizeThatFits:self.ratingsLabel.bounds.size];
-    self.ratingsLabel.frame = (CGRect) {
-        .origin.x = 135.0f,
-        .origin.y = 52.0f,
-        .size = ratingsLabelSize
-    };
-}
-
-
 #pragma mark - Property methods
 
 - (void)setAppObject:(DAAppObject *)appObject
@@ -280,19 +179,12 @@ static CGSize const DAAppIconSize = {64, 64};
     _appObject = appObject;
     self.nameLabel.text = appObject.name;
     self.genreLabel.text = appObject.genre;
-    NSNumber *userRatingCountNumber = [NSNumber numberWithInteger:appObject.userRatingCount];
-    NSString *formattedRatingsCount = [_decimalNumberFormatter stringFromNumber:userRatingCountNumber];
-    self.ratingsLabel.text = [NSString stringWithFormat:@"(%@)", formattedRatingsCount];
-    self.ratingsLabel.hidden = (appObject.userRatingCount == 0);
-    self.noRatingsLabel.hidden = (appObject.userRatingCount > 0);
-    self.starImageView.hidden = (appObject.userRatingCount == 0);
     if (appObject.formattedPrice) {
         [self.purchaseButton setTitle:appObject.formattedPrice forState:UIControlStateNormal];
     } else {
         [self.purchaseButton setTitle:[NSLocalizedString(@"View",) uppercaseString] forState:UIControlStateNormal];
     }
-    self.starImageView.image = [_starRatingImages objectAtIndex:(2 * appObject.userRating)];
-    
+
     UIImage *iconImage = [_iconCache objectForKey:self.appObject.iconURL];
     if (iconImage) {
         self.iconView.image = iconImage;
