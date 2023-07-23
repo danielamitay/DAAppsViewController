@@ -42,23 +42,14 @@ static CGSize const DAAppIconSize = {64, 64};
 {
     self = [super initWithStyle:style reuseIdentifier:reuseIdentifier];
     if (self) {
-        self.selectionStyle = UITableViewCellSelectionStyleGray;
         self.separatorInset = UIEdgeInsetsZero;
-        
-        UIView *cellTopWhiteLine = [[UIView alloc] init];
-        cellTopWhiteLine.frame = (CGRect) {
-            .size.width = self.frame.size.width,
-            .size.height = 1.0f
-        };
-        cellTopWhiteLine.autoresizingMask = UIViewAutoresizingFlexibleWidth;
-        if (@available(iOS 13.0, *)) {
-            cellTopWhiteLine.backgroundColor = [UIColor systemBackgroundColor];
-        } else {
-            cellTopWhiteLine.backgroundColor = [UIColor whiteColor];
-        }
-        [self addSubview:cellTopWhiteLine];
-        
+
+        UIView *selectedBackgroundColor = [[UIView alloc] init];
+        selectedBackgroundColor.backgroundColor = [UIColor colorWithWhite:0.75 alpha:0.2];
+        self.selectedBackgroundView = selectedBackgroundColor;
+
         _iconView = [[UIImageView alloc] init];
+        _iconView.contentMode = UIViewContentModeScaleAspectFit;
         _iconView.layer.cornerRadius = 11.0;
         _iconView.layer.masksToBounds = YES;
         _iconView.layer.borderWidth = 1.0;
@@ -69,7 +60,6 @@ static CGSize const DAAppIconSize = {64, 64};
         } else {
             _iconView.backgroundColor = [UIColor colorWithWhite:0.5 alpha:0.2];
         }
-        _iconView.contentMode = UIViewContentModeScaleAspectFit;
         [self addSubview:_iconView];
         
         _nameLabel = [[UILabel alloc] init];
@@ -96,7 +86,6 @@ static CGSize const DAAppIconSize = {64, 64};
         _purchaseButton = [UIButton buttonWithType:UIButtonTypeCustom];
         _purchaseButton.layer.cornerRadius = 14.0f;
         _purchaseButton.layer.masksToBounds = YES;
-
         UIColor *buttonColor = [UIColor colorWithWhite:0.75 alpha:0.2];
         CGRect rect = CGRectMake(0.0f, 0.0f, 2.0f, 2.0f);
         UIGraphicsBeginImageContextWithOptions(rect.size, NO, 0);
@@ -142,7 +131,7 @@ static CGSize const DAAppIconSize = {64, 64};
             [_genreLabel.rightAnchor constraintLessThanOrEqualToAnchor:_purchaseButton.leftAnchor constant:-10.0],
             [_genreLabel.bottomAnchor constraintEqualToAnchor:belowGenreGuide.topAnchor],
 
-            [_purchaseButton.rightAnchor constraintEqualToAnchor:self.rightAnchor constant:-21.0],
+            [_purchaseButton.rightAnchor constraintEqualToAnchor:self.safeAreaLayoutGuide.rightAnchor constant:-12.0],
             [_purchaseButton.centerYAnchor constraintEqualToAnchor:self.centerYAnchor],
             [_purchaseButton.widthAnchor constraintEqualToConstant:72.0],
             [_purchaseButton.heightAnchor constraintEqualToConstant:28.0],
