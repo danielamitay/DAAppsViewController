@@ -15,9 +15,7 @@
     NSString *_defaultTitle;
 }
 
-@property (nonatomic, copy) NSArray *appsArray;
-
-- (void)presentAppObjectAtIndexPath:(NSIndexPath *)indexPath;
+@property (nonatomic, copy) NSArray<DAAppObject *> *appsArray;
 
 @end
 
@@ -35,7 +33,7 @@
 
 #pragma mark - Property methods
 
-- (void)setAppsArray:(NSArray *)appsArray
+- (void)setAppsArray:(NSArray<DAAppObject *> *)appsArray
 {
     _appsArray = appsArray;
     [self.tableView reloadData];
@@ -47,7 +45,7 @@
     [self.tableView reloadData];
 }
 
-- (void)setBlockedApps:(NSArray *)blockedApps
+- (void)setBlockedApps:(NSArray<id> *)blockedApps
 {
     _blockedApps = blockedApps;
     [self.tableView reloadData];
@@ -71,7 +69,7 @@
 
 #pragma mark - Loading methods
 
-- (void)loadRequestPath:(NSString *)path withCompletion:(void (^)(NSArray *results, NSError *error))completion
+- (void)_loadRequestPath:(NSString *)path withCompletion:(void (^)(NSArray<NSDictionary *> *results, NSError *error))completion
 {
     NSMutableString *requestUrlString = [[NSMutableString alloc] init];
     [requestUrlString appendString:@"https://itunes.apple.com/"];
@@ -113,40 +111,47 @@
     }] resume];
 }
 
-- (void)loadAppsWithPath:(NSString *)path defaultTitle:(NSString *)defaultTitle completionBlock:(void(^)(BOOL result, NSError *error))block
+- (void)_loadAppsWithPath:(NSString *)path defaultTitle:(NSString *)defaultTitle completionBlock:(void(^)(BOOL result, NSError *error))block
 {
     _isLoading = YES;
     _defaultTitle = defaultTitle;
     [self updateTitle];
-    [self loadRequestPath:path withCompletion:^(NSArray *results, NSError *error) {
-        _isLoading = NO;
-        if (error) {
-            _defaultTitle = NSLocalizedString(@"Error",);
-            if (block) {
-                block(NO, error);
-            }
-        } else {
-            NSMutableArray *mutableApps = [[NSMutableArray alloc] init];
-            for (NSDictionary *result in results) {
-                BOOL isArtistWrapper = [[result objectForKey:@"wrapperType"] isEqualToString:@"artist"];
-                if (isArtistWrapper) {
-                    NSString *artistName = [result objectForKey:@"artistName"];
-                    if (artistName) {
-                        _defaultTitle = artistName;
-                    }
+
+    __weak typeof(self) wSelf = self;
+    [self _loadRequestPath:path withCompletion:^(NSArray<NSDictionary *> *results, NSError *error) {
+        [wSelf _didLoadApps:results error:error completionBlock:block];
+    }];
+}
+
+- (void)_didLoadApps:(NSArray<NSDictionary *> *)results error:(NSError *)error completionBlock:(void(^)(BOOL result, NSError *error))block
+{
+    _isLoading = NO;
+    if (error) {
+        _defaultTitle = NSLocalizedString(@"Error",);
+        if (block) {
+            block(NO, error);
+        }
+    } else {
+        NSMutableArray *mutableApps = [[NSMutableArray alloc] init];
+        for (NSDictionary *result in results) {
+            BOOL isArtistWrapper = [[result objectForKey:@"wrapperType"] isEqualToString:@"artist"];
+            if (isArtistWrapper) {
+                NSString *artistName = [result objectForKey:@"artistName"];
+                if (artistName) {
+                    _defaultTitle = artistName;
                 }
-                DAAppObject *appObject = [[DAAppObject alloc] initWithResult:result];
-                if (appObject && ![mutableApps containsObject:appObject]) {
-                    [mutableApps addObject:appObject];
-                }
             }
-            self.appsArray = mutableApps;
-            if (block) {
-                block(YES, nil);
+            DAAppObject *appObject = [[DAAppObject alloc] initWithResult:result];
+            if (appObject && ![mutableApps containsObject:appObject]) {
+                [mutableApps addObject:appObject];
             }
         }
-        [self updateTitle];
-    }];
+        self.appsArray = mutableApps;
+        if (block) {
+            block(YES, nil);
+        }
+    }
+    [self updateTitle];
 }
 
 
@@ -155,21 +160,21 @@
 - (void)loadAppsWithArtistId:(NSInteger)artistId completionBlock:(void(^)(BOOL result, NSError *error))block
 {
     NSString *requestPath = [NSString stringWithFormat:@"lookup?id=%ld", (long)artistId];
-    [self loadAppsWithPath:requestPath defaultTitle:NSLocalizedString(@"Results",) completionBlock:block];
+    [self _loadAppsWithPath:requestPath defaultTitle:NSLocalizedString(@"Results",) completionBlock:block];
 }
 
-- (void)loadAppsWithAppIds:(NSArray *)appIds completionBlock:(void(^)(BOOL result, NSError *error))block
+- (void)loadAppsWithAppIds:(NSArray<NSNumber *> *)appIds completionBlock:(void(^)(BOOL result, NSError *error))block
 {
     NSString *appString = [appIds componentsJoinedByString:@","];
     NSString *requestPath = [NSString stringWithFormat:@"lookup?id=%@", appString];
-    [self loadAppsWithPath:requestPath defaultTitle:NSLocalizedString(@"Results",) completionBlock:block];
+    [self _loadAppsWithPath:requestPath defaultTitle:NSLocalizedString(@"Results",) completionBlock:block];
 }
 
-- (void)loadAppsWithBundleIds:(NSArray *)bundleIds completionBlock:(void(^)(BOOL result, NSError *error))block
+- (void)loadAppsWithBundleIds:(NSArray<NSString *> *)bundleIds completionBlock:(void(^)(BOOL result, NSError *error))block
 {
     NSString *bundleString = [bundleIds componentsJoinedByString:@","];
     NSString *requestPath = [NSString stringWithFormat:@"lookup?bundleId=%@", bundleString];
-    [self loadAppsWithPath:requestPath defaultTitle:NSLocalizedString(@"Results",) completionBlock:block];
+    [self _loadAppsWithPath:requestPath defaultTitle:NSLocalizedString(@"Results",) completionBlock:block];
 }
 
 - (void)loadAppsWithSearchTerm:(NSString *)searchTerm completionBlock:(void(^)(BOOL result, NSError *error))block
@@ -177,13 +182,13 @@
     NSCharacterSet *allowedCharacters = [NSCharacterSet whitespaceAndNewlineCharacterSet].invertedSet;
     NSString *escapedSearchTerm = [searchTerm stringByAddingPercentEncodingWithAllowedCharacters:allowedCharacters];
     NSString *requestPath = [NSString stringWithFormat:@"search?term=%@", escapedSearchTerm];
-    [self loadAppsWithPath:requestPath defaultTitle:searchTerm completionBlock:block];
+    [self _loadAppsWithPath:requestPath defaultTitle:searchTerm completionBlock:block];
 }
 
 
 #pragma mark - Table view data source
 
-- (NSArray *)compatibleAppsArray
+- (NSArray<DAAppObject *> *)compatibleAppsArray
 {
     if (self.shouldShowIncompatibleApps) {
         return self.appsArray;
@@ -220,18 +225,18 @@
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
-    [self presentAppObjectAtIndexPath:indexPath];
+    [self _presentAppObjectAtIndexPath:indexPath];
 }
 
 - (void)tableView:(UITableView *)tableView accessoryButtonTappedForRowWithIndexPath:(NSIndexPath *)indexPath
 {
-    [self presentAppObjectAtIndexPath:indexPath];
+    [self _presentAppObjectAtIndexPath:indexPath];
 }
 
 
 #pragma mark - Presentation methods
 
-- (void)presentAppObjectAtIndexPath:(NSIndexPath *)indexPath
+- (void)_presentAppObjectAtIndexPath:(NSIndexPath *)indexPath
 {
     DAAppObject *appObject = [self.compatibleAppsArray objectAtIndex:indexPath.row];
 
