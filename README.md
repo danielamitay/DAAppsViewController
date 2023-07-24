@@ -1,26 +1,34 @@
 # DAAppsViewController
 
-`DAAppsViewController` is a simple way of displaying apps from the App Store in an aesthetically similar manner. The user is able to view each app's App Store page by launching an instance of `SKStoreProductViewController`. Particularly useful for showing an app developer's other apps.
+`DAAppsViewController` is a simple way of displaying apps from the App Store in a similar UI/UX. The user is able to view each app's App Store page by launching an instance of `SKStoreProductViewController`. Particularly useful for showing an app developer's other apps.
 
-![Screenshot](https://github.com/danielamitay/DAAppsViewController/raw/master/screenshot.jpg)
+| By ArtistId | By List of AppIds | By Search Term |
+|---|---|---|
+| ![by artist id](./screenshots/screenshot-1.png) | ![by list of app ids](./screenshots/screenshot-2.png) | ![by search term](./screenshots/screenshot-3.png) |
 
 ## Installation
+
+Requires iOS 12.0+
+
+#### Via CocoaPods
+
+- Add to your Podfile:
+```ruby
+pod 'DAAppsViewController'
+```
+- `@import DAAppsViewController;`
+
+#### Manually
 
 - Copy over the `DAAppsViewController` folder to your project folder.
 - Add the **StoreKit** framework to your project.
 - `#import "DAAppsViewController.h"`
 
-### App Transport Security Settings
-
-As of iOS 9.0, App Transport Security (ATS) is enforcing additional security requirements for HTTP-based networking requests. As a result, the images that `DAAppsViewController` attempts to load from Apple are unable to load without the proper exceptions. To make sure that everything works as expected, make sure to add the following settings to your app's Info.plist file. If your app has `NSAllowsArbitraryLoads: true` enabled, then this is unnecessary.
-
-![App Transport Security Settings](https://github.com/danielamitay/DAAppsViewController/raw/master/app-transport.jpg)
-
 ## Usage
 
 Example project included (DAAppsViewControllerExample)
 
-### Displaying apps by a specific developer (useful for "Our other apps")
+#### Displaying apps by a specific developer (useful for "Our other apps")
 
 ```objective-c
 DAAppsViewController *appsViewController = [[DAAppsViewController alloc] init];
@@ -28,7 +36,7 @@ DAAppsViewController *appsViewController = [[DAAppsViewController alloc] init];
 [self.navigationController pushViewController:appsViewController animated:YES];
 ```
 
-### Displaying a predetermined set of apps
+#### Displaying a predetermined set of apps
 
 By **appId**:
 ```objective-c
@@ -47,23 +55,13 @@ DAAppsViewController *appsViewController = [[DAAppsViewController alloc] init];
 [self.navigationController pushViewController:appsViewController animated:YES];
 ```
 
-### Displaying apps for a specific App Store search term
+#### Displaying apps for a specific App Store search term
 
 ```objective-c
 DAAppsViewController *appsViewController = [[DAAppsViewController alloc] init];
 [appsViewController loadAppsWithSearchTerm:@"Radio" completionBlock:nil];
 [self.navigationController pushViewController:appsViewController animated:YES];
 ```
-
-## Notes
-
-### Compatibility
-
-iOS 8.0+
-
-### Automatic Reference Counting (ARC) support
-
-`DAAppsViewController` was made with ARC enabled by default.
 
 ## Contact
 
