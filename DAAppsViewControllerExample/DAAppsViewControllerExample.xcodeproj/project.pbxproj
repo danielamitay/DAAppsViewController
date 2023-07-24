@@ -14,7 +14,6 @@
 		6390A5752A672B250070CA82 /* RootViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 6390A5742A672B250070CA82 /* RootViewController.m */; };
 		6390A57E2A672B8C0070CA82 /* DAAppsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 6390A5782A672B8C0070CA82 /* DAAppsViewController.m */; };
 		6390A57F2A672B8C0070CA82 /* DAAppObject.m in Sources */ = {isa = PBXBuildFile; fileRef = 6390A57A2A672B8C0070CA82 /* DAAppObject.m */; };
-		6390A5802A672B8C0070CA82 /* DAAppsViewController.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 6390A57C2A672B8C0070CA82 /* DAAppsViewController.bundle */; };
 		6390A5812A672B8C0070CA82 /* DAAppViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 6390A57D2A672B8C0070CA82 /* DAAppViewCell.m */; };
 /* End PBXBuildFile section */
 
@@ -33,7 +32,6 @@
 		6390A5792A672B8C0070CA82 /* DAAppViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DAAppViewCell.h; sourceTree = "<group>"; };
 		6390A57A2A672B8C0070CA82 /* DAAppObject.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DAAppObject.m; sourceTree = "<group>"; };
 		6390A57B2A672B8C0070CA82 /* DAAppsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DAAppsViewController.h; sourceTree = "<group>"; };
-		6390A57C2A672B8C0070CA82 /* DAAppsViewController.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = DAAppsViewController.bundle; sourceTree = "<group>"; };
 		6390A57D2A672B8C0070CA82 /* DAAppViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DAAppViewCell.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -89,7 +87,6 @@
 				6390A57A2A672B8C0070CA82 /* DAAppObject.m */,
 				6390A5792A672B8C0070CA82 /* DAAppViewCell.h */,
 				6390A57D2A672B8C0070CA82 /* DAAppViewCell.m */,
-				6390A57C2A672B8C0070CA82 /* DAAppsViewController.bundle */,
 			);
 			name = DAAppsViewController;
 			path = ../DAAppsViewController;
@@ -154,7 +151,6 @@
 			files = (
 				6390A56A2A672AD20070CA82 /* LaunchScreen.storyboard in Resources */,
 				6390A5672A672AD20070CA82 /* Assets.xcassets in Resources */,
-				6390A5802A672B8C0070CA82 /* DAAppsViewController.bundle in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
