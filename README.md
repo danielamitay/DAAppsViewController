@@ -2,6 +2,8 @@
 
 `DAAppsViewController` is a simple way of displaying apps from the App Store in a similar UI/UX. The user is able to view each app's App Store page by launching an instance of `SKStoreProductViewController`. Particularly useful for showing an app developer's other apps.
 
+For SwiftUI, you should use [AppsView](https://github.com/danielamitay/AppsView)
+
 | By ArtistId | By List of AppIds | By Search Term |
 |---|---|---|
 | ![by artist id](./screenshots/screenshot-1.png) | ![by list of app ids](./screenshots/screenshot-2.png) | ![by search term](./screenshots/screenshot-3.png) |
@@ -62,35 +64,3 @@ DAAppsViewController *appsViewController = [[DAAppsViewController alloc] init];
 [appsViewController loadAppsWithSearchTerm:@"Radio" completionBlock:nil];
 [self.navigationController pushViewController:appsViewController animated:YES];
 ```
-
-## Contact
-
-- [@danielamitay](http://twitter.com/danielamitay)
-- hello@danielamitay.com
-- http://www.danielamitay.com
-
-If you use/enjoy `DAAppsViewController`, let me know!
-
-## License
-
-### MIT License
-
-Copyright (c) 2013 Daniel Amitay (http://www.danielamitay.com)
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in
-all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-THE SOFTWARE.
